@@ -8,7 +8,6 @@ import { EyeIcon, EyeOffIcon, Loader2, X } from "lucide-react"
 import FormInput from "~/components/reusables/form-fields/form-input";
 import logo from "../../../../public/images/OMAI-Logo-RGB-Color.svg"
 import { useRouter } from "next/navigation"
-import { LoginFormData } from "~/types/users"
 import { FORM_DEFAULT_VALUES } from "~/lib/variables"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form"
@@ -20,11 +19,11 @@ import {
 } from "@/components/ui/dialog"
 import { LOGIN_TEST_IDS } from "~/components/test-ids/login-ids";
 import { useLoader } from "@/context/loader-context";
+import { LoginFormType } from "@/types/form"
 
 const RESEND_COUNTDOWN_TIME = 30;
 
 // Components
-const defaultFormValues: LoginFormData = FORM_DEFAULT_VALUES.loginForm;
 
 const ForgotPasswordModal = ({ isOpen, onClose, email }: { isOpen: boolean; onClose: () => void; email?: string }) => {
   const [countdown, setCountdown] = useState(RESEND_COUNTDOWN_TIME);
@@ -140,9 +139,9 @@ const SignIn = () => {
   const router = useRouter();
   const { showLoader, hideLoader } = useLoader();
 
-  const form = useForm<LoginFormData>({
+  const form = useForm<LoginFormType>({
     resolver: zodResolver(LoginFormSchema),
-    defaultValues: defaultFormValues,
+    defaultValues: FORM_DEFAULT_VALUES.loginForm,
     mode: "onBlur",
     reValidateMode: "onChange",
     criteriaMode: "all",
@@ -156,7 +155,7 @@ const SignIn = () => {
     } 
   }, [user, accessToken, router]);
 
-  const handleFormSubmit: SubmitHandler<LoginFormData> = async (values) => {
+  const handleFormSubmit: SubmitHandler<LoginFormType> = async (values) => {
     try {
       setIsLoading(true)
       await signIn(values.username, values.password);
