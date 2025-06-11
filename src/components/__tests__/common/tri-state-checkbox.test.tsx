@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import TriStateCheckbox from '~/components/reusables/form-fields/tri-state-checkbox';
-import { ESelectedStatus } from '~/enums/workflow-customization-enum';
+import { ESelectedStatus } from '~/enums/base-enum';
 import { APP_NAME, SRS_ID, generateTestId } from '~/components/test-ids/utc-global';
 import React from 'react';
 

@@ -181,7 +181,7 @@ jest.mock('@/app/(auth)/sign-in/page', () => {
   return SignIn;
 });
 
-describe(`${APP_NAME}-${SRS_ID.SITE_RESOURCES}: Login - SignIn Component`, () => {
+describe(`${APP_NAME}-${SRS_ID.LOGIN}: Login - SignIn Component`, () => {
   const mockRouter = {
     push: jest.fn()
   };

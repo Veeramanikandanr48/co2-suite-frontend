@@ -3,7 +3,6 @@ import {
   DatePickerFormField,
   FormInput,
   FormTextarea,
-  FormFile,
   FormCustomInput,
   FormCheckbox,
   FormDropdown,
@@ -26,10 +25,6 @@ describe('Components Index', () => {
 
   it('should export FormTextarea component', () => {
     expect(FormTextarea).toBeDefined();
-  });
-
-  it('should export FormFile component', () => {
-    expect(FormFile).toBeDefined();
   });
 
   it('should export FormCustomInput component', () => {

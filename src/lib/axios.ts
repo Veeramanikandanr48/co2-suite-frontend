@@ -74,6 +74,37 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(new Error(error))
 );
 
+const handleHttpError = (error: AxiosError, skipToast: boolean) => {
+  const status: number | undefined = error.response?.status;
+  
+  if (status === HttpStatus.CONNECTION_REFUSED) {
+    showWarningToast("You are offline. Please check your internet connection and try again.");
+    throw new Error("Connection Refused");
+  }
+
+  if (status === HttpStatus.UNAUTHORIZED || status === HttpStatus.FORBIDDEN) {
+    showErrorToast("You are not authorized to access this resource.");
+    handleUnauthorized();
+    throw new Error(status === HttpStatus.UNAUTHORIZED ? "Unauthorized" : "Forbidden");
+  }
+
+  if (status === HttpStatus.BAD_REQUEST) {
+    const errorMessage = (error.response?.data as { message?: string })?.message ?? error.message ?? 'Bad Request';
+    if (!skipToast) showErrorToast(errorMessage);
+    return;
+  }
+
+  if (!skipToast) {
+    showErrorToast(error.message || "An unexpected error occurred");
+  }
+};
+
+const handleNetworkError = (error: AxiosError, skipToast: boolean) => {
+  if (!skipToast && error.request) {
+    showErrorToast("Please check your internet connection");
+  }
+};
+
 /**
  * Response Interceptor
  * Handles:
@@ -84,7 +115,7 @@ axiosInstance.interceptors.request.use(
  */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    const skipToast = response.config?.headers?.['X-Skip-Toast'] === 'true';
+    const skipToast: boolean = response.config?.headers?.['X-Skip-Toast'] === 'true';
     
     if (!skipToast && response.data?.message) {
       showSuccessToast(response.data.message);
@@ -92,40 +123,12 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   (error: AxiosError) => {
-    const skipToast = error.config?.headers?.['X-Skip-Toast'] === 'true';
+    const skipToast: boolean = error.config?.headers?.['X-Skip-Toast'] === 'true';
 
     if (error?.response) {
-      switch (error.response.status) {
-        case HttpStatus.CONNECTION_REFUSED:
-          showWarningToast("You are offline. Please check your internet connection and try again.");
-          throw new Error("Connection Refused");
-
-        case HttpStatus.UNAUTHORIZED:
-        case HttpStatus.FORBIDDEN:
-          showErrorToast("You are not authorized to access this resource.");
-          handleUnauthorized();
-          throw new Error(error.response.status === HttpStatus.UNAUTHORIZED ? "Unauthorized" : "Forbidden");
-
-          case HttpStatus.BAD_REQUEST: {
-            if (error instanceof AxiosError) {
-              const errorMessage = (error.response?.data as { message?: string })?.message ?? error.message ?? 'Bad Request';
-              if (!skipToast) {
-                showErrorToast(errorMessage);
-              }
-            } else {
-              if (!skipToast) {
-                showErrorToast('Bad Request');
-              }
-            }
-            break;
-          }
-        default:
-          if (!skipToast) {
-            showErrorToast(error.message || "An unexpected error occurred");
-          }
-      }
-    } else if (!skipToast && error.request) {
-      showErrorToast("Please check your internet connection");
+      handleHttpError(error, skipToast);
+    } else {
+      handleNetworkError(error, skipToast);
     }
 
     return Promise.reject(error);
