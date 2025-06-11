@@ -1,4 +1,4 @@
-import { DefaultValues, UploadType } from "~/enums/base-enum";
+import { UploadType } from "~/enums/base-enum";
 
 /**
  * Form date options
@@ -19,67 +19,9 @@ const SHORT_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
  * Form defaults
  */
 const FORM_DEFAULT_VALUES = {
-    paymentInformation: {
-        profilePicture: undefined,
-        attachments: [],
-    },
-    pacsConfiguration: {
-        ipAddress: "",
-        port: "",
-        aeTitle: "",
-    },
-    roomConfiguration: {
-        name: "",
-        description: "",
-        ipAddress: "",
-        port: "",
-        aeTitle: "",
-    },
-    userForm: {
-        firstName: "",
-        lastName: "",
-        userId: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        roleId: DefaultValues.USER_ROLE_ID,
-        profilePicture: undefined,
-    },
-    roomName: {
-        name: "",
-        contextRoomValue: [],
-    },
-    usgConfiguration: {
-        usgName: "",
-        usgDescription: "",
-        usgIp: "",
-        usgPort: "",
-        usgAeTitle: "",
-        roomId: 0,
-        usgId: 0,
-    },
-    blackboxConfiguration: {
-        blackboxName: "",
-        blackboxDescription: "",
-        blackboxIp: "",
-        blackboxPort: "",
-        blackboxAeTitle: "",
-        roomId: 0,
-        blackboxId: 0,
-    },
     loginForm: {
         username: "",
         password: "",
-    },
-    roleForm: {
-        roleName: "",
-        description: "",
-        permissions: {},
-    },
-    workflowConfiguration: {
-        name: "",
-        description: "",
-        contextWorkFlowValue: [],
     },
 }
 
@@ -116,69 +58,9 @@ const REGEX = {
  * Form auto fill values for testing
  */
 const FORM_FILL_VALUES = {
-    paymentInformation: {
-        bankName: "Bank of America",
-        accountName: "John Doe",
-        email: "john.doe@example.com",
-        additionalNotes: "This is a test note",
-        profilePicture: "https://via.placeholder.com/150",
-        customInputs: [
-            { key: "customInput1", value: "Custom Input 1" },
-            { key: "customInput2", value: "Custom Input 2" },
-        ],
-        date: "2021-01-01",
-    },
-    pacsConfiguration: {
-        ipAddress: "192.168.1.1",
-        port: 104,
-        aeTitle: "PACS",
-    },
-    userForm: {
-        firstName: "John",
-        lastName: "Doe",
-        userId: "johndoe",
-        email: "john@gmail.com",
-        password: "password123",
-        confirmPassword: "password123",
-        roleId: 1,
-        profilePicture: undefined,
-    },
-    roomName: {
-        name: "Room 1",
-        contextRoomValue: [],
-    },
-    usg: {
-        usgName: "USG 1",
-        usgDescription: "USG 1 description",
-        usgIp: "192.168.1.1",
-        usgPort: 104,
-        usgAeTitle: "USG1AE",
-        roomId: "1",
-        usgId: "1",
-    },
-    blackbox: {
-        blackboxName: "Blackbox 1",
-        blackboxDescription: "Blackbox 1 description",
-        blackboxIp: "192.168.1.1",
-        blackboxPort: 104,
-        blackboxAeTitle: "BBX1AE",
-        roomId: "1",
-        blackboxId: "1",
-    },
     userLogin: {
         username: "Antony@gmail.com",
         password: "password123",
-    },
-    roleForm: {
-        roleName: "Admin",
-        description: "Admin role",
-        permissions: {
-            "admin": true,
-        },
-    },
-    workflowConfiguration: {
-        name: "Workflow 1",
-        description: "Workflow 1 description",
     },
 };
 

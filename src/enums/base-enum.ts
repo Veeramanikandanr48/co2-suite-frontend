@@ -19,27 +19,15 @@ enum FontSize {
     LARGE = 18
 }
 
-enum DefaultValues {
-    USER_ROLE_ID = 4,
-}
-
 enum UploadType {
     PROFILE_PICTURE = 'profilePicture',
     ATTACHMENT = 'attachment'
 }
 
-enum ResourceType {
-    SITE_RESOURCE = 1,
-}
 
 enum ToastType {
     LIMIT = 1,
     DURATION = 4000,
-}
-
-enum PacsImage{
-    WIDTH = 1920,
-    HEIGHT = 1080,
 }
 
 enum ESelectedStatus {
@@ -52,10 +40,7 @@ export {
     HttpStatus,
     EAdditionalFieldError,
     FontSize,
-    DefaultValues,
     UploadType,
-    ResourceType,
     ToastType,
-    PacsImage,
     ESelectedStatus,
 };
