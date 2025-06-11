@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import BaseButton from '../../base-button';
+import BaseButton from '../../reusables/base-button';
 import React from 'react';
 import { baseButtonTestIds } from '../../test-ids/common.ids';
 

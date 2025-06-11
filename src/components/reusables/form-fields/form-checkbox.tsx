@@ -29,6 +29,15 @@ const FormCheckbox = ({
 }: FormCheckboxProps) => {
     const { control } = useFormContext();
 
+    const getPositionClass = (pos: FormCheckboxProps["position"]) => {
+        switch (pos) {
+            case "left": return "flex-row-reverse gap-4";
+            case "right": return "flex-row gap-4";
+            case "top": return "flex-col gap-2";
+            default: return "flex-col-reverse gap-2";
+        }
+    };
+
     return (
         <FormField
             control={control}
@@ -37,10 +46,7 @@ const FormCheckbox = ({
                 <FormItem className="space-y-1">
                     <div className={cn(
                         "flex items-center",
-                        position === "left" ? "flex-row-reverse gap-4" :
-                        position === "right" ? "flex-row gap-4" :
-                        position === "top" ? "flex-col gap-2" :
-                        "flex-col-reverse gap-2",
+                        getPositionClass(position),
                         position === "left" || position === "right" ? "w-full" : ""
                     )}>
                         {label && (

@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react"
 import { Check, Minus } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ESelectedStatus } from "~/enums/workflow-customization-enum"
+import { ESelectedStatus } from "~/enums/base-enum"
 
 
 interface TriStateCheckboxProps {

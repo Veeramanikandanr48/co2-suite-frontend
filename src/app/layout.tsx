@@ -3,9 +3,9 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth-provider";
 import { ThemeProvider } from "../context/theme-provider";
 import { PermissionsProvider } from "~/context/permissions-provider";
-import { Toaster } from "~/components/toaster";
+import { Toaster } from "@/components/reusables/toaster";
 import { LoaderProvider } from "@/context/loader-context";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/reusables/loader";
 
 export const metadata: Metadata = {
   title: "OMEA - Admin",

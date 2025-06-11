@@ -14,7 +14,7 @@ import {
 
 // Icons
 import { Loader2 } from "lucide-react";
-import { baseButtonTestIds } from "./test-ids/common.ids";
+import { baseButtonTestIds } from "../test-ids/common.ids";
 
 type BaseButtonProps = {
     className?: string;

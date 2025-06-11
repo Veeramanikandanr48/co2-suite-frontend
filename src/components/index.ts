@@ -1,7 +1,6 @@
-import BaseButton from "./base-button";
+import BaseButton from "./reusables/base-button";
 import DatePickerFormField from "./reusables/form-fields/date-picker-form-field";
 import FormCustomInput from "./reusables/form-fields/form-custom-input";
-import FormFile from "./reusables/form-fields/form-file";
 import FormInput from "./reusables/form-fields/form-input";
 import FormTextarea from "./reusables/form-fields/form-textarea";
 import FormCheckbox from "./reusables/form-fields/form-checkbox";
@@ -14,7 +13,6 @@ export {
     DatePickerFormField,
     FormInput,
     FormTextarea,
-    FormFile,
     FormCustomInput,
     FormCheckbox,
     FormDropdown,

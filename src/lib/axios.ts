@@ -4,7 +4,7 @@ import {
   showErrorToast,
   showSuccessToast,
   showWarningToast,
-} from "~/components/toast-variant";
+} from "@/components/reusables/toast-variant";
 
 /**
  * Handles unauthorized access by clearing storage and redirecting to sign-in.

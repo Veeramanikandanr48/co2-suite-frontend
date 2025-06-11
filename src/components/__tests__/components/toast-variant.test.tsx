@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
-import { showErrorToast, showWarningToast } from '@/components/toast-variant';
+import { showErrorToast, showWarningToast } from '@/components/reusables/toast-variant';
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 
 // Mock the Verified and WarningCircle components

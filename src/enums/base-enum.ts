@@ -42,6 +42,12 @@ enum PacsImage{
     HEIGHT = 1080,
 }
 
+enum ESelectedStatus {
+    SELECTED = 1,
+    UNSELECTED = 0,
+    INTERMEDIATE = 2,
+}
+
 export {
     HttpStatus,
     EAdditionalFieldError,
@@ -51,4 +57,5 @@ export {
     ResourceType,
     ToastType,
     PacsImage,
+    ESelectedStatus,
 };

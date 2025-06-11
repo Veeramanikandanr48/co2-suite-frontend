@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import FormFile from '@/components/reusables/form-fields/form-file';
 import { UploadType } from '@/enums/base-enum';
-import { showWarningToast } from '~/components/toast-variant';
+import { showWarningToast } from '@/components/reusables/toast-variant';
 import Image from 'next/image';
 
 // Mock URL.createObjectURL and URL.revokeObjectURL

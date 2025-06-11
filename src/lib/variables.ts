@@ -210,14 +210,7 @@ const FILE_UPLOAD_CONFIG: Record<UploadType, FileUploadConfig> = {
 } as const;
 
 const FORM_CONFIGURATION: Record<string, boolean> = {
-  "/device-integration/system-integration/pacs-configuration": true,
-  "/device-integration/room-integration/room/[id]": true,
-  "/device-integration/room-integration/room/[id]/blackbox-configuration": true,
-  "/device-integration/room-integration/room/[id]/usg-configuration": true,
-  "/user-access-management/all-users/create": true,
-  "/user-access-management/all-users/[id]": true,
-  "/user-access-management/user-roles/create": true,
-  "/user-access-management/user-roles/[id]": true,
+  "/dashboard/overview": true,
 }
 
 export {

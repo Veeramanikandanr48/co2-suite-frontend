@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Icons } from "@/components/svg";
-import EventBus from "../composables/eventbus";
+import EventBus from "../reusables/eventbus";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import { SidebarItemProps } from "@/types/sidebar";
 
