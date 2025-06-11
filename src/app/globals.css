@@ -294,12 +294,9 @@
     @apply [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-none [&::-webkit-scrollbar-thumb]:bg-[#D9E5F2] [&::-webkit-scrollbar-thumb]:rounded-xl;
   }
 
+    /* Base Styles */
   body {
     font-family: 'Roboto-Regular', Helvetica, sans-serif;
-  }
-
-  /* Base Styles */
-  body {
     @apply bg-background text-foreground;
     font-family: 'Roboto', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;

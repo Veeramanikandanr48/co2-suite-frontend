@@ -6,6 +6,7 @@ import { PermissionsProvider } from "~/context/permissions-provider";
 import { Toaster } from "@/components/reusables/toaster";
 import { LoaderProvider } from "@/context/loader-context";
 import { Loader } from "@/components/reusables/loader";
+import { SocketProvider } from "@/context/socket-context";
 
 export const metadata: Metadata = {
   title: "OMEA - Admin",
@@ -30,8 +31,10 @@ export default function RootLayout({
             <Loader />
             <AuthProvider>
               <PermissionsProvider>
-                {children}
-              <Toaster />
+                <SocketProvider>
+                  {children}
+                  <Toaster />
+                </SocketProvider>
               </PermissionsProvider>
             </AuthProvider>
           </LoaderProvider>
