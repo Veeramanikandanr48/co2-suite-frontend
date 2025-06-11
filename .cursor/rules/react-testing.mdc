@@ -1,0 +1,146 @@
+---
+description: 
+globs: *.test.tsx
+alwaysApply: false
+---
+# React Testing Rules
+
+## File Location and Structure
+- All test files must be in `/src/components/__tests__/`
+- Use `.test.tsx` for React components
+- Mirror source file structure
+- Example: `action-template.tsx` → `action-template.test.tsx`
+
+## Test Organization
+```typescript
+import { describe, it, expect } from '@jest/globals';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ComponentName } from '../ComponentName';
+
+describe('ComponentName', () => {
+    it('should render correctly', () => {
+        render(<ComponentName />);
+        expect(screen.getByRole('heading')).toHaveTextContent('Expected Title');
+    });
+
+    it('should handle user interactions', async () => {
+        render(<ComponentName />);
+        await userEvent.click(screen.getByRole('button'));
+        expect(screen.getByText('Updated Text')).toBeInTheDocument();
+    });
+});
+```
+
+## Testing Library Queries
+Priority order for element selection:
+1. `getByRole` (preferred)
+2. `getByLabelText`
+3. `getByPlaceholderText`
+4. `getByText`
+5. `getByDisplayValue`
+6. `getByTestId` (last resort)
+
+## Common Patterns
+
+### Component Render Test
+```typescript
+describe('ComponentName', () => {
+    it('should render correctly', () => {
+        render(<ComponentName />);
+        expect(screen.getByRole('heading')).toHaveTextContent('Expected Title');
+        expect(screen.getByRole('button')).toBeEnabled();
+    });
+});
+```
+
+### User Interaction Test
+```typescript
+describe('ComponentName', () => {
+    it('should handle user interactions', async () => {
+        render(<ComponentName />);
+        const button = screen.getByRole('button');
+        await userEvent.click(button);
+        expect(screen.getByText('Updated Text')).toBeInTheDocument();
+    });
+});
+```
+
+### Form Test
+```typescript
+describe('FormComponent', () => {
+    it('should handle form submission', async () => {
+        render(<FormComponent />);
+        await userEvent.type(screen.getByLabelText('Name'), 'John Doe');
+        await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        expect(screen.getByText('Success')).toBeInTheDocument();
+    });
+});
+```
+
+### API Integration Test
+```typescript
+describe('DataComponent', () => {
+    it('should fetch and display data', async () => {
+        render(<DataComponent />);
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
+        await screen.findByText('Data loaded');
+        expect(screen.getByText('mocked data')).toBeInTheDocument();
+    });
+});
+```
+
+## Mocking Rules
+
+### API Mocks
+```typescript
+jest.mock('../../api', () => ({
+    fetchData: jest.fn().mockResolvedValue({ data: 'mocked data' })
+}));
+```
+
+### Context Mocks
+```typescript
+const mockContext = {
+    value: 'test',
+    setValue: jest.fn()
+};
+
+render(
+    <Context.Provider value={mockContext}>
+        <Component />
+    </Context.Provider>
+);
+```
+
+## Common Issues
+
+### Async Testing
+- Use `async/await`
+- Use `findBy` queries
+- Use `waitFor`
+- Handle loading states
+
+### Context Testing
+- Mock context providers
+- Test context consumers
+- Test context updates
+- Test context persistence
+
+### Router Testing
+- Mock router context
+- Test navigation
+- Test route parameters
+- Test route guards
+
+## Best Practices
+1. Use `userEvent` over `fireEvent`
+2. Test accessibility
+3. Test error states
+4. Test loading states
+5. Test edge cases
+6. Keep tests focused
+7. Mock external dependencies
+8. Test user interactions
+9. Test state changes
+10. Test prop changes 

@@ -1,0 +1,63 @@
+import { AxiosResponse } from "axios";
+import { ReactNode } from "react"
+import { Subject, PureAbility } from "@casl/ability"
+import { EAdditionalFieldError } from "@/enums/base-enum";
+
+interface LayoutProps {
+  readonly children: ReactNode;
+}
+
+interface CustomAxiosResponse<T = unknown> extends AxiosResponse<T> {
+  success: boolean;
+  message: string;
+  additionalContext: EAdditionalFieldError;
+}
+
+type SubheadingProps = {
+  children: React.ReactNode;
+  className?: string;
+  'data-testid'?: string;
+} & React.HTMLAttributes<HTMLDivElement>;
+
+interface DeviceField {
+  ipAddress: string
+  port: number
+  aeTitle: string
+  name?: string
+  description?: string
+  id?: number
+}
+
+interface WarningDialogProps {
+  title: string;
+  message: string;
+  open: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+interface DeleteDialogProps {
+  open: boolean
+  onOpenChange?: (open: boolean) => void
+  onConfirm: () => void
+  onCancel: () => void
+  title?: string
+  message?: string
+  confirmLabel?: string
+  cancelLabel?: string
+}
+
+type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete';
+type AppAbility = PureAbility<[Actions, Subject]>;
+
+export type {
+  Actions,
+  AppAbility,
+  LayoutProps,
+  CustomAxiosResponse,
+  DeviceField,
+  SubheadingProps,
+  WarningDialogProps,
+  DeleteDialogProps
+};

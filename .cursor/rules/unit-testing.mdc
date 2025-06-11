@@ -1,0 +1,120 @@
+---
+description: 
+globs: *.test.tsx
+alwaysApply: false
+---
+# Unit Testing Rules
+
+## File Location and Structure
+- All test files must be in `/src/components/__tests__/`
+- Use `.test.ts` for TypeScript files
+- Use `.test.tsx` for React components
+- Mirror source file structure
+- Example: `schemas.ts` → `schemas.test.ts`
+
+## Test Organization
+```typescript
+import { describe, it, expect } from '@jest/globals';
+import { ComponentName } from '../ComponentName';
+
+describe('ComponentName', () => {
+    it('should validate valid data', () => {
+        // Test valid case
+    });
+
+    it('should reject invalid data', () => {
+        // Test invalid case
+    });
+});
+```
+
+## Coverage Requirements
+- Minimum 90% coverage for critical files
+- Document uncovered lines
+- Focus on critical paths
+- Test edge cases
+
+## Mocking Rules
+- Mock external dependencies
+- Use proper TypeScript types
+- Reset mocks between tests
+- Example for browser APIs:
+```typescript
+class MockFile {
+    fileBits: any[];
+    name: string;
+    size: number;
+    type: string;
+    lastModified: number;
+    webkitRelativePath: string = '';
+    constructor(fileBits: any[] = [], fileName: string = 'mock.txt', options: any = {}) {
+        this.fileBits = fileBits;
+        this.name = fileName;
+        this.size = 0;
+        this.type = (options && options.type) || '';
+        this.lastModified = (options && options.lastModified) || Date.now();
+    }
+    slice() { return this; }
+}
+```
+
+## Common Patterns
+
+### Schema Tests
+```typescript
+describe('SchemaName', () => {
+    it('should validate valid data', () => {
+        const validData = { /* valid data */ };
+        expect(() => Schema.parse(validData)).not.toThrow();
+    });
+
+    it('should reject invalid data', () => {
+        const invalidData = { /* invalid data */ };
+        expect(() => Schema.parse(invalidData)).toThrow();
+    });
+});
+```
+
+### Function Tests
+```typescript
+describe('functionName', () => {
+    it('should return expected result', () => {
+        const result = functionName(input);
+        expect(result).toBe(expectedOutput);
+    });
+});
+```
+
+## Running Tests
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+
+# Run specific test file
+npm test -- --coverage src/components/__tests__/schemas.test.ts
+```
+
+## Common Issues
+
+### Browser API Mocks
+- Mock at top level
+- Include all required properties
+- Use proper TypeScript types
+- Document mock behavior
+
+### Type Errors
+- Use proper TypeScript types
+- Avoid `any` where possible
+- Use type assertions when necessary
+- Document complex types
+
+### Test Isolation
+- Reset mocks between tests
+- Use `beforeEach` and `afterEach`
+- Don't rely on test order
+- Keep tests independent
+
+

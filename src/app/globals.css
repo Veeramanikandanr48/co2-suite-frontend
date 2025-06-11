@@ -1,0 +1,350 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .scrollBar {
+    @apply [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-none [&::-webkit-scrollbar-thumb]:bg-[#D9E5F2] [&::-webkit-scrollbar-thumb]:rounded-xl;
+  }
+}
+
+@layer base {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #0A0A0A;
+    --card: #FFFFFF;
+    --card-foreground: #0A0A0A;
+    --popover: #FFFFFF;
+    --popover-foreground: #0A0A0A;
+    --primary: #1454CC;
+    --primary-foreground: #FAFAFA;
+    --secondary: #F4F4F6;
+    --secondary-foreground: #1A1A1A;
+    --muted: #F4F4F6;
+    --muted-foreground: #75757D;
+    --accent: #F4F4F6;
+    --accent-foreground: #1A1A1A;
+    --destructive: #F03D3D;
+    --destructive-foreground: #FAFAFA;
+    --border: #E6E6E6;
+    --input: #E6E6E6;
+    --ring: #2B6FFF;
+    --radius: 0.5rem;
+    --tab-border: #1E64FF;
+    --text-primary: #FF0000;
+
+    --text-primary: #4D5059;
+
+    --button-primary: #1454CC;
+    --button-disabled: #95989F;
+    --text-disabled: #5C5F66;
+    --button-outline: #1454CC;
+
+    --modal-heading: #030712;
+    --modal-content: #4B5563;
+
+    --background-inner: #F8F9FA;
+    --background-outer: #EFF0F1;
+    --header-primary: #17181A;
+    --header-secondary: #5C5F66;
+    --input-label: #3A3D40;
+    --input-placeholder: #ACB6BF;
+    --input-border: #ACB6BF;
+    --input-bg: #FFFFFF;
+    --link: #95989F;
+    --link-active: #3A73E6;
+    --close-button: #6B7280;
+    --preview-bg:#0101018C
+
+
+    /* Typography Scale */
+    --font-heading-1: 2.5rem;
+    --font-heading-2: 2rem;
+    --font-heading-3: 1.75rem;
+    --font-heading-4: 1.5rem;
+    --font-heading-5: 1.25rem;
+    --font-paragraph: 1rem;
+    --font-small: 0.875rem;
+    --font-xs: 0.75rem;
+
+    /* Font Weights */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+
+    /* Neutral Scale */
+    --neutral-100: #D9E5F2;
+    --neutral-200: #F0F2F5;
+    --neutral-300: #E6E8EB;
+    --neutral-400: #5C5F66;
+    --neutral-500: #4D5059;
+    --neutral-600: #3A3D40;
+    --neutral-700: #2A2D30;
+    --neutral-800: #222326;
+    --neutral-900: #0A0D10;
+    --neutral-950: #95989F;
+
+    /* Primary Scale */
+    --positive-50: #EDFCF3;
+    --positive-100: #D3F8E0;
+    --positive-200: #AAF0C6;
+    --positive-300: #74E1A7;
+    --positive-400: #32BF78;
+    --positive-500: #18B169;
+    --positive-600: #0C8F54;
+    --positive-700: #097346;
+    --positive-800: #0A5B39;
+    --positive-900: #094B30;
+    --positive-950: #042A1C;
+
+    --warning-50: #FFFEE7;
+    --warning-100: #FFFCC1;
+    --warning-200: #FFF686;
+    --warning-300: #FFE941;
+    --warning-400: #FFD70D;
+    --warning-500: #FFC700;
+    --warning-600: #D19100;
+    --warning-700: #A66702;
+    --warning-800: #89500A;
+    --warning-900: #74410F;
+    --warning-950: #442204;
+
+    --negative-50: #FFDED8;
+    --negative-300: #D95E45;
+    --negative-500: #CC4529;
+    --negative-700: #A83821;
+    --negative-900: #FA2222;
+
+    --light-100: #FFFFFF;
+    --light-200: #F8F9FA;
+    --light-250: #F3F6FC;
+    --light-300: #EFF0F1;
+    --light-400: #E7EEF4;
+    --light-500: #ECF2F9;
+    --light-600: #DEF0FD;
+    --light-700: #9BC5FF;
+
+    --primary-100: #80AAFF;
+    --primary-500: #1454CC;
+    --primary-300: #3A73E6;
+    --filter-icon: #1454CC;
+    --title-color: #17181A;
+
+    --img-mode:#6FC4DB;
+    --admin-mode:#C7C0FF;
+    
+  }
+
+  .dark {
+    --background: #0A0A0A;
+    --foreground: #FAFAFA;
+    --card: #0A0A0A;
+    --card-foreground: #FAFAFA;
+    --card-check: #f00;
+    --popover: #0A0A0A;
+    --popover-foreground: #FAFAFA;
+    --primary: #2B6FFF;
+    --primary-foreground: #FAFAFA;
+    --secondary: #1A1A1A;
+    --secondary-foreground: #FAFAFA;
+    --muted: #1A1A1A;
+    --muted-foreground: #A6A6A6;
+    --accent: #1A1A1A;
+    --accent-foreground: #FAFAFA;
+    --destructive: #4E1A1A;
+    --destructive-foreground: #FAFAFA;
+    --border: #1A1A1A;
+    --input: #1A1A1A;
+    --ring: #2B6FFF;
+    
+    --text-primary: #4D5059;
+    
+    --modal-heading: #030712;
+    --modal-content: #4B5563;
+    
+    --button-primary: #1454CC;
+    --button-disabled: #95989F;
+    --button-outline: #1454CC;
+    --button-background: #FFFFFF;
+
+    --background-inner: #F8F9FA;
+    --background-outer: #EFF0F1;
+    --header-primary: #17181A;
+    --header-secondary: #5C5F66;
+    --input-label: #3A3D40;
+    --input-placeholder: #ACB6BF;
+    --input-border: #ACB6BF;
+    --input-bg: #FFFFFF;
+    --link-disabled: #95989F;
+    --link-active: #3A73E6;
+
+    /* Typography Scale */
+    --font-heading-1: 2.5rem;
+    --font-heading-2: 2rem;
+    --font-heading-3: 1.75rem;
+    --font-heading-4: 1.5rem;
+    --font-heading-5: 1.25rem;
+    --font-paragraph: 1rem;
+    --font-small: 0.875rem;
+    --font-xs: 0.75rem;
+
+    /* Font Weights */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+
+    /* Dark Neutral Scale */
+    --neutral-100: #D9E5F2;
+    --neutral-200: #BFC2C5;
+    --neutral-300: #E6E8EB;
+    --neutral-400: #5C5F66;
+    --neutral-500: #4D5059;
+    --neutral-600: #3A3D40;
+    --neutral-700: #2A2D30;
+    --neutral-800: #1A1D20;
+    --neutral-900: #0A0D10;
+    --neutral-950: #000000;
+    --neutral-960: #95989F;
+  }
+}
+
+@layer base {
+  /* Font Faces */
+  @font-face {
+    font-family: 'Roboto';
+    src: url('../../public/fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Roboto';
+    src: url('../../public/fonts/Roboto/Roboto-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Roboto';
+    src: url('../../public/fonts/Roboto/Roboto-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @layer utilities {
+    input:-webkit-autofill {
+      box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
+    }
+  }
+
+  h1 {
+    font-size: var(--font-heading-1);
+    font-weight: var(--font-weight-bold);
+  }
+
+  h2 {
+    font-size: var(--font-heading-2);
+    font-weight: var(--font-weight-bold);
+  }
+
+  h3 {
+    font-size: var(--font-heading-3);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  h4 {
+    font-size: var(--font-heading-4);
+    font-weight: var(--font-weight-medium);
+  }
+
+  h5 {
+    font-size: var(--font-heading-5);
+    font-weight: var(--font-weight-medium);
+  }
+
+  h6 {
+    font-size: var(--font-small);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .tabs-trigger {
+    @apply relative px-4 py-2 text-gray-500 font-medium transition-all hover:text-gray-700 data-[state=active]:font-semibold outline-none;
+  }
+
+  /* Use the new variable */
+  .tabs-trigger::after {
+    content: "";
+    @apply absolute bottom-[-2px] left-0 w-full h-[3px] scale-x-0 transition-transform data-[state=active]:scale-x-100;
+    background-color: var(--color-tab-border);
+  }
+
+  .scrollBar {
+    @apply [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-none [&::-webkit-scrollbar-thumb]:bg-[#D9E5F2] [&::-webkit-scrollbar-thumb]:rounded-xl;
+  }
+
+  body {
+    font-family: 'Roboto-Regular', Helvetica, sans-serif;
+  }
+
+  /* Base Styles */
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Roboto', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* For Firefox */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+
+  /* For Chrome, Safari, and Opera */
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Typography Classes */
+  .h1 {
+    @apply text-[var(--font-heading-1)] font-bold leading-tight;
+  }
+
+  .h2 {
+    @apply text-[var(--font-heading-2)] font-bold leading-tight;
+  }
+
+  .h3 {
+    @apply text-[var(--font-heading-3)] font-bold leading-tight;
+  }
+
+  .h4 {
+    @apply text-[var(--font-heading-4)] font-medium leading-snug;
+  }
+
+  .h5 {
+    @apply text-[var(--font-heading-5)] font-medium leading-snug;
+  }
+
+  .body {
+    @apply text-[var(--font-paragraph)] leading-normal;
+  }
+
+  .small {
+    @apply text-[var(--font-small)] leading-normal;
+  }
+
+  .xs {
+    @apply text-[var(--font-xs)] leading-normal;
+  }
+}

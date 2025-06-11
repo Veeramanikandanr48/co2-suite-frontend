@@ -1,0 +1,9 @@
+import { cn } from "@/lib/utils";
+export default function HelpAndTutorialsIcon ({ className = '', stroke='#5C5F66'}) {
+  return (
+  <svg className={cn(className)} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M12.625 16.875C12.625 17.2202 12.3452 17.5 12 17.5C11.6548 17.5 11.375 17.2202 11.375 16.875C11.375 16.5298 11.6548 16.25 12 16.25C12.3452 16.25 12.625 16.5298 12.625 16.875Z" fill="#17181A" stroke={stroke}/>
+<path d="M12 13.5V12.75C12.5192 12.75 13.0267 12.596 13.4584 12.3076C13.8901 12.0192 14.2265 11.6092 14.4252 11.1295C14.6239 10.6499 14.6758 10.1221 14.5746 9.61289C14.4733 9.10369 14.2233 8.63596 13.8562 8.26885C13.489 7.90173 13.0213 7.65173 12.5121 7.55044C12.0029 7.44915 11.4751 7.50114 10.9955 7.69982C10.5158 7.8985 10.1058 8.23495 9.81739 8.66663C9.52895 9.09831 9.375 9.60583 9.375 10.125" stroke={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+  )}
