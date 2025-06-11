@@ -189,13 +189,13 @@ const SignIn = () => {
         <div className="flex flex-col items-center justify-center space-y-4 mt-4">
               <Image
                 src={logo}
-                alt="Origin Medical Logo"
+                alt="Boiler-Plate Logo"
                 width={150}
                 height={40}
                 priority
               />
           <h5 className="text-center text-xl font-semibold text-text-primary">
-            Exam Assistant - Admin Mode
+            Boiler-Plate
           </h5>
         </div>
 
@@ -277,7 +277,7 @@ const SignIn = () => {
     </FormProvider>
 
     <p className="text-center text-sm text-header-secondary mt-10 mr-8">
-      © 2024 Origin Medical. All rights reserved.
+      © 2024 Boiler-Plate. All rights reserved.
     </p>
   </div>
 

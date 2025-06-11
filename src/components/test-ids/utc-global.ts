@@ -1,4 +1,4 @@
-const APP_NAME = "OMEA-ADM";
+const APP_NAME = "BPV";
 
 const URS_ID = {
     LOGIN:'02',

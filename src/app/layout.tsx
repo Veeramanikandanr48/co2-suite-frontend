@@ -9,8 +9,8 @@ import { Loader } from "@/components/reusables/loader";
 import { SocketProvider } from "@/context/socket-context";
 
 export const metadata: Metadata = {
-  title: "OMEA - Admin",
-  description: "OMEA-EXAM-ASSISTANT-ADMIN-FRONT-END",
+  title: "Boiler-Plate",
+  description: "Boiler-Plate-Front-End",
 };
 
 export default function RootLayout({
