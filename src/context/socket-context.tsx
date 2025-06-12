@@ -25,7 +25,7 @@ interface SocketProviderProps {
   autoConnect?: boolean
 }
 
-export function SocketProvider({ children, url = process.env.SOCKET_URL as string, autoConnect = true }: Readonly<SocketProviderProps>) {
+export function SocketProvider({ children, url = process.env.SOCKET_URL as string, autoConnect = false }: Readonly<SocketProviderProps>) {
   const [socket, setSocket] = useState<Socket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
 

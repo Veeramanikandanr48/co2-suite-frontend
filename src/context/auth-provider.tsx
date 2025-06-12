@@ -67,50 +67,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
-  const signIn = useCallback(async (username: string, password: string) => {
+  const signIn = useCallback(async (userName: string, password: string) => {
     try {
       setIsLoading(true)
-      const response = await apiService.post<LoginResponse>(API_LIST.LOGIN, {
-        username,
-        password,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Skip-Toast": "false",
-        },
-      }
-    );
+    // Actual login      
+    //   const response = await apiService.post<LoginResponse>(API_LIST.LOGIN, {
+    //     username,
+    //     password,
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "X-Skip-Toast": "false",
+    //     },
+    //   }
+    // );
 
-      if (response?.data?.token) {        
-        const token = response.data.token;
-        localStorage.setItem("access_token", token);
+    //   if (response?.data?.token) {        
+    //     const token = response.data.token;
+    //     localStorage.setItem("access_token", token);
 
-        // Store user data
-        const userData = {
-          id: response.data.id,
-          userName: response.data.userName,
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          email: response.data.email,
-          userId: response.data.userId,
-          idpId: response.data.idpId,
-          profilePath: response.data.profilePath,
-          roleId: response.data.roleId
-        };
+    //     // Store user data
+    //     const userData = {
+    //       id: response.data.id,
+    //       userName: response.data.userName,
+    //       firstName: response.data.firstName,
+    //       lastName: response.data.lastName,
+    //       email: response.data.email,
+    //       userId: response.data.userId,
+    //       idpId: response.data.idpId,
+    //       profilePath: response.data.profilePath,
+    //       roleId: response.data.roleId
+    //     };
 
-        localStorage.setItem("user_data", JSON.stringify(userData));
-        connectSocket();
+    //     localStorage.setItem("user_data", JSON.stringify(userData));
+    //     connectSocket();
 
-        setState({
-          user: userData,
-          isLoading: false,
-          accessToken: token,
-        });
-        router.push("/dashboard/overview");
-        return; 
-      }
+    //     setState({
+    //       user: userData,
+    //       isLoading: false,
+    //       accessToken: token,
+    //     });
+    //     router.push("/dashboard/overview");
+    //     return; 
+    //   }
 
+          // mock login
+          const mockLogin: AuthState = {
+            user: {
+              id: 1,
+              userName,
+              firstName: "mock",
+              lastName: "user",
+              email: "mock-email",
+              roleId: 1,
+              profilePath: "mock-profile-path",
+              userId: "mock-user-id",
+              idpId: "mock-idp-id",
+            },
+            isLoading: false,
+            accessToken: "mock-token",
+          }
+    
+          localStorage.setItem("access_token", mockLogin.accessToken ?? "");
+          localStorage.setItem("user_data", JSON.stringify(mockLogin.user));
+          setState(mockLogin);
+          connectSocket();
+          router.push("/dashboard/overview");
     } catch  {
     } finally {
       setIsLoading(false)
