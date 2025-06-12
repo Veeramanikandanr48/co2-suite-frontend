@@ -131,11 +131,21 @@ const fieldValidators = {
 
 const LoginFormSchema = z.object({
     username: z.string()
-    .min(1, "Username is required")
-    .email("Please enter a valid username"),
-   password: fieldValidators.password,
+        .min(1, "Username is required")
+        .email("Please enter a valid username"),
+    password: fieldValidators.password,
 });
 
-export { 
+const UserFormSchema = z.object({
+    name: fieldValidators.name,
+    email: fieldValidators.email,
+    description: z.string()
+        .max(255, "Description must be less than 255 characters")
+        .optional(),
+    roleId: fieldValidators.roleId,
+});
+
+export {
     LoginFormSchema,
+    UserFormSchema
 };

@@ -36,6 +36,11 @@ enum ESelectedStatus {
     INTERMEDIATE = 2,
 }
 
+enum EAction {
+    EDIT = 'edit',
+    DELETE = 'delete',
+}
+
 export {
     HttpStatus,
     EAdditionalFieldError,
@@ -43,4 +48,5 @@ export {
     UploadType,
     ToastType,
     ESelectedStatus,
+    EAction
 };

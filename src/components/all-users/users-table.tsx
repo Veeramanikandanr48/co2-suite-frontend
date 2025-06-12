@@ -15,35 +15,66 @@ import {
 import { Checkbox } from "~/components/ui/checkbox"
 import { cn } from "~/lib/utils"
 import { Filter } from "../svg"
-import { RoleResponse, UserResponse as UserTable } from "~/types/users"
-import { apiService } from "~/lib/api-service"
+// import { RoleResponse, UserResponse as UserTable } from "~/types/users"
+import { UserResponse as UserTable } from "~/types/users"
+// import { apiService } from "~/lib/api-service"
 import { allUser } from "../test-ids/all-users.ids"
-import { useLoader } from "@/context/loader-context";
+import { useLoader } from "@/context/loader-context"
+import { EAction } from "@/enums/base-enum"
+import { RoleList, UserList } from "@/mock-data"
 
 interface RoleFilter {
     id: number;
     name: string;
 }
 
-interface RolesTableProps {
+interface UsersTableProps {
     onBackClick?: () => void;
 }
 
-interface RoleColumnsProps {
+interface UserColumnsProps {
     hasUsers: boolean;
     handleColumnSort: (field: string) => void;
-    handleRowClick: (roleId: string) => void;
+    handleRowClick: (userId: string, action: EAction) => void;
 }
+
+const SNoHeader = () => (
+    <div className="flex flex-col w-full">
+        <div className="flex gap-1 text-sm text-neutral-500 font-bold">
+            S.No
+        </div>
+        <div className="h-6"></div>
+    </div>
+);
 
 const NameHeader = ({ hasUsers, handleColumnSort }: { hasUsers: boolean; handleColumnSort: (field: string) => void }) => (
     <div className="flex flex-col w-full">
         <div className="flex justify-between items-center w-full">
-            <span className="font-bold text-neutral-500 text-sm">User Role</span>
+            <span className="font-bold text-neutral-500 text-sm">Name</span>
             <Button
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 hover:bg-transparent"
-                onClick={() => hasUsers && handleColumnSort("roleName")}
+                onClick={() => hasUsers && handleColumnSort("name")}
+                disabled={!hasUsers}
+                data-testid={allUser.sortUserRoleButton}
+            >
+                <ArrowUpDown className={`h-4 w-4 ${!hasUsers ? 'stroke-gray-600' : 'stroke-neutral-400'}`} />
+            </Button>
+        </div>
+        <div className="h-6"></div>
+    </div>
+);
+
+const EmailHeader = ({ hasUsers, handleColumnSort }: { hasUsers: boolean; handleColumnSort: (field: string) => void }) => (
+    <div className="flex flex-col w-full">
+        <div className="flex justify-between items-center w-full">
+            <span className="font-bold text-neutral-500 text-sm">Email</span>
+            <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-transparent"
+                onClick={() => hasUsers && handleColumnSort("email")}
                 disabled={!hasUsers}
                 data-testid={allUser.sortUserRoleButton}
             >
@@ -63,17 +94,40 @@ const DescriptionHeader = () => (
     </div>
 );
 
-const ActionsHeader = () => (
-    <div className="flex justify-center w-full">
-        <span className="text-neutral-500 font-bold">
-            <Info className="w-[17px] h-[17px]" />
-        </span>
+const RoleHeader = ({ hasUsers, handleColumnSort }: { hasUsers: boolean; handleColumnSort: (field: string) => void }) => (
+    <div className="flex flex-col w-full">
+        <div className="flex justify-between items-center w-full">
+            <span className="font-bold text-neutral-500 text-sm">Role</span>
+            <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-transparent"
+                onClick={() => hasUsers && handleColumnSort("role")}
+                disabled={!hasUsers}
+                data-testid={allUser.sortUserRoleButton}
+            >
+                <ArrowUpDown className={`h-4 w-4 ${!hasUsers ? 'stroke-gray-600' : 'stroke-neutral-400'}`} />
+            </Button>
+        </div>
+        <div className="h-6"></div>
     </div>
+);
+
+const SNoCell = ({ row }: { row: { index: number } }) => (
+    <span className="font-medium text-xs text-neutral-500 text-normal pl-2">
+        {row.index + 1}
+    </span>
 );
 
 const NameCell = ({ row }: { row: { original: UserTable } }) => (
     <span className="font-medium text-xs text-neutral-500 text-normal pl-2" data-testid={allUser.userRoleColumn}>
         {row.original.name ?? '-'}
+    </span>
+);
+
+const EmailCell = ({ row }: { row: { original: UserTable } }) => (
+    <span className="font-medium text-xs text-neutral-500 text-normal pl-2" data-testid={allUser.userRoleColumn}>
+        {row.original.email ?? '-'}
     </span>
 );
 
@@ -85,20 +139,47 @@ const DescriptionCell = ({ row }: { row: { original: UserTable } }) => (
     </div>
 );
 
-const ActionsCell = ({ row, handleRowClick }: { row: { original: UserTable }; handleRowClick: (roleId: string) => void }) => (
+const RoleCell = ({ row }: { row: { original: UserTable } }) => (
+    <span className="font-medium text-xs text-neutral-500 text-normal pl-2" data-testid={allUser.userRoleColumn}>
+        {row.original.roleName ?? '-'}
+    </span>
+);
+
+const ActionsHeader = () => (
     <div className="flex justify-center w-full">
+        <span className="text-neutral-500 font-bold">
+            <Info className="w-[17px] h-[17px]" />
+        </span>
+    </div>
+);
+
+const ActionsCell = ({ row, handleRowClick }: { row: { original: UserTable }; handleRowClick: (roleId: string, action: EAction) => void }) => (
+    <div className="flex justify-center w-full gap-2">
         <button
             className="text-[10px] text-blue-600 underline font-normal"
-            onClick={() => row.original?.id && handleRowClick(row.original.id.toString())}
+            onClick={() => row.original?.id && handleRowClick(row.original.id.toString(), EAction.EDIT)}
             data-testid={`view-more-button-${row.original?.id}`}
         >
-            View more...
+            Edit
+        </button>
+        <button
+            className="text-[10px] text-blue-600 underline font-normal"
+            onClick={() => row.original?.id && handleRowClick(row.original.id.toString(), EAction.DELETE)}
+            data-testid={`view-more-button-${row.original?.id}`}
+        >
+            Delete
         </button>
     </div>
 );
 
-const useRoleColumns = ({ hasUsers, handleColumnSort, handleRowClick }: RoleColumnsProps) => {
+const useUserColumns = ({ hasUsers, handleColumnSort, handleRowClick }: UserColumnsProps) => {
     return useMemo<ColumnDef<UserTable>[]>(() => [
+        {
+            id: "sno",
+            size: 80,
+            header: SNoHeader,
+            cell: ({ row }) => <SNoCell row={row} />,
+        },
         {
             id: "name",
             accessorKey: "name",
@@ -107,11 +188,25 @@ const useRoleColumns = ({ hasUsers, handleColumnSort, handleRowClick }: RoleColu
             cell: ({ row }) => <NameCell row={row} />,
         },
         {
+            id: "email",
+            accessorKey: "email",
+            size: 200,
+            header: () => <EmailHeader hasUsers={hasUsers} handleColumnSort={handleColumnSort} />,
+            cell: ({ row }) => <EmailCell row={row} />,
+        },
+        {
             id: "description",
             accessorKey: "description",
             size: 317,
             header: DescriptionHeader,
             cell: ({ row }) => <DescriptionCell row={row} />,
+        },
+        {
+            id: "role",
+            accessorKey: "role",
+            size: 150,
+            header: () => <RoleHeader hasUsers={hasUsers} handleColumnSort={handleColumnSort} />,
+            cell: ({ row }) => <RoleCell row={row} />,
         },
         {
             id: "actions",
@@ -122,7 +217,7 @@ const useRoleColumns = ({ hasUsers, handleColumnSort, handleRowClick }: RoleColu
     ], [hasUsers, handleColumnSort, handleRowClick]);
 };
 
-export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
+export function UsersTable({ onBackClick }: Readonly<UsersTableProps>) {
     const router = useRouter()
     const [localSorting, setLocalSorting] = useState<{ field: string; direction: number }>({ field: '', direction: 1 })
     const [showFilter, setShowFilter] = useState(false)
@@ -134,7 +229,7 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
     const { showLoader, hideLoader } = useLoader();
 
     const {
-        list: roles = [],
+        // list: users = UserList.data || [],
         setSearch,
         setSorting,
         setAdditionalFilter,
@@ -143,12 +238,14 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
         refetch
     } = useFetchList<UserTable>(API_LIST.GET_ALL_USERS);
 
-    const hasUsers: boolean = roles?.length > 1;
+    const users = UserList.data || [];
+    const hasUsers: boolean = users?.length > 0;
 
     const fetchRoles = async () => {
         try {
             setIsLoading(true);
-            const response = await apiService.get<RoleResponse[]>(API_LIST.GET_ROLE_FILTER);
+            // const response = await apiService.get<RoleResponse[]>(API_LIST.GET_ROLE_FILTER);
+            const response = RoleList;
             if (response?.data?.length) {
                 const validRoles = response.data
                     .filter((role) =>
@@ -206,14 +303,18 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
         setSorting(field);
     }, [localSorting, setSorting]);
 
-    const handleRowClick = useCallback((roleId: string) => {
+    const handleRowClick = useCallback((userId: string, action: string) => {
         if (onBackClick) {
             onBackClick();
         }
-        router.push(`/user-access-management/user-roles/${roleId}`);
+        if (action === EAction.EDIT) {
+            router.push(`/user-access-management/users/${userId}`);
+        } else if (action === EAction.DELETE) {
+            console.log('delete');
+        }
     }, [router, onBackClick]);
 
-    const columns: ColumnDef<UserTable>[] = useRoleColumns({ hasUsers, handleColumnSort, handleRowClick });
+    const columns: ColumnDef<UserTable>[] = useUserColumns({ hasUsers, handleColumnSort, handleRowClick });
 
     return (
         <div className="space-y-2">
@@ -233,8 +334,8 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
                                 <Button
                                     className={cn(
                                         "relative p-2 rounded-lg focus-visible:ring-0 border-neutral-100 border-[1px] w-[32px] h-[30px]",
-                                        (showFilter || appliedRoleIds.length > 0) && "border border-primary bg-blue-400 stroke-primary",
-                                        !showFilter && appliedRoleIds.length === 0 && "bg-white"
+                                        (showFilter || appliedRoleIds?.length > 0) && "border border-primary bg-blue-400 stroke-primary",
+                                        !showFilter && appliedRoleIds?.length === 0 && "bg-white"
                                     )}
                                     data-testid={allUser.filterRolesButton}
                                 >
@@ -327,7 +428,7 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
                     </div>
 
                     <SearchBar
-                        placeholder="Search User Roles"
+                        placeholder="Search Users"
                         onSearch={setSearch}
                         className="placeholder:italic placeholder:text-input-placeholder placeholder:font-normal placeholder:text-xs font-normal text-input-label"
                     />
@@ -335,10 +436,10 @@ export function UsersTable({ onBackClick }: Readonly<RolesTableProps>) {
                 </div>
             </div>
             <ReusableTable
-                data={roles.map(role => ({
-                    ...role,
-                    id: role.id.toString() ?? '0'
-                }))}
+                data={users?.map(user => ({
+                    ...user,
+                    id: user.id.toString() ?? '0'
+                })) || []}
                 columns={columns}
                 isLoadingMore={isLoadingMore}
                 handleLoadMore={loadMore}
