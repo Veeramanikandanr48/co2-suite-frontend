@@ -3,10 +3,10 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth-provider";
 import { ThemeProvider } from "../context/theme-provider";
 import { PermissionsProvider } from "~/context/permissions-provider";
-import { Toaster } from "@/components/reusables/toaster";
 import { LoaderProvider } from "@/context/loader-context";
 import { Loader } from "@/components/reusables/loader";
 import { SocketProvider } from "@/context/socket-context";
+import { ToasterWrapper } from "@/components/reusables/toaster-wrapper";
 
 export const metadata: Metadata = {
   title: "Boiler-Plate",
@@ -33,7 +33,7 @@ export default function RootLayout({
               <AuthProvider>
                 <PermissionsProvider>
                   {children}
-                  <Toaster />
+                  <ToasterWrapper />
                 </PermissionsProvider>
               </AuthProvider>
             </SocketProvider>

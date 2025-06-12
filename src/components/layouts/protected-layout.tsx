@@ -10,6 +10,7 @@ import { Loader } from "../reusables/loader"
 interface ProtectedLayoutProps {
   readonly children: React.ReactNode
 }
+
 const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
   const { user, isLoading } = useAuth()
   const router = useRouter()
@@ -19,6 +20,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
       router.push("/sign-in")
     }
   }, [user, isLoading, router])
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -26,6 +28,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
       </div>
     )
   }
+
   if (!user) {
     return null
   }

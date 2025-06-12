@@ -7,7 +7,6 @@ import { useAuth } from "@/context/auth-provider"
 import { EyeIcon, EyeOffIcon, Loader2, X } from "lucide-react"
 import FormInput from "~/components/reusables/form-fields/form-input";
 import logo from "../../../../public/images/OMAI-Logo-RGB-Color.svg"
-import { useRouter } from "next/navigation"
 import { FORM_DEFAULT_VALUES } from "~/lib/variables"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form"
@@ -135,8 +134,7 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
-  const { signIn, user, accessToken } = useAuth();
-  const router = useRouter();
+  const { signIn } = useAuth();
   const { showLoader, hideLoader } = useLoader();
 
   const form = useForm<LoginFormType>({
@@ -148,12 +146,6 @@ const SignIn = () => {
   });
 
   const { handleSubmit, formState: { isDirty } } = form;
-
-  useEffect(() => {
-    if (user && accessToken) {
-      router.push("/dashboard/overview");
-    } 
-  }, [user, accessToken, router]);
 
   const handleFormSubmit: SubmitHandler<LoginFormType> = async (values) => {
     try {
