@@ -6,7 +6,6 @@ export default function DashboardPage() {
   const params = useParams();
   const { slug } = params;
 
-
   return (
     <>
       <div>

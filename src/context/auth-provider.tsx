@@ -113,6 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //   }
 
           // mock login
+          console.log('userName', userName, 'password', password);
           const mockLogin: AuthState = {
             user: {
               id: 1,

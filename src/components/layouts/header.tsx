@@ -5,7 +5,7 @@ import { DialogTrigger, Dialog, DialogOverlay } from "@/components/ui/dialog";
 import { LogoutDialog } from "./logout-dropdown";
 import { useAuth } from "@/context/auth-provider";
 import { FORM_CONFIGURATION } from "@/lib/variables";
-import EventBus from "../reusables/eventbus";
+import EventBus from "../../lib/eventbus";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {

@@ -5,7 +5,7 @@ import FormInput from "./reusables/form-fields/form-input";
 import FormTextarea from "./reusables/form-fields/form-textarea";
 import FormCheckbox from "./reusables/form-fields/form-checkbox";
 import FormDropdown from "./reusables/form-fields/form-dropdown";
-import SearchBar from "./reusables/form-fields/search-bar";
+import SearchBar from "./reusables/search-bar";
 import TriStateCheckbox  from "./reusables/form-fields/tri-state-checkbox";
 
 export {
