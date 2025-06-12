@@ -29,14 +29,14 @@ export default function RootLayout({
         >
           <LoaderProvider>
             <Loader />
-            <AuthProvider>
-              <PermissionsProvider>
-                <SocketProvider>
+            <SocketProvider>
+              <AuthProvider>
+                <PermissionsProvider>
                   {children}
                   <Toaster />
-                </SocketProvider>
-              </PermissionsProvider>
-            </AuthProvider>
+                </PermissionsProvider>
+              </AuthProvider>
+            </SocketProvider>
           </LoaderProvider>
         </ThemeProvider>
       </body>

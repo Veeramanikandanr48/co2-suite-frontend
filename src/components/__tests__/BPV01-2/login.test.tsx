@@ -136,7 +136,7 @@ jest.mock('@/app/(auth)/sign-in/page', () => {
 
     useEffect(() => {
       if (user && accessToken) {
-        router.push("/device-integration/system-integration");
+        router.push("/dashboard/overview");
       }
     }, [user, accessToken, router]);
 

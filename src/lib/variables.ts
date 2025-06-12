@@ -28,31 +28,31 @@ const FORM_DEFAULT_VALUES = {
 
 const REGEX = {
     stringOnly: /^[a-zA-Z ]+$/,
-    numberOnly: /^[0-9.]+$/,
-    noOfShareOnly: /^[^0][0-9]*$/,
-    alphaNumeric: /^[a-zA-Z0-9 ]+$/,
-    alphaNumericWithCommaHiphen: /^[a-zA-Z0-9 ,\-]+$/,
-    alphaNumericWithSpecialChar: /^[A-Za-z0-9 _\.\-@:+/'%]+$/,
+    numberOnly: /^[\d.]+$/,
+    noOfShareOnly: /^[^0]\d*$/,
+    alphaNumeric: /^[a-zA-Z\d ]+$/,
+    alphaNumericWithCommaHiphen: /^[a-zA-Z\d ,-]+$/,
+    alphaNumericWithSpecialChar: /^[A-Za-z\d _.\-@:+/'%]+$/,
     exceptional: /^[^<>]*$/,
-    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/,
-    panNumber: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+    email: /^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,10}$/,
+    panNumber: /^[A-Z]{5}\d{4}[A-Z]$/,
     decimal: /^\d+\.\d{3}$/,
-    weight: /^[0-9]\.[0-9]{1}[0]{2}$/,
+    weight: /^\d\.\d00$/,
     aadhar: /^[2-9]\d{11}$/,
     maxDay: /^(1|10)$/,
     mobileNumber: /^[6-9]\d{9}$/,
     Landline: /^\d{3,5}-\d{6,7}$/,
-    numberWithoutPeriod: /^[0-9]+$/,
-    ifscCode: /^[A-Z]{4}[0]{1}[A-Z0-9]{6}$/,
-    capitalizedAlphaNumeric: /^[A-Z0-9 ]$/,
-    withOutZero: /^[1-9][0-9]*(?:[ ,\\-][0-9]+)*$/,
-    pinCode: /^[0-9]+$/,
-    numbers: /^[0-9]+$/,
-    alphaNumericWithAllSpecialChar: /^[a-zA-Z0-9 _.\-(){}&@#+'~!]+$/,
-    alphanumericWithUnderscoreSpace: /^(?!\s*$)[a-zA-Z0-9_\s]+$/,
-    alphanumericWithHyphenUnderscore: /^(?=[a-zA-Z0-9 _-]*[a-zA-Z])[a-zA-Z0-9 _-]+$/
-}
-
+    numberWithoutPeriod: /^\d+$/,
+    ifscCode: /^[A-Z]{4}0[A-Z\d]{6}$/,
+    capitalizedAlphaNumeric: /^[A-Z\d ]$/,
+    withOutZero: /^[1-9]\d*(?:[ ,\\-]\d+)*$/,
+    pinCode: /^\d+$/,
+    numbers: /^\d+$/,
+    alphaNumericWithAllSpecialChar: /^[a-zA-Z\d _.\-(){}&@#+'~!]+$/,
+    alphanumericWithUnderscoreSpace: /^(?!\s*$)[a-zA-Z\d_\s]+$/,
+    alphanumericWithHyphenUnderscore: /^(?=[a-zA-Z\d _-]*[a-zA-Z])[a-zA-Z\d _-]+$/
+  }
+  
 /**
  * ? DEV Only
  * Form auto fill values for testing
@@ -92,7 +92,7 @@ const FILE_UPLOAD_CONFIG: Record<UploadType, FileUploadConfig> = {
 } as const;
 
 const FORM_CONFIGURATION: Record<string, boolean> = {
-  "/dashboard/overview": true,
+//   "/dashboard/overview": true,
 }
 
 export {
