@@ -1,11 +1,14 @@
 import { IconName } from '../../types/svg-icon';
 import DashboardIcon from './dashboard-icon';
+import UserAccessManagementIcon from './user-access-management';
+
 
 export const Icons: Record<
   IconName,
   React.FC<{ className?: string; stroke?: string }>
 > = {
    "DashboardIcon" : DashboardIcon,
+   "UserAccessManagementIcon": UserAccessManagementIcon
 }
 
 export { default as Close } from './close';
