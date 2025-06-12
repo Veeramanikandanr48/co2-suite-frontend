@@ -94,7 +94,7 @@ export function SocketProvider({ children, url = process.env.SOCKET_URL as strin
         socket.disconnect()
       }
     }
-  }, [])
+  }, [autoConnect, connect, socket])
 
 
   const contextValue: SocketContextType = useMemo(() => ({

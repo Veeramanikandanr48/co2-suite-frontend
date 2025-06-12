@@ -4,8 +4,9 @@ import React, { createContext, useContext, useEffect, useState, useMemo, useCall
 import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api-service";
 import { API_LIST } from "~/lib/api-list";
-import { LoginResponse } from "@/types/users";
+import { LoginResponse } from "~/types/users";
 import { useLoader } from "@/context/loader-context";
+import { useSocket } from "@/context/socket-context";
 
 export interface User {
   id: number;
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { showLoader, hideLoader } = useLoader();
   const [isLoading, setIsLoading] = useState(false)
+  const { connect: connectSocket } = useSocket();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -68,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (username: string, password: string) => {
     try {
       setIsLoading(true)
-      const response = await apiService.post<LoginResponse>(API_LIST.LOGIN_KEYCLOAK, {
+      const response = await apiService.post<LoginResponse>(API_LIST.LOGIN, {
         username,
         password,
       },
@@ -80,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-      if (response.data && response.data.token) {        
+      if (response?.data?.token) {        
         const token = response.data.token;
         localStorage.setItem("access_token", token);
 
@@ -98,14 +100,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         localStorage.setItem("user_data", JSON.stringify(userData));
+        connectSocket();
 
         setState({
           user: userData,
           isLoading: false,
           accessToken: token,
         });
-        // router.push("/dashboard/overview");
-        router.push("/device-integration/system-integration");
+        router.push("/dashboard/overview");
         return; 
       }
 
@@ -113,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [router]);
+  }, [router, connectSocket]);
 
   useEffect(() => {
     if (isLoading) {
@@ -126,7 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     try {
       setIsLoading(true)
-      await apiService.post(API_LIST.SIGNOUT, undefined, {
+      await apiService.post(API_LIST.LOGOUT, undefined, {
         headers: {
           Authorization: `Bearer ${state.accessToken}`,
           "X-Skip-Auth": "true",

@@ -1,23 +1,11 @@
 import { IconName } from '../../types/svg-icon';
 import DashboardIcon from './dashboard-icon';
-import DeviceIntegrationIcon from './device-integration-icon';
-import GeneralSettingsIcon from './general-settings-icon';
-import HelpAndTutorialsIcon from './help-tutorials-icon';
-import SiteResourcesIcon from './site-resources-icon';
-import UserAccessManagementIcon from './user-access-management';
-import WorkflowCustomizationIcon from './workflow-customization-icon';
 
 export const Icons: Record<
   IconName,
   React.FC<{ className?: string; stroke?: string }>
 > = {
    "DashboardIcon" : DashboardIcon,
-   "DeviceIntegrationIcon" : DeviceIntegrationIcon,
-   "GeneralSettingsIcon" : GeneralSettingsIcon,
-   "HelpAndTutorialsIcon" : HelpAndTutorialsIcon,
-   "SiteResourcesIcon" : SiteResourcesIcon,
-   "UserAccessManagementIcon" : UserAccessManagementIcon,
-   "WorkflowCustomizationIcon" : WorkflowCustomizationIcon,
 }
 
 export { default as Close } from './close';

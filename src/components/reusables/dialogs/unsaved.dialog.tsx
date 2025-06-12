@@ -11,7 +11,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { X } from "lucide-react";
 import { WarningDialogProps } from "~/types";
-import { SYSTEM_INTEGRATION_TEST_IDS } from "@/components/test-ids/system-integration.ids";
+import dialogIds from "@/components/test-ids/dialog-ids";
 import { WarningAlert } from "@/components/svg";
 
 export function UnSavedDialog({
@@ -31,7 +31,7 @@ export function UnSavedDialog({
             <X
               className="h-6 w-6 stroke-neutral-500 hover:stroke-neutral-700 "
               onClick={onCancel} 
-              data-testid={SYSTEM_INTEGRATION_TEST_IDS.CANCEL_WARNING_BUTTON}
+              data-testid={dialogIds.cancelWarningButton}
             />
         </DialogHeader>
         <div className="flex justify-center items-center gap-[6px] h-5 -mt-2">
@@ -49,7 +49,7 @@ export function UnSavedDialog({
             variant="outline"
             onClick={onCancel}
             className="w-[130px] h-[38px] rounded-sm font-bold text-sm text-header-secondary bg-white border-[1px] border-header-secondary"
-            data-testid={SYSTEM_INTEGRATION_TEST_IDS.CANCEL_WARNING_BUTTON}
+            data-testid={dialogIds.cancelWarningButton}
           >
             Cancel
           </Button>
@@ -57,7 +57,7 @@ export function UnSavedDialog({
             type="button"
             onClick={onConfirm}
             className="w-[130px] h-[38px] rounded-sm font-bold text-sm text-primary bg-white border-[1px] border-primary"
-            data-testid={SYSTEM_INTEGRATION_TEST_IDS.CONFIRM_WARNING_BUTTON}
+            data-testid={dialogIds.confirmWarningButton}
           >
             Continue
           </Button>

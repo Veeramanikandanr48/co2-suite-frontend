@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Close, WarningAlert } from "~/components/svg"
 import { DeleteDialogProps } from "~/types"
-import userTable from "@/components/test-ids/user-table.test-id"
+import dialogIds from "@/components/test-ids/dialog-ids"
 
 export function DeleteDialog({
   open,
@@ -27,7 +27,7 @@ export function DeleteDialog({
       <DialogOverlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-3xs" />
       <DialogContent className="sm:max-w-[503px] p-4 rounded-sm">
         <div className="flex justify-end items-end">
-            <button onClick={onCancel} className="focus:outline-none" data-testid={userTable.cancelButton}>
+            <button onClick={onCancel} className="focus:outline-none" data-testid={dialogIds.cancelButton}>
               <Close className="h-6 w-6" stroke="black"/>
             </button>
         </div>
@@ -38,7 +38,7 @@ export function DeleteDialog({
         </DialogTitle>
         <DialogDescription className="text-center font-normal text-modal-content break-words text-base leading-tight"
           dangerouslySetInnerHTML={{ __html: message }}
-          data-testid={userTable.deleteDescription}
+          data-testid={dialogIds.deleteDescription}
         />
         <p className="text-center font-normal text-modal-content text-md leading-tight">Do you still want to continue?</p>
 
@@ -47,14 +47,14 @@ export function DeleteDialog({
             variant="outline"
             onClick={onCancel}
             className="w-[130px] h-[38px] font-bold rounded-sm text-sm text-header-secondary bg-light-100 border-[1px] border-header-secondary"
-            data-testid={userTable.cancelButton}
+            data-testid={dialogIds.cancelButton}
           >
             {cancelLabel}
           </Button>
           <Button
             onClick={onConfirm}
             className="w-[130px] h-[38px] font-bold rounded-sm text-sm text-primary-500 bg-light-100 border-[1px] border-primary-500"
-            data-testid={userTable.confirmDelete}
+            data-testid={dialogIds.confirmDelete}
           >
             {confirmLabel}
           </Button>
