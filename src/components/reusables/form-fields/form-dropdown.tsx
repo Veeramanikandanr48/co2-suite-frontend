@@ -17,12 +17,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "~/lib/utils";
 import React from "react";
+import { DropdownOption } from "@/types";
 
 type FormDropdownProps = {
     name: string;
     label?: string;
     placeholder?: string;
-    options: { id: number; label: string }[];
+    options: DropdownOption[];
     disabled?: boolean;
     vertical?: boolean;
     className?: string;

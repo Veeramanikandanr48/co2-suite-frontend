@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useMemo, useState, useEffect } from "react";
 import { Command, CommandInput, CommandList, CommandEmpty } from "~/components/ui/command";
 import { debounce } from "lodash";

@@ -22,6 +22,7 @@ import { allUser } from "../test-ids/all-users.ids"
 import { useLoader } from "@/context/loader-context"
 import { EAction } from "@/enums/base-enum"
 import { RoleList, UserList } from "@/mock-data"
+import { DeleteDialog } from "@/components/reusables/dialogs/delete"
 
 interface RoleFilter {
     id: number;
@@ -226,6 +227,8 @@ export function UsersTable({ onBackClick }: Readonly<UsersTableProps>) {
     const [initialRoles, setInitialRoles] = useState<RoleFilter[]>([])
     const [appliedRoleIds, setAppliedRoleIds] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false)
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [selectedUserId, setSelectedUserId] = useState<string>('')
     const { showLoader, hideLoader } = useLoader();
 
     const {
@@ -310,14 +313,35 @@ export function UsersTable({ onBackClick }: Readonly<UsersTableProps>) {
         if (action === EAction.EDIT) {
             router.push(`/user-access-management/users/${userId}`);
         } else if (action === EAction.DELETE) {
-            console.log('delete');
+            setSelectedUserId(userId);
+            setDeleteDialogOpen(true);
         }
     }, [router, onBackClick]);
+
+    const handleDeleteSubmit = (userId: string) => {
+        if (UserList.data) {
+            UserList.data = UserList.data.filter(e => e.id !== userId);
+            refetch();
+        }
+        setDeleteDialogOpen(false);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteDialogOpen(false);
+        setSelectedUserId('');
+    };
 
     const columns: ColumnDef<UserTable>[] = useUserColumns({ hasUsers, handleColumnSort, handleRowClick });
 
     return (
         <div className="space-y-2">
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onConfirm={() => handleDeleteSubmit(selectedUserId)}
+                onCancel={handleDeleteCancel}
+                title="Are you sure you want to delete this user?"
+                message="This will permanently delete the user and all associated configurations."
+            />
             <div className="flex items-center justify-end ">
                 <div className="flex items-center gap-2 -mt-20">
                     <div className="">

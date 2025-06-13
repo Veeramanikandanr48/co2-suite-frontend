@@ -48,8 +48,14 @@ interface DeleteDialogProps {
   cancelLabel?: string
 }
 
+interface DropdownOption {
+  id: number;
+  label: string;
+}
+
 type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete';
 type AppAbility = PureAbility<[Actions, Subject]>;
+
 
 export type {
   Actions,
@@ -59,5 +65,6 @@ export type {
   DeviceField,
   SubheadingProps,
   WarningDialogProps,
-  DeleteDialogProps
+  DeleteDialogProps,
+  DropdownOption
 };

@@ -23,6 +23,12 @@ const FORM_DEFAULT_VALUES = {
         username: "",
         password: "",
     },
+    userForm: {
+        name: "",
+        email: "",
+        roleId: undefined,
+        description: "",
+    }
 }
 
 
