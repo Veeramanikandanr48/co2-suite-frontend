@@ -98,7 +98,7 @@ const FILE_UPLOAD_CONFIG: Record<UploadType, FileUploadConfig> = {
 } as const;
 
 const FORM_CONFIGURATION: Record<string, boolean> = {
-//   "/dashboard/overview": true,
+  "/user-access-management/users/[id]": true,
 }
 
 export {
