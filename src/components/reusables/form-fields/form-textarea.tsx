@@ -20,6 +20,7 @@ type FormTextareaProps = {
     labelHelper?: string;
     placeholder?: string;
     className?: string;
+    labelClassName?: string;
 } & TextareaProps;
 
 const FormTextarea = ({
@@ -28,6 +29,7 @@ const FormTextarea = ({
     labelHelper,
     placeholder,
     className,
+    labelClassName,
     ...props
 }: FormTextareaProps) => {
     const { control } = useFormContext();
@@ -37,7 +39,7 @@ const FormTextarea = ({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    {label && <FormLabel>{`${label}:`}</FormLabel>}
+                    {label && <FormLabel className={cn(`flex-1`, labelClassName)}>{`${label}`}</FormLabel>}
                     {labelHelper && (
                         <span className="text-xs"> {labelHelper}</span>
                     )}

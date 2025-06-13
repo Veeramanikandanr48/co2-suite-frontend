@@ -39,6 +39,7 @@ enum ESelectedStatus {
 enum EAction {
     EDIT = 'edit',
     DELETE = 'delete',
+    CREATE = 'create'
 }
 
 export {

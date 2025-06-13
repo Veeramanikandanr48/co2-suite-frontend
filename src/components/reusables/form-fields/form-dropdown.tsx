@@ -28,6 +28,7 @@ type FormDropdownProps = {
     vertical?: boolean;
     className?: string;
     search?: boolean;
+    labelClassName?: string;
 };
 
 const FormDropdown = ({
@@ -39,6 +40,7 @@ const FormDropdown = ({
     vertical = false,
     className = "",
     search = false,
+    labelClassName = "",
 }: FormDropdownProps) => {
     const { control } = useFormContext();
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -77,7 +79,7 @@ const FormDropdown = ({
                             !vertical && "w-full text-sm"
                         )}>
                             {label && (
-                                <FormLabel className={vertical ? "text-xs font-normal text-neutral-700" : "text-sm"}>
+                                <FormLabel className={cn(`flex-1`, labelClassName)}>
                                     {label}
                                 </FormLabel>
                             )}
