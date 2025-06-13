@@ -14,11 +14,18 @@ import { Close, Save } from "@/components/svg";
 import { RoleList, UserList } from "@/mock-data";
 import { useRouter } from "next/navigation";
 import { DropdownOption } from "@/types";
+import EventBus from "@/lib/eventbus";
+import { UserResponse } from "@/types/users";
 
 const UserPage = ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = use(params);
     const router = useRouter();
-
+    const form = useForm<UserFormType>({
+        defaultValues: FORM_DEFAULT_VALUES.userForm,
+        resolver: zodResolver(UserFormSchema),
+        mode: "onChange",
+    });
+    const { handleSubmit, formState } = form;
 
     useEffect(() => {
         if (id) {
@@ -26,19 +33,11 @@ const UserPage = ({ params }: { params: Promise<{ id: string }> }) => {
         }
     }, [id])
 
-    const form = useForm<UserFormType>({
-        defaultValues: FORM_DEFAULT_VALUES.userForm,
-        resolver: zodResolver(UserFormSchema),
-        mode: "onChange",
-    });
-
-    const { handleSubmit, formState } = form;
-
     const onSubmit = async (data: UserFormType) => {
         const { name, email, roleId, description } = data;
         const roleName = RoleList.data?.find(role => role.id === roleId)?.roleName;
 
-        const newUser = {
+        const newUser: UserResponse = {
             id: "1",
             name,
             email,
