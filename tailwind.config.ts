@@ -28,6 +28,11 @@ export default {
 				inner: "var(--background-inner)",
 				preview:"var(--preview-bg)",
 				sidebar: "var(--sidebar-bg)",
+				sidebarActive: "var(--sidebar-active-bg)",
+			},
+			icon: {
+				color: "var(--icon-color)",
+				colorActive: "var(--icon-color-active)",
 			},
   			foreground: "var(--foreground)",
             card: {
@@ -55,6 +60,9 @@ export default {
   				DEFAULT: "var(--accent)",
   				foreground: "var(--accent-foreground)",
   			},
+			profile: {
+				border: "var(--profile-border)",
+			},
             destructive: {
                 DEFAULT: "var(--destructive)",
                 foreground: "var(--destructive-foreground)",
@@ -68,7 +76,10 @@ export default {
 				close: "var(--close-button)",
 				text: "var(--text-disabled)",
             },
-            border: "var(--border)",
+            border:  {
+				DEFAULT: "var(--border)",
+				logo: "var(--logo-outline)",
+			},
             ring: "var(--ring)",
 			text: {
 				primary: "var(--text-primary)",

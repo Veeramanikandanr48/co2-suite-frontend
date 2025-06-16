@@ -1,6 +1,8 @@
 import { IconName } from '../../types/svg-icon';
 import DashboardIcon from './dashboard-icon';
-import UserAccessManagementIcon from './user-access-management';
+import UserManagementIcon from './user-access-management';
+import ProbeIcon from './probe';
+import PrintIcon from './print';
 
 
 export const Icons: Record<
@@ -8,7 +10,9 @@ export const Icons: Record<
   React.FC<{ className?: string; stroke?: string }>
 > = {
    "DashboardIcon" : DashboardIcon,
-   "UserAccessManagementIcon": UserAccessManagementIcon
+   "UserManagementIcon": UserManagementIcon,
+   "JobManagementIcon": ProbeIcon,
+   "SettingsIcon": PrintIcon,
 }
 
 export { default as Close } from './close';
@@ -30,3 +34,4 @@ export { default as Triangle } from './triangle';
 export { default as WarningAlert } from './warning-alert';
 export { default as WavyCircle } from './wavy-circle';
 export { default as XCircle } from './x-circle';
+export { default as NotificationIcon } from './notification';

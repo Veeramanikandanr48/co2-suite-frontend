@@ -1,15 +1,8 @@
 import { cn } from "@/lib/utils";
-export default function UserAccessManagementIcon ({ className = '', stroke='#5C5F66'}) {
+export default function UserManagementIcon ({ className = '', stroke='#5C5F66'}) {
   return (
-  <svg className={cn(className)} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M10.125 15C13.2316 15 15.75 12.4816 15.75 9.375C15.75 6.2684 13.2316 3.75 10.125 3.75C7.0184 3.75 4.5 6.2684 4.5 9.375C4.5 12.4816 7.0184 15 10.125 15Z" stroke={stroke} strokeMiterlimit="10"/>
-<path d="M2.08203 18.7498C3.06766 17.5755 4.29846 16.6313 5.68797 15.9835C7.07747 15.3357 8.59198 15 10.1251 15C11.6582 15 13.1727 15.3357 14.5622 15.9835C15.9517 16.6314 17.1825 17.5756 18.1681 18.7499" stroke={stroke} strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M20.625 14.25C21.4534 14.25 22.125 13.5784 22.125 12.75C22.125 11.9216 21.4534 11.25 20.625 11.25C19.7966 11.25 19.125 11.9216 19.125 12.75C19.125 13.5784 19.7966 14.25 20.625 14.25Z" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M20.625 11.25V10.125" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M19.3261 12L18.3518 11.4375" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M19.3261 13.5L18.3518 14.0625" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M20.625 14.25V15.375" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M21.9241 13.5L22.8983 14.0625" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M21.9241 12L22.8983 11.4375" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-</svg>
-)}
+    <svg className={cn(className)}  width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.9173 10.0833H16.3173C17.3441 10.0833 17.8575 10.0833 18.2496 10.2832C18.5946 10.4589 18.8751 10.7394 19.0508 11.0844C19.2507 11.4765 19.2507 11.9899 19.2507 13.0167V19.25M11.9173 19.25V5.68333C11.9173 4.65657 11.9173 4.14319 11.7175 3.75102C11.5417 3.40605 11.2613 3.12559 10.9163 2.94982C10.5241 2.75 10.0107 2.75 8.98398 2.75H5.68398C4.65722 2.75 4.14384 2.75 3.75167 2.94982C3.4067 3.12559 3.12624 3.40605 2.95047 3.75102C2.75065 4.14319 2.75065 4.65657 2.75065 5.68333V19.25M20.1673 19.25H1.83398M5.95898 6.41667H8.70898M5.95898 10.0833H8.70898M5.95898 13.75H8.70898" stroke={stroke} strokeOpacity="0.45" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}

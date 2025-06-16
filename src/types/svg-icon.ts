@@ -1,3 +1,5 @@
 export type IconName =
   | "DashboardIcon"
-  | "UserAccessManagementIcon";
+  | "UserManagementIcon"
+  | "JobManagementIcon"
+  | "SettingsIcon"

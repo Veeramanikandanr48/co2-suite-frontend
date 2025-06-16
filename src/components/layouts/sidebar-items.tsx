@@ -41,22 +41,22 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
   const IconComponent = (Icons as Record<string, React.FC<{ className?: string; stroke?: string }>>)[item.icon ?? ""];
 
   return (
-    <div className={`relative ${(isOpen && !collapsed) ? "border-b border-neutral-100" : ""}`}>
+    <div className={`relative ${(isOpen && !collapsed) ? "border-b border-gray-400" : ""}`}>
       <button
         onClick={handleParentClick} 
-        className={`text-sm w-full p-5 ${!isOpen && "border-b border-neutral-100"} flex items-center cursor-pointer relative h-[50px] text-neutral-400
-        ${isActiveParent ? "bg-light-300 text-neutral-800" : "hover:bg-gray-50"} ${collapsed ? "justify-center" : ""}`}
+        className={`text-sm mx-auto w-[86%] px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400
+        ${isActiveParent ? "bg-background-sidebarActive text-light-100" : ""} ${collapsed ? "justify-center" : ""}`}
       >
-        {IconComponent && <IconComponent className={`${!collapsed && "mr-2"}`} stroke={isActiveParent ? "var(--neutral-800)" : "var(--neutral-400)"} />}
+        {IconComponent && <IconComponent className={`${!collapsed && "mr-2"}`} stroke={isActiveParent ? "var(--icon-color-active)" : "var(--icon-color)"} />}
 
         <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "text-light-100" : "text-sidebar-text"}`}
+          className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "text-light-100 font-medium" : "text-text-sidebar"}`}
         >
           {item.name}
         </div>
       </button>
 
-      {!collapsed && isOpen && item.child && (
+      {!collapsed && isOpen && item.child && (                                                                
         <div className="ml-6 flex flex-col items-start">
           {item.child.map((subItem) => {
             const fullHref = `${item.href}${subItem.href}`;

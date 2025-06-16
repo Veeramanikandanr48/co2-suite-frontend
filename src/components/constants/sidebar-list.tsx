@@ -8,19 +8,19 @@ export const sidebarList = [
   {
     name: "User management",
     href: "/user-management",
-    icon: "UserAccessManagementIcon",
+    icon: "UserManagementIcon",
     isActive: false,
   },
   {
     name: "Job management",
     href: "/job-management",
-    icon: "UserAccessManagementIcon",
+    icon: "UserManagementIcon",
     isActive: false,
   },
   {
     name: "Settings",
     href: "/settings",
-    icon: "UserAccessManagementIcon",
+    icon: "UserManagementIcon",
     isActive: false,
   },
 ]

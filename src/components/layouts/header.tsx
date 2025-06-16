@@ -1,19 +1,13 @@
 "use client";
 import Image from "next/image";
-import { CircleUserRound, LogOut } from "lucide-react";
-import { DialogTrigger, Dialog, DialogOverlay } from "@/components/ui/dialog";
-import { LogoutDialog } from "./logout-dropdown";
-import { useAuth } from "@/context/auth-provider";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "../../lib/eventbus";
 import { usePathname, useRouter } from "next/navigation";
+import { NotificationIcon } from "../svg";
 
 export default function Header() {
-  const { logout, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
 
   const handleItemClick = (requestHref: string) => {
     const currentroute: string = pathname;
@@ -28,7 +22,7 @@ export default function Header() {
   };
 
   return (
-    <div className="w-full h-12 flex justify-between py-2 px-1.5 border-b-1 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] z-10 bg-light-100">
+    <div className="w-full h-[42px] flex justify-between py-2 px-1.5 border-b-1 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] z-10 bg-light-100">
       <button className="flex items-center gap-3" onClick={() => handleItemClick('/')}>
         <Image
           src="/images/CMP.svg"
@@ -43,23 +37,9 @@ export default function Header() {
       </button>
 
       <div className="h-full flex justify-between items-center gap-4">
-        <CircleUserRound className="w-7 aspect-square" />
-
-        <p className="text-neutral-700 font-normal text-success text-sm">
-          {displayName}
-        </p>
-
-        <div className="w-0.5 h-full bg-light-500"></div>
-
-        <Dialog>
-          <DialogOverlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-3xs" />
-          <DialogTrigger asChild>
-            <button className="p-2 rounded-full hover:bg-gray-100" aria-label="Logout">
-              <LogOut size={20} />
-            </button>
-          </DialogTrigger>
-          <LogoutDialog onLogout={logout} />
-        </Dialog>
+        <button className="p-2 rounded-full hover:bg-gray-100" aria-label="Logout">
+          <NotificationIcon />
+        </button>
       </div>
 
     </div>
