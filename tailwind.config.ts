@@ -26,7 +26,8 @@ export default {
 				DEFAULT: "var(--background)",
 				outer: "var(--background-outer)",
 				inner: "var(--background-inner)",
-				preview:"var(--preview-bg)"
+				preview:"var(--preview-bg)",
+				sidebar: "var(--sidebar-bg)",
 			},
   			foreground: "var(--foreground)",
             card: {
@@ -71,6 +72,7 @@ export default {
             ring: "var(--ring)",
 			text: {
 				primary: "var(--text-primary)",
+				sidebar: "var(--sidebar-text)",
 			},
 			header: {
 				DEFAULT: "var(--primary)",

@@ -28,7 +28,7 @@ const Sidebar = () => {
     const map = new Map();
     sidebarList.forEach((item) => {
       map.set(item.href, item);
-      item.child?.forEach((child) => {
+      item?.child?.forEach((child: SidebarItemType) => {
         map.set(`${item.href}${child.href}`, { ...child, parentHref: item.href });
       });
     });
@@ -49,7 +49,7 @@ const Sidebar = () => {
   }, [pathname, router, indexedSidebar]);
 
   return (
-    <div className={`h-full bg-light-100 border-r border-neutral-100 transition-[width]
+    <div className={`h-full bg-background-sidebar border-r border-neutral-100 transition-[width]
         duration-300 ease-in-out pb-4 relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
         shadow-[inset_0px_3px_10px_0px_#0000001A] ${collapsed ? "w-[64px]" : "w-[250px]"}`}
     >

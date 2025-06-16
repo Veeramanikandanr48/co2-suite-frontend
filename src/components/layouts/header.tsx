@@ -28,15 +28,18 @@ export default function Header() {
   };
 
   return (
-      <div className="w-full h-12 flex justify-between py-2 px-1.5 border-b-1 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] z-10 bg-light-100">
-      <button onClick={() => handleItemClick('/')}>
+    <div className="w-full h-12 flex justify-between py-2 px-1.5 border-b-1 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] z-10 bg-light-100">
+      <button className="flex items-center gap-3" onClick={() => handleItemClick('/')}>
         <Image
-          src="/images/OMAI-Logo-RGB-Color.svg"
+          src="/images/CMP.svg"
           className="w-fit"
           alt="My Image"
           width={300}
           height={300}
         />
+        <p className="text-[28px] font-light">
+          CMP
+        </p>
       </button>
 
       <div className="h-full flex justify-between items-center gap-4">

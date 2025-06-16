@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/auth-provider"
 import { EyeIcon, EyeOffIcon, Loader2, X } from "lucide-react"
 import FormInput from "~/components/reusables/form-fields/form-input";
-import logo from "../../../../public/images/OMAI-Logo-RGB-Color.svg"
+import logo from "../../../../public/images/CMP.svg"
 import { FORM_DEFAULT_VALUES } from "~/lib/variables"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form"

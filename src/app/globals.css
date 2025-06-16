@@ -136,7 +136,10 @@
 
     --img-mode:#6FC4DB;
     --admin-mode:#C7C0FF;
-    
+    --sidebar-bg: #201E61;
+    --sidebar-active-bg: #3C389D;
+    --sidebar-text: #E8E8E8;
+
   }
 
   .dark {
