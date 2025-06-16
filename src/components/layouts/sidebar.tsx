@@ -13,7 +13,6 @@ import Image from "next/image";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "@/lib/eventbus";
 
-// Recursive function to check if any descendant matches the pathname
 function hasActiveDescendant(item: SidebarItemType, pathname: string): boolean {
   if (!item.child) return false;
   return item.child.some((child: SidebarItemType) => {
@@ -69,25 +68,28 @@ const Sidebar = () => {
   }, [pathname, router, indexedSidebar]);
 
   return (
-    <div className={`h-full transition-[width]
-        duration-300 ease-in-out pb-4 relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
-        shadow-[inset_0px_3px_10px_0px_#0000001A] ${collapsed ? "w-[80px]" : "w-[246px]"}`}
+    <div className={`h-full relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
+        shadow-[inset_0px_3px_10px_0px_#0000001A] transition-[width] duration-300 ease-in-out will-change-[width] ${collapsed ? "w-[80px]" : "w-[246px]"}`}
     >
-      <button className={`flex mx-auto ${collapsed ? "w-auto" : "w-[86%]"} gap-3 border-b border-border-logo py-2`} onClick={() => handleItemClick('/')}>
+      <button 
+        className={`flex items-center mx-auto w-[86%] border-b border-border-logo py-2 transition-all duration-300 ease-in-out`} 
+        onClick={() => handleItemClick('/')}
+      >
         <Image
           src="/images/CMP.svg"
           className="w-fit"
           alt="My Image"
-          width={300}
-          height={300}
+          width={40}
+          height={40}
         />
-        {!collapsed && (
-          <p className="text-[28px] font-light text-text-sidebar">
+        <div className={`transition-all duration-300 ml-0 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-full opacity-100'}`}>
+          <p className="text-[28px] font-light text-text-sidebar whitespace-nowrap">
             CMP
           </p>
-        )}
+        </div>
       </button>
-      <ul className="mt-[10px]">
+
+      <ul className="mt-[10px] transition-all duration-300 ease-in-out">
         {sidebarList.map((item) => (
           <SidebarItem
             key={item.href}
@@ -102,19 +104,17 @@ const Sidebar = () => {
 
       <div className="absolute left-0 right-0 bottom-0 w-full px-4 py-6">
         <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-background-sidebarActive border border-profile-border">
+          <div className="flex items-center justify-center min-w-[44px] h-[44px] rounded-full bg-background-sidebarActive border border-profile-border">
             <CircleUserRound className="w-7 aspect-square text-text-sidebar" />
           </div>
-          {!collapsed && (
-            <div>
-              <p className="text-text-sidebar font-medium text-sm capitalize">{displayName}</p>
-              <p className="text-xs font-normal text-gray-400 capitalize">Admin</p>
-            </div>
-          )}
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-full opacity-100'}`}>
+            <p className="text-text-sidebar font-medium text-sm capitalize whitespace-nowrap">{displayName}</p>
+            <p className="text-xs font-normal text-gray-400 capitalize whitespace-nowrap">Admin</p>
+          </div>
         </div>
       </div>
 
-      <div className="absolute bottom-4 left-full transform -translate-x-1/2 cursor-pointer">
+      <div className="absolute bottom-4 left-full transform -translate-x-1/2 cursor-pointer transition-transform duration-300 ease-in-out">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
