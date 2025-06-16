@@ -13,7 +13,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const displayName = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
+  const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
 
   const handleItemClick = (requestHref: string) => {
     const currentroute: string = pathname;

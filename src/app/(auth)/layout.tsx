@@ -15,7 +15,7 @@ export default function AuthLayout({
 
     useEffect(() => {
         if (!isLoading && user) {
-            router.push("/dashboard/overview");
+            router.push("/dashboard");
         }
     }, [user, isLoading, router]);
 

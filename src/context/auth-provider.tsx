@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //       isLoading: false,
     //       accessToken: token,
     //     });
-    //     router.push("/dashboard/overview");
+    //     router.push("/dashboard");
     //     return; 
     //   }
 
@@ -134,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem("user_data", JSON.stringify(mockLogin.user));
           setState(mockLogin);
           connectSocket();
-          router.push("/dashboard/overview");
+          router.push("/dashboard");
     } catch  {
     } finally {
       setIsLoading(false)
