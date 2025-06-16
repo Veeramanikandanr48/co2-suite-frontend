@@ -34,16 +34,12 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col">
-      <div className="flex flex-1">
-        <div>
-          <Sidebar />
-        </div>
-        <main className="flex-1 py-4 overflow-y-auto bg-background-outer shadow-[inset_2px_2px_10px_0px_#0000001A]">
+    <div className="w-full h-screen flex bg-background-sidebar">
+      <Sidebar />
+      <div className="flex-1 flex flex-col py-2">
+        <main className="flex-1 bg-white rounded-tl-[20px] rounded-bl-[20px] flex flex-col overflow-hidden">
           <Header />
-          <div className="px-4">
-            {children}
-          </div>
+          <div className="flex-1 overflow-auto p-4">{children}</div>
         </main>
       </div>
     </div>
