@@ -16,7 +16,7 @@ interface SidebarItemProps {
   item: {
     name: string;
     href: string;
-    icon: string | null;
+    icon?: string | null;
     child?: { name: string; href: string }[];
   };
   isOpen: boolean;
