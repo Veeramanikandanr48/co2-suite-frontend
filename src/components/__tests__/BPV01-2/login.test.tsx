@@ -6,7 +6,7 @@ import { APP_NAME, generateTestId, SRS_ID } from '@/components/test-ids/utc-glob
 import { LOGIN_TEST_IDS } from '~/components/test-ids/login-ids';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import SignIn from '@/app/(auth)/sign-in/page';
+import SignIn from '@/app/(auth)/sign-in/admin/page';
 import '@testing-library/jest-dom';
 import Image from 'next/image';
 import { Dialog } from '@radix-ui/react-dialog';
