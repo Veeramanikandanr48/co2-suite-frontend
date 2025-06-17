@@ -44,7 +44,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
     <div className={`relative ${(isOpen && !collapsed) ? "border-b border-gray-400" : ""}`}>
       <button
         onClick={handleParentClick} 
-        className={`text-sm mx-auto w-[86%] px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400
+        className={`text-sm mx-auto ${collapsed ? "w-[64%]" : "w-[86%]"} px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400
         ${isActiveParent ? "bg-background-sidebarActive text-light-100" : ""} ${collapsed ? "justify-center" : ""}`}
       >
         {IconComponent && <IconComponent className={`${!collapsed && "mr-2"}`} stroke={isActiveParent ? "var(--icon-color-active)" : "var(--icon-color)"} />}

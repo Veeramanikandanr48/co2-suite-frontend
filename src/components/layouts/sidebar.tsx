@@ -72,22 +72,24 @@ const Sidebar = () => {
         shadow-[inset_0px_3px_10px_0px_#0000001A] transition-[width] duration-300 ease-in-out will-change-[width] ${collapsed ? "w-[80px]" : "w-[246px]"}`}
     >
       <button 
-        className={`flex items-center mx-auto w-[86%] border-b border-border-logo py-2 transition-all duration-300 ease-in-out`} 
+        className={`flex items-center justify-start w-[86%] py-2 ml-4 transition-all duration-300 ease-in-out`} 
         onClick={() => handleItemClick('/')}
       >
         <Image
           src="/images/CMP.svg"
-          className="w-fit"
+          className="w-fit mx-2"
           alt="My Image"
           width={40}
           height={40}
         />
-        <div className={`transition-all duration-300 ml-0 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-full opacity-100'}`}>
+        <div className={`flex items-center justify-start transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-full opacity-100'}`}>
           <p className="text-[28px] font-light text-text-sidebar whitespace-nowrap">
             CMP
           </p>
         </div>
       </button>
+
+      <div className={`${collapsed ? 'w-[64%]' : 'w-[86%]'} mx-auto border-b border-border-logo`}></div>
 
       <ul className="mt-[10px] transition-all duration-300 ease-in-out">
         {sidebarList.map((item) => (
