@@ -227,7 +227,7 @@
   /* Font Faces */
   @font-face {
     font-family: 'Inter';
-    src: url('../../public/fonts/Inter/Inter-Regular.ttf') format('truetype');
+    src: url('../../public/fonts/inter/Inter-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -235,7 +235,7 @@
 
   @font-face {
     font-family: 'Inter';
-    src: url('../../public/fonts/Inter/Inter-Medium.ttf') format('truetype');
+    src: url('../../public/fonts/inter/Inter-Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -243,7 +243,7 @@
 
   @font-face {
     font-family: 'Inter';
-    src: url('../../public/fonts/Inter/Inter-Bold.ttf') format('truetype');
+    src: url('../../public/fonts/inter/Inter-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
