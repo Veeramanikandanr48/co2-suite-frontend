@@ -113,7 +113,9 @@ const Sidebar = () => {
   const [activeLogo, setActiveLogo] = useState<WorkspaceLogo>(workspaceLogos[0]);
   const { user, logout } = useAuth();
 
-  const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
+  const displayName: string = user
+    ? user.userName || user.name || (user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user.email?.split('@')[0] || '')
+    : '';
 
   const indexedSidebar = useMemo(() => {
     const map = new Map();

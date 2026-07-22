@@ -85,7 +85,9 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
   const pathname = usePathname();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
 
-  const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
+  const displayName: string = user
+    ? user.userName || user.name || (user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user.email?.split('@')[0] || '')
+    : '';
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAllAsRead = () => {

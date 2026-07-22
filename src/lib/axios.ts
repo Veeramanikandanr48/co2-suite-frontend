@@ -5,6 +5,7 @@ import {
   showSuccessToast,
   showWarningToast,
 } from "@/components/reusables/toast-variant";
+import { encryptedStorage } from "@/lib/crypto";
 
 /**
  * Handles unauthorized access by clearing storage and redirecting to sign-in.
@@ -12,7 +13,7 @@ import {
  */
 function handleUnauthorized(): void {
   if (typeof window !== "undefined") {
-    localStorage.clear();
+    encryptedStorage.clear();
     sessionStorage.clear();
     window.location.href = "/sign-in";
   }
@@ -32,8 +33,8 @@ const isOffline = (): boolean => {
  * - Base URL from environment
  * - Default headers
  * - Request/Response interceptors
- * - Error handling
- * - Toast notifications
+ * - Encrypted Client Storage for Auth Tokens
+ * - Error handling & Toast notifications
  */
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.SERVER_URL,
@@ -47,7 +48,7 @@ const axiosInstance: AxiosInstance = axios.create({
  * Request Interceptor
  * Handles:
  * - Offline detection
- * - Token injection
+ * - Token injection from encrypted storage
  * - Security headers
  */
 axiosInstance.interceptors.request.use(
@@ -61,7 +62,7 @@ axiosInstance.interceptors.request.use(
     // Add auth token if available and not explicitly skipped
     const skipAuth = config.headers?.['X-Skip-Auth'] === 'true';
     if (!skipAuth) {
-      const token = localStorage.getItem('access_token');
+      const token = encryptedStorage.getItem<string>('access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -108,19 +109,19 @@ const handleNetworkError = (error: AxiosError, skipToast: boolean) => {
 /**
  * Response Interceptor
  * Handles:
- * - Success messages
+ * - Standard JSON responses over HTTPS
+ * - Success messages & Toast notifications
  * - Error handling with specific HTTP status codes
- * - Toast notifications
- * - Network errors
  */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     const skipToast: boolean = response.config?.headers?.['X-Skip-Toast'] === 'true';
-    
-    if (!skipToast && response.data?.message) {
-      showSuccessToast(response.data.message);
+    const resData = response.data;
+
+    if (!skipToast && resData?.message) {
+      showSuccessToast(resData.message);
     }
-    return response.data;
+    return resData;
   },
   (error: AxiosError) => {
     const skipToast: boolean = error.config?.headers?.['X-Skip-Toast'] === 'true';
@@ -142,4 +143,4 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export default axiosInstance; 
+export default axiosInstance;

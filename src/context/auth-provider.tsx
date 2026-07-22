@@ -13,6 +13,7 @@ import { apiService } from "@/lib/api-service";
 import { API_LIST } from "~/lib/api-list";
 import { useLoader } from "@/context/loader-context";
 import { useSocket } from "@/context/socket-context";
+import { encryptedStorage } from "@/lib/crypto";
 import type { LoginResponse, PermissionEntry, RoleInfo, UserProfile } from "@/types/users";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -41,6 +42,13 @@ export interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const extractPermissions = (res: any): PermissionEntry[] => {
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res?.data)) return res.data;
+  if (Array.isArray(res?.permissions)) return res.permissions;
+  return [];
+};
+
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -62,15 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        const userData = localStorage.getItem("user_data");
+        const token = encryptedStorage.getItem<string>("access_token");
+        const user = encryptedStorage.getItem<AuthUser>("user_data");
 
-        if (!token || !userData) {
+        if (!token || !user) {
           setState((prev) => ({ ...prev, isLoading: false }));
           return;
         }
-
-        const user: AuthUser = JSON.parse(userData);
 
         // Fetch fresh permissions from the API (not localStorage)
         const permResponse = await apiService.get<{ success: boolean; data: PermissionEntry[] }>(
@@ -83,14 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           user,
           isLoading: false,
           accessToken: token,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          permissions: (permResponse as any)?.data ?? [],
+          permissions: extractPermissions(permResponse),
           roles: [],
         });
       } catch {
         // If permissions fetch fails, clear session and force re-login
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user_data");
+        encryptedStorage.clear();
         setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
       }
     };
@@ -112,25 +116,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           password,
         });
 
-        const loginData = (response as unknown as { data: LoginResponse }).data ?? response;
-        const { accessToken, user, roles, permissions } = loginData;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const resObj: any = response;
+        const loginData = resObj?.data ?? resObj;
+        const accessToken = loginData?.accessToken ?? resObj?.accessToken;
+        const user = loginData?.user ?? resObj?.user;
+        const roles = loginData?.roles ?? resObj?.roles;
+        const permissions = loginData?.permissions ?? resObj?.permissions;
 
-        // Only accessToken goes to localStorage — permissions stay in memory
-        localStorage.setItem("access_token", accessToken);
-        localStorage.setItem("user_data", JSON.stringify(user));
+        if (!accessToken || !user) {
+          console.error("Login response missing token/user:", response);
+          return;
+        }
+
+        // Store accessToken and user_data in AES-256 encrypted storage
+        encryptedStorage.setItem("access_token", accessToken);
+        encryptedStorage.setItem("user_data", user);
 
         setState({
           user,
           isLoading: false,
           accessToken,
-          permissions,
-          roles,
+          permissions: extractPermissions(permissions),
+          roles: Array.isArray(roles) ? roles : [],
         });
 
         connectSocket();
         router.push("/dashboard");
-      } catch {
-        // Error handled by axios interceptor (toast)
+      } catch (err) {
+        console.error("Sign in failed:", err);
       } finally {
         setIsLoading(false);
       }
@@ -144,15 +158,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    */
   const refreshPermissions = useCallback(async () => {
     try {
-      const token = localStorage.getItem("access_token");
+      const token = encryptedStorage.getItem<string>("access_token");
       if (!token) return;
       const response = await apiService.get<{ success: boolean; data: PermissionEntry[] }>(
         API_LIST.GET_MY_PERMISSIONS,
         undefined,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setState((prev) => ({ ...prev, permissions: (response as any)?.data ?? [] }));
+      setState((prev) => ({ ...prev, permissions: extractPermissions(response) }));
     } catch {
       // Silently fail — permissions stay as-is
     }
@@ -171,21 +184,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Always clear session even if logout API fails
     } finally {
       setIsLoading(false);
-      localStorage.clear();
+      encryptedStorage.clear();
       setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
       router.push("/sign-in");
     }
   }, [router, state.accessToken]);
 
   const logout = useCallback(async () => {
-    localStorage.clear();
+    encryptedStorage.clear();
     setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
     router.push("/sign-in");
   }, [router]);
 
   const updateUser = useCallback((userData: AuthUser) => {
     setState((prev) => ({ ...prev, user: userData }));
-    localStorage.setItem("user_data", JSON.stringify(userData));
+    encryptedStorage.setItem("user_data", userData);
   }, []);
 
   const contextValue = useMemo(

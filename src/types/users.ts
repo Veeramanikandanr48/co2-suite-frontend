@@ -9,12 +9,15 @@ interface LoginResponse {
 
 interface UserProfile {
   id: number;
-  userName: string;
+  userName?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string;
   email: string;
   roleKey: string;
-  roleName: string;
-  roleIds: number[];
-  currentRoleId: number;
+  roleName?: string;
+  roleIds?: number[];
+  currentRoleId?: number;
 }
 
 interface RoleInfo {
