@@ -30,12 +30,14 @@ const RoleList: Partial<CustomAxiosResponse<RoleResponse[]>> = {
     data: [
         {
             id: 1,
+            roleKey: 'ADMIN',
             roleName: 'Admin',
             description: 'Administrator role with full access'
         },
         {
             id: 2,
-            roleName: 'User',
+            roleKey: 'MEMBER',
+            roleName: 'Member',
             description: 'Regular user with limited access'
         }
     ]

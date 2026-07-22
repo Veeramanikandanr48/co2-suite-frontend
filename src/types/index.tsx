@@ -53,8 +53,9 @@ interface DropdownOption {
   label: string;
 }
 
-type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete';
-type AppAbility = MongoAbility<[Actions, Subject]>;
+type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'approve' | 'reject' | 'download';
+type AppAbility = MongoAbility<[Actions, string]>;
+
 
 
 export type {

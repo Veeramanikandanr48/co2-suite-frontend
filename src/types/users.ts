@@ -1,34 +1,57 @@
 interface LoginResponse {
-    id: number;
-    userName: string;
-    firstName: string;
-    lastName: string | null;
-    prefix: string | null;
-    email: string;
-    userId: string;
-    idpId: string;
-    profilePath: string;
-    token: string;
-    roleId: number;
+  isTwoFactorAuthenticationEnabled: boolean;
+  accessToken: string;
+  refreshToken: string;
+  user: UserProfile;
+  roles: RoleInfo[];
+  permissions: PermissionEntry[];
+}
+
+interface UserProfile {
+  id: number;
+  userName: string;
+  email: string;
+  roleKey: string;
+  roleName: string;
+  roleIds: number[];
+  currentRoleId: number;
+}
+
+interface RoleInfo {
+  roleId: number;
+  roleKey: string;
+  roleName: string;
+  isPrimary: boolean;
+}
+
+interface PermissionEntry {
+  action: string;
+  subject: string;
+  conditions?: Record<string, unknown>;
 }
 
 interface UserResponse {
-    id: string;
-    name: string;
-    email: string;
-    roleName: string;
-    roleId?: number;
-    description: string;
+  id: string;
+  name: string;
+  email: string;
+  roleName: string;
+  roleKey?: string;
+  roleId?: number;
+  description: string;
 }
 
 interface RoleResponse {
-    id: number;
-    roleName: string;
-    description: string;
+  id: number;
+  roleKey: string;
+  roleName: string;
+  description: string;
 }
 
 export type {
-    LoginResponse,
-    UserResponse,
-    RoleResponse
-}
+  LoginResponse,
+  UserProfile,
+  UserResponse,
+  RoleResponse,
+  RoleInfo,
+  PermissionEntry,
+};

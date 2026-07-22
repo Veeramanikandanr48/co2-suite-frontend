@@ -1,25 +1,23 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { defineAbilityFor } from '../lib/casl/ability';
-import { AppAbility } from '@/types';
-  
+import React, { createContext, useContext, useMemo } from "react";
+import { defineAbilityFor } from "@/lib/casl/ability";
+import { AppAbility } from "@/types";
+import { useAuth } from "@/context/auth-provider";
+
 const PermissionsContext = createContext<AppAbility | undefined>(undefined);
 
+/**
+ * PermissionsProvider — builds the CASL ability from the in-memory permissions
+ * stored in AuthContext. No localStorage reads; always in sync with auth state.
+ *
+ * Wraps the entire protected tree so any component can call usePermissions().
+ */
 export const PermissionsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [ability, setAbility] = useState<AppAbility>(defineAbilityFor([]));
+  const { permissions } = useAuth();
 
-  useEffect(() => {
-    const userPermissions: string | null = localStorage.getItem('user_permissions');    
-    if (userPermissions) {
-      try {
-        const parsedPermissions = userPermissions ? JSON.parse(userPermissions) : [];
-        const newAbility = defineAbilityFor(parsedPermissions);
-        setAbility(newAbility);
-      } catch {
-      }
-    }
-  }, []);
+  // Rebuild ability whenever permissions change (e.g. role switch)
+  const ability = useMemo(() => defineAbilityFor(permissions), [permissions]);
 
   return (
     <PermissionsContext.Provider value={ability}>
@@ -28,11 +26,10 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
   );
 };
 
-// Custom hook to use the Permissions context
-export const usePermissions = () => {
+export const usePermissions = (): AppAbility => {
   const context = useContext(PermissionsContext);
   if (context === undefined) {
-    throw new Error('usePermissions must be used within a PermissionsProvider');
+    throw new Error("usePermissions must be used within a PermissionsProvider");
   }
   return context;
 };
