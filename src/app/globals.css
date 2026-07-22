@@ -1,11 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
-@layer components {
-  .scrollBar {
-    @apply [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-none [&::-webkit-scrollbar-thumb]:bg-[#D9E5F2] [&::-webkit-scrollbar-thumb]:rounded-xl;
-  }
+.scrollBar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollBar::-webkit-scrollbar-track {
+  background: none;
+}
+.scrollBar::-webkit-scrollbar-thumb {
+  background-color: #D9E5F2;
+  border-radius: 0.75rem;
 }
 
 @layer base {
@@ -54,7 +59,7 @@
     --link: #95989F;
     --link-active: #3A73E6;
     --close-button: #6B7280;
-    --preview-bg:#0101018C
+    --preview-bg: #0101018C;
 
 
     /* Typography Scale */
@@ -224,31 +229,6 @@
 }
 
 @layer base {
-  /* Font Faces */
-  @font-face {
-    font-family: 'Inter';
-    src: url('../../public/fonts/inter/Inter-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'Inter';
-    src: url('../../public/fonts/inter/Inter-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'Inter';
-    src: url('../../public/fonts/inter/Inter-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-  }
-  
   @layer utilities {
     input:-webkit-autofill {
       box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
@@ -297,11 +277,7 @@
     background-color: var(--color-tab-border);
   }
 
-  .scrollBar {
-    @apply [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-none [&::-webkit-scrollbar-thumb]:bg-[#D9E5F2] [&::-webkit-scrollbar-thumb]:rounded-xl;
-  }
-
-    /* Base Styles */
+  /* Base Styles */
   body {
     font-family: 'Inter-Regular', Helvetica, sans-serif;
     @apply bg-background text-foreground;

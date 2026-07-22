@@ -71,20 +71,20 @@ const Sidebar = () => {
     <div className={`h-full relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
         shadow-[inset_0px_3px_10px_0px_#0000001A] transition-[width] duration-300 ease-in-out will-change-[width] ${collapsed ? "w-[80px]" : "w-[246px]"}`}
     >
-      <button 
-        className={`flex items-center justify-start w-[86%] py-2 ml-4 transition-all duration-300 ease-in-out`} 
+      <button
+        className={`flex items-center justify-start w-[86%] py-2 ml-4 transition-all duration-300 ease-in-out`}
         onClick={() => handleItemClick('/')}
       >
         <Image
           src="/images/CMP.svg"
           className="w-fit mx-2"
-          alt="My Image"
+          alt="CO2 Suite"
           width={40}
           height={40}
         />
         <div className={`flex items-center justify-start transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-full opacity-100'}`}>
           <p className="text-[28px] font-light text-text-sidebar whitespace-nowrap">
-            CMP
+            Suite
           </p>
         </div>
       </button>
@@ -123,7 +123,7 @@ const Sidebar = () => {
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 className="bg-white rounded-full p-1 hover:bg-gray-50 transition-all cursor-pointer shadow-[-3px_0px_10px_0px_#0000001A]">
-                  {collapsed ? <ChevronRight size={25} /> : <ChevronLeft size={25} />}
+                {collapsed ? <ChevronRight size={25} /> : <ChevronLeft size={25} />}
               </button>
             </TooltipTrigger>
             <TooltipContent>

@@ -9,8 +9,8 @@ import { SocketProvider } from "@/context/socket-context";
 import { ToasterWrapper } from "@/components/reusables/toaster-wrapper";
 
 export const metadata: Metadata = {
-  title: "Boiler-Plate",
-  description: "Boiler-Plate-Front-End",
+  title: "CO2 Suite",
+  description: "CO2 Suite Front-End",
 };
 
 export default function RootLayout({

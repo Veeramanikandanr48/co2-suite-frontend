@@ -3,7 +3,7 @@ import plugin from "tailwindcss/plugin";
 import animate from "tailwindcss-animate";
 
 export default {
-    darkMode: ["class"],
+    darkMode: "class",
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -211,4 +211,4 @@ export default {
     'bg-violet-300',
     'bg-blue-400',
   ],
-} satisfies Config;
+} as any;

@@ -84,7 +84,7 @@ const DatePickerFormField = ({ name, label, className }: DatePickerFormFieldProp
                                     <PopoverContent className={cn("w-auto p-0 bg-input-bg", className)}>
                                         <Calendar
                                             mode="single"
-                                            captionLayout="dropdown-buttons"
+                                            captionLayout="dropdown"
                                             defaultMonth={field.value}
                                             selected={new Date(field.value)}
                                             onSelect={(e: Date | undefined) => {
@@ -96,11 +96,10 @@ const DatePickerFormField = ({ name, label, className }: DatePickerFormFieldProp
                                             disabled={(date: Date) =>
                                                 date < new Date("1900-01-01")
                                             }
-                                            fromYear={1960}
-                                            toYear={
-                                                new Date().getFullYear() + 30
+                                            startMonth={new Date(1960, 0)}
+                                            endMonth={
+                                                new Date(new Date().getFullYear() + 30, 11)
                                             }
-                                            initialFocus
                                         />
                                     </PopoverContent>
                                 </Popover>

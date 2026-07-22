@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState, useMemo, useCall
 import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api-service";
 import { API_LIST } from "~/lib/api-list";
-// import { LoginResponse } from "~/types/users";
 import { useLoader } from "@/context/loader-context";
 import { useSocket } from "@/context/socket-context";
 
@@ -69,51 +68,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (userName: string, password: string) => {
     try {
-      setIsLoading(true)
-    // Actual login      
-    //   const response = await apiService.post<LoginResponse>(API_LIST.LOGIN, {
-    //     username,
-    //     password,
-    //   },
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "X-Skip-Toast": "false",
-    //     },
-    //   }
-    // );
-
-    //   if (response?.data?.token) {        
-    //     const token = response.data.token;
-    //     localStorage.setItem("access_token", token);
-
-    //     // Store user data
-    //     const userData = {
-    //       id: response.data.id,
-    //       userName: response.data.userName,
-    //       firstName: response.data.firstName,
-    //       lastName: response.data.lastName,
-    //       email: response.data.email,
-    //       userId: response.data.userId,
-    //       idpId: response.data.idpId,
-    //       profilePath: response.data.profilePath,
-    //       roleId: response.data.roleId
-    //     };
-
-    //     localStorage.setItem("user_data", JSON.stringify(userData));
-    //     connectSocket();
-
-    //     setState({
-    //       user: userData,
-    //       isLoading: false,
-    //       accessToken: token,
-    //     });
-    //     router.push("/dashboard");
-    //     return; 
-    //   }
-
-          // mock login
-          console.log('userName', userName, 'password', password);
+      setIsLoading(true);
+      // mock login
+      console.log('userName', userName, 'password', password);
           const mockLogin: AuthState = {
             user: {
               id: 1,

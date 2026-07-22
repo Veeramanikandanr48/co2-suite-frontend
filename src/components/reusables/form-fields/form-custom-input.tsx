@@ -1,9 +1,10 @@
 // Components
 
 // Icons
-import { Trash2 } from "lucide-react";
-import { FormInput, BaseButton } from "@/components";
+import FormInput from "./form-input";
+import BaseButton from "../base-button";
 import { cn } from "~/lib/utils";
+import { Trash2 } from "lucide-react";
 
 type FormCustomInputProps = {
     index: number;
@@ -23,26 +24,26 @@ const FormCustomInput = ({
     const nameKey = `${location}[${index}].key`;
     const nameValue = `${location}[${index}].value`;
     return (
-            <div className="flex items-center gap-2">
-                <FormInput
-                    name={nameKey}
-                    placeholder="Name"
-                    className={cn("w-[10rem]", keyClassName)}
-                />
+        <div className="flex items-center gap-2">
+            <FormInput
+                name={nameKey}
+                placeholder="Name"
+                className={cn("w-[10rem]", keyClassName)}
+            />
 
-                <FormInput
-                    name={nameValue}
-                    placeholder="Value"
-                    className={cn("w-[10rem]", valueClassName)}
-                />
-                <BaseButton
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => removeField(index)}
-                >
-                    <Trash2 />
-                </BaseButton>
-            </div>
+            <FormInput
+                name={nameValue}
+                placeholder="Value"
+                className={cn("w-[10rem]", valueClassName)}
+            />
+            <BaseButton
+                size="icon"
+                variant="destructive"
+                onClick={() => removeField(index)}
+            >
+                <Trash2 />
+            </BaseButton>
+        </div>
     );
 };
 

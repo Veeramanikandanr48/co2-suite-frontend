@@ -1,9 +1,9 @@
-import { AbilityBuilder, PureAbility } from '@casl/ability';
+import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import { Actions, AppAbility } from '@/types';
 
 
 export const defineAbilityFor = (permissions: Array<{ action: string; subject: string }>) => {
-  const { can, cannot, build } = new AbilityBuilder<AppAbility>(PureAbility);
+  const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
   // Default rules - deny everything by default
   cannot('manage', 'all');

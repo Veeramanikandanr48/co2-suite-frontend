@@ -7,26 +7,5 @@ export const sidebarList: SidebarItemType[] = [
     icon: "DashboardIcon",
     isActive: true,
     child: [],
-  },
-  {
-    name: "User management",
-    href: "/user-management",
-    icon: "UserManagementIcon",
-    isActive: false,
-    child: [],
-  },
-  {
-    name: "Job management",
-    href: "/job-management",
-    icon: "UserManagementIcon",
-    isActive: false,
-    child: [],
-  },
-  {
-    name: "Settings",
-    href: "/settings",
-    icon: "UserManagementIcon",
-    isActive: false,
-    child: [],
-  },
+  }
 ]

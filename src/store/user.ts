@@ -16,7 +16,7 @@ type UserState = {
 
 const defaultUser: User = {
   id: 1,
-  name: "Boiler-Plate-01234",
+  name: "CO2-Suite-01234",
   role: 'Admin',
 };
 

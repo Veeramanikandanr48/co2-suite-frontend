@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { ReactNode } from "react"
-import { Subject, PureAbility } from "@casl/ability"
+import { Subject, MongoAbility } from "@casl/ability"
 import { EAdditionalFieldError } from "@/enums/base-enum";
 
 interface LayoutProps {
@@ -54,7 +54,7 @@ interface DropdownOption {
 }
 
 type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete';
-type AppAbility = PureAbility<[Actions, Subject]>;
+type AppAbility = MongoAbility<[Actions, Subject]>;
 
 
 export type {
