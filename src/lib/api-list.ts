@@ -15,6 +15,8 @@ export enum API_LIST {
   // Permissions
   GET_PERMISSIONS     = '/permissions',
   GET_MY_PERMISSIONS  = '/permissions/me',
+  EFFECTIVE_PERMISSIONS = '/permissions/effective',
+  CACHE_METRICS       = '/permissions/cache/metrics',
 
   // Users (legacy)
   GET_ALL_USERS       = '/users',

@@ -6,6 +6,7 @@ import {
   showWarningToast,
 } from "@/components/reusables/toast-variant";
 import { encryptedStorage } from "@/lib/crypto";
+import { signAxiosRequest, SessionKey } from "@/lib/request-signer";
 
 /**
  * Handles unauthorized access by clearing storage and redirecting to sign-in.
@@ -13,6 +14,7 @@ import { encryptedStorage } from "@/lib/crypto";
  */
 function handleUnauthorized(): void {
   if (typeof window !== "undefined") {
+    SessionKey.clear();
     encryptedStorage.clear();
     sessionStorage.clear();
     window.location.href = "/sign-in";
@@ -32,12 +34,12 @@ const isOffline = (): boolean => {
  * Includes:
  * - Base URL from environment
  * - Default headers
- * - Request/Response interceptors
- * - Encrypted Client Storage for Auth Tokens
- * - Error handling & Toast notifications
+ * - withCredentials enabled for HttpOnly cookies
+ * - Request/Response interceptors with HMAC request signing
  */
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.SERVER_URL,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || process.env.SERVER_URL || 'http://localhost:5000/api/v1',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     'X-Skip-Toast': 'true',
@@ -48,11 +50,11 @@ const axiosInstance: AxiosInstance = axios.create({
  * Request Interceptor
  * Handles:
  * - Offline detection
- * - Token injection from encrypted storage
- * - Security headers
+ * - Token injection from storage (if set)
+ * - HMAC Request Signing with AWS V4 specification
  */
 axiosInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // Check offline status before making request
     if (isOffline()) {
       showWarningToast("You are offline. Please check your internet connection and try again.");
@@ -67,10 +69,9 @@ axiosInstance.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-    
-    // Security headers
-    config.headers['X-Frame-Options'] = 'DENY';
-    return config;
+
+    // Sign request with HMAC-SHA256
+    return await signAxiosRequest(config);
   },
   (error) => Promise.reject(new Error(error))
 );
@@ -108,10 +109,6 @@ const handleNetworkError = (error: AxiosError, skipToast: boolean) => {
 
 /**
  * Response Interceptor
- * Handles:
- * - Standard JSON responses over HTTPS
- * - Success messages & Toast notifications
- * - Error handling with specific HTTP status codes
  */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {

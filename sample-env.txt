@@ -1,2 +1,4 @@
-SERVER_URL=http://localhost:5000/api/
+NEXT_PUBLIC_SERVER_URL=http://localhost:5000/api/v1/
+NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+SERVER_URL=http://localhost:5000/api/v1/
 SOCKET_URL=http://localhost:5000

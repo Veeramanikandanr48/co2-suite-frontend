@@ -14,6 +14,7 @@ import { API_LIST } from "~/lib/api-list";
 import { useLoader } from "@/context/loader-context";
 import { useSocket } from "@/context/socket-context";
 import { encryptedStorage } from "@/lib/crypto";
+import { SessionKey } from "@/lib/request-signer";
 import type { LoginResponse, PermissionEntry, RoleInfo, UserProfile } from "@/types/users";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -38,6 +39,8 @@ export interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   updateUser: (userData: AuthUser) => void;
   refreshPermissions: () => Promise<void>;
+  /** Switches the active role, re-issues a JWT, and refreshes CASL permissions atomically. */
+  switchRole: (roleId: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,8 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const { connect: connectSocket } = useSocket();
 
-  // On mount: restore session from localStorage (token only, not permissions)
-  // Permissions are always fetched fresh from the API to avoid stale data.
+  // On mount: restore session from localStorage & fetch in-memory session signing key
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -76,6 +78,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!token || !user) {
           setState((prev) => ({ ...prev, isLoading: false }));
           return;
+        }
+
+        // Fetch session signing key into memory for HMAC request signing
+        try {
+          const keyRes = await apiService.get<{ data: { signingKey: string } }>(
+            "/registration/session-key",
+            undefined,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const key = (keyRes as any)?.data?.signingKey || (keyRes as any)?.signingKey;
+          if (key) SessionKey.set(key);
+        } catch {
+          // Ignore failure to fetch key if route is unauthenticated
         }
 
         // Fetch fresh permissions from the API (not localStorage)
@@ -94,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       } catch {
         // If permissions fetch fails, clear session and force re-login
+        SessionKey.clear();
         encryptedStorage.clear();
         setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
       }
@@ -133,6 +149,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         encryptedStorage.setItem("access_token", accessToken);
         encryptedStorage.setItem("user_data", user);
 
+        // Fetch dedicated session signing key for HMAC signature calculations
+        try {
+          const keyRes = await apiService.get<{ data: { signingKey: string } }>(
+            "/registration/session-key",
+            undefined,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          const key = (keyRes as any)?.data?.signingKey || (keyRes as any)?.signingKey;
+          if (key) SessionKey.set(key);
+        } catch {
+          // If session key fetch fails, proceed
+        }
+
         setState({
           user,
           isLoading: false,
@@ -171,6 +200,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  /**
+   * Switches the active role by calling POST /roles/switch.
+   * The backend now issues a fresh JWT with the updated currentRoleId,
+   * roleKey, and permissionsVersion, and returns the new permissions.
+   * This function stores the new token and rebuilds auth state atomically —
+   * no separate refreshPermissions() call is needed.
+   */
+  const switchRole = useCallback(async (roleId: number) => {
+    try {
+      const token = encryptedStorage.getItem<string>("access_token");
+      if (!token) return;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await apiService.post(
+        API_LIST.SWITCH_ROLE,
+        { roleId },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      const data = response?.data ?? response;
+      const newToken: string = data?.accessToken;
+      const currentRole = data?.currentRole;
+      const permissions: PermissionEntry[] = extractPermissions(data?.permissions);
+
+      if (!newToken || !currentRole) return;
+
+      // Store the new token and update state atomically
+      encryptedStorage.setItem("access_token", newToken);
+      setState((prev) => ({
+        ...prev,
+        accessToken: newToken,
+        permissions,
+        user: prev.user
+          ? {
+              ...prev.user,
+              roleKey: currentRole.key,
+              roleName: currentRole.name,
+              currentRoleId: currentRole.id,
+            }
+          : prev.user,
+      }));
+    } catch (err) {
+      console.error("Role switch failed:", err);
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -184,6 +259,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Always clear session even if logout API fails
     } finally {
       setIsLoading(false);
+      SessionKey.clear();
       encryptedStorage.clear();
       setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
       router.push("/sign-in");
@@ -191,6 +267,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router, state.accessToken]);
 
   const logout = useCallback(async () => {
+    SessionKey.clear();
     encryptedStorage.clear();
     setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
     router.push("/sign-in");
@@ -202,8 +279,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const contextValue = useMemo(
-    () => ({ ...state, signIn, signOut, logout, updateUser, refreshPermissions }),
-    [state, signIn, signOut, logout, updateUser, refreshPermissions]
+    () => ({ ...state, signIn, signOut, logout, updateUser, refreshPermissions, switchRole }),
+    [state, signIn, signOut, logout, updateUser, refreshPermissions, switchRole]
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
