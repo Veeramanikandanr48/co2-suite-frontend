@@ -9,8 +9,16 @@ import { SocketProvider } from "@/context/socket-context";
 import { ToasterWrapper } from "@/components/reusables/toaster-wrapper";
 
 export const metadata: Metadata = {
-  title: "CO2 Suite",
-  description: "CO2 Suite Front-End",
+  title: "CO2 Suite | Enterprise Carbon Accounting",
+  description: "Enterprise Carbon Accounting & Sustainability Platform",
+  icons: {
+    icon: [
+      { url: "/images/CMP.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/images/CMP.svg",
+    apple: "/images/CMP.svg",
+  },
 };
 
 export default function RootLayout({
