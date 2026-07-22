@@ -5,9 +5,11 @@ import '@testing-library/jest-dom'
 window.URL.createObjectURL = jest.fn()
 window.URL.revokeObjectURL = jest.fn()
 
-// Mock document.createElement
-document.createElement = jest.fn(() => ({
-  href: '',
-  download: '',
-  click: jest.fn(),
-})) 
+const originalCreateElement = document.createElement.bind(document);
+document.createElement = jest.fn((tagName, options) => {
+  const element = originalCreateElement(tagName, options);
+  if (tagName && tagName.toLowerCase() === 'a') {
+    element.click = jest.fn();
+  }
+  return element;
+}); 

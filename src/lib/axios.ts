@@ -7,14 +7,14 @@ import {
 } from "@/components/reusables/toast-variant";
 
 /**
- * Handles unauthorized access by clearing storage and redirecting to sign-in/admin.
+ * Handles unauthorized access by clearing storage and redirecting to sign-in.
  * This is called when receiving 401/403 status codes from the API.
  */
 function handleUnauthorized(): void {
   if (typeof window !== "undefined") {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = "/sign-in/admin";
+    window.location.href = "/sign-in";
   }
 }
 

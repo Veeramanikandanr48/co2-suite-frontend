@@ -59,7 +59,7 @@ export default function SignUp() {
         </form>
         <div className="text-center text-sm">
           Already have an account?{" "}
-          <Link className="underline" href="/sign-in/admin">
+          <Link className="underline" href="/sign-in">
             Sign In
           </Link>
         </div>

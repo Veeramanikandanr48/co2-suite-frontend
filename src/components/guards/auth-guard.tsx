@@ -7,7 +7,7 @@ import { Loader } from "@/components/reusables/loader";
 
 interface AuthGuardProps {
   readonly children: React.ReactNode;
-  /** Override the redirect target (default: /sign-in/admin) */
+  /** Override the redirect target (default: /sign-in) */
   readonly redirectTo?: string;
 }
 
@@ -20,7 +20,7 @@ interface AuthGuardProps {
  *     <ProtectedPage />
  *   </AuthGuard>
  */
-const AuthGuard: React.FC<AuthGuardProps> = ({ children, redirectTo = "/sign-in/admin" }) => {
+const AuthGuard: React.FC<AuthGuardProps> = ({ children, redirectTo = "/sign-in" }) => {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
