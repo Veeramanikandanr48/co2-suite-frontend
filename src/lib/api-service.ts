@@ -53,17 +53,27 @@ class ApiService {
   /**
    * Performs a PUT request to update existing data
    * @param endpoint - The base API endpoint
-   * @param id - The ID of the item to update
+   * @param id - Optional ID of the item to update
    * @param data - The updated data
    * @param config - Optional axios configuration
    * @returns Promise with the response data
-   * @example
-   * await apiService.put<User>('/users', 123, { name: 'Updated' });
    */
-  async put<T>(endpoint: string, id: string | number, data?: unknown, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.put<T>(`${endpoint}/${id}`, data, config) as Promise<CustomAxiosResponse<T>>;
+  async put<T>(endpoint: string, idOrData?: string | number | unknown, data?: unknown, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
+    if (typeof idOrData === 'string' || typeof idOrData === 'number') {
+      return axiosInstance.put<T>(`${endpoint}/${idOrData}`, data, config) as Promise<CustomAxiosResponse<T>>;
+    }
+    return axiosInstance.put<T>(endpoint, idOrData, config) as Promise<CustomAxiosResponse<T>>;
   }
- 
+
+  /**
+   * Performs a DELETE request
+   * @param endpoint - The API endpoint
+   * @param config - Optional axios configuration
+   * @returns Promise with the response data
+   */
+  async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.delete<T>(endpoint, config) as Promise<CustomAxiosResponse<T>>;
+  }
 }
  
 export const apiService = new ApiService();

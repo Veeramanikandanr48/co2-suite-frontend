@@ -7,5 +7,19 @@ export const sidebarList: SidebarItemType[] = [
     icon: "DashboardIcon",
     isActive: true,
     child: [],
-  }
-]
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: "SettingsIcon",
+    isActive: false,
+    child: [
+      {
+        name: "Roles & Permissions",
+        href: "/roles",
+        group: "Options",
+        icon: "Shield",
+      },
+    ],
+  },
+];

@@ -7,37 +7,32 @@ import EventBus from "../../lib/eventbus";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import { SidebarItemProps } from "@/types/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import {
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from "@/components/ui/sidebar";
+import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
+import { ChevronRight } from "lucide-react";
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setCollapsed }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isActiveParent = pathname.startsWith(item.href);
+  const isActiveParent =
+    pathname === item.href ||
+    (item.child &&
+      item.child.some((c) => c.href !== "" && pathname.startsWith(`${item.href}${c.href}`)));
 
   const handleParentClick = () => {
     if (!item.child?.length) {
-      handleItemClick(item.href)
-    } else if (pathname !== `${item.href}${item.child[0].href}`) {
-      const fullHref: string = `${item.href}${item.child[0].href}`;
-      handleItemClick(fullHref)
-    }
-
-    if(collapsed) {
-      setCollapsed(false);
+      handleItemClick(item.href);
+    } else {
+      const firstChild = item.child[0];
+      const fullHref = `${item.href}${firstChild.href}`;
+      handleItemClick(fullHref);
     }
   };
 
   const handleItemClick = (requestHref: string) => {
     const currentroute: string = pathname;
     let modifiedRoute = currentroute;
-    modifiedRoute = modifiedRoute.replace(/\d+/g, '[id]');
+    modifiedRoute = modifiedRoute.replace(/\d+/g, "[id]");
     const formExit: boolean = FORM_CONFIGURATION[modifiedRoute];
     if (formExit) {
       EventBus.$emit(`${currentroute}`, requestHref);
@@ -46,7 +41,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
     }
   };
 
-  const IconComponent = (Icons as Record<string, React.FC<{ className?: string; stroke?: string }>>)[item.icon ?? ""];
+  const IconComponent = (Icons as Record<string, React.FC<{ className?: string; stroke?: string }>>)[
+    item.icon ?? ""
+  ];
 
   const renderButton = () => (
     <SidebarMenuButton
@@ -54,64 +51,63 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
       isActive={isActiveParent}
       tooltip={collapsed ? item.name : undefined}
       onClick={handleParentClick}
-      className={`text-sm mx-auto ${collapsed ? "w-[64%]" : "w-[86%]"} px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400 hover:bg-transparent
-      ${isActiveParent ? "bg-background-sidebarActive text-light-100" : ""} ${collapsed ? "justify-center" : ""}`}
+      className={`text-sm mx-auto ${
+        collapsed ? "w-[72%]" : "w-[88%]"
+      } px-3 py-2.5 rounded-xl flex items-center justify-between cursor-pointer relative h-11 text-neutral-300 hover:bg-white/10 transition-all ${
+        isActiveParent ? "bg-background-sidebarActive text-white font-semibold shadow-xs" : ""
+      } ${collapsed ? "justify-center" : ""}`}
     >
-      <button>
-        {IconComponent && <IconComponent className={`${!collapsed && "mr-2"}`} stroke={isActiveParent ? "var(--icon-color-active)" : "var(--icon-color)"} />}
+      <button type="button" className="w-full flex items-center justify-between">
+        <div className="flex items-center gap-2.5 min-w-0">
+          {IconComponent && (
+            <IconComponent
+              className="shrink-0"
+              stroke={isActiveParent ? "var(--icon-color-active)" : "var(--icon-color)"}
+            />
+          )}
 
-        <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "text-light-100 font-medium" : "text-text-sidebar"}`}
-        >
-          {item.name}
+          <div
+            className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize text-xs ${
+              collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+            } ${isActiveParent ? "text-white font-medium" : "text-text-sidebar"}`}
+          >
+            {item.name}
+          </div>
         </div>
+
+        {!collapsed && (
+          <div className="flex items-center gap-1.5">
+            {item.badge && (
+              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-white/15 text-white">
+                {item.badge}
+              </span>
+            )}
+            {item.child && item.child.length > 0 && (
+              <ChevronRight
+                className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-200 ${
+                  isActiveParent ? "rotate-90 text-white" : ""
+                }`}
+              />
+            )}
+          </div>
+        )}
       </button>
     </SidebarMenuButton>
   );
 
   return (
-    <SidebarMenuItem className={`relative ${(isOpen && !collapsed) ? "border-b border-gray-400" : ""}`}>
+    <SidebarMenuItem className="relative py-0.5 group/item">
       {collapsed ? (
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              {renderButton()}
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>{item.name}</p>
+            <TooltipTrigger asChild>{renderButton()}</TooltipTrigger>
+            <TooltipContent side="right" className="bg-neutral-900 text-white border-neutral-800 text-xs">
+              <p>{item.name} {item.badge ? `(${item.badge})` : ""}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       ) : (
         renderButton()
-      )}
-
-      {!collapsed && isOpen && item.child && (                                                                
-        <SidebarMenuSub className="ml-6 flex flex-col items-start border-l-0 p-0 m-0">
-          {item.child.map((subItem) => {
-            const fullHref = `${item.href}${subItem.href}`;
-            const isActiveChild = pathname.startsWith(fullHref);
-
-            return (
-              <SidebarMenuSubItem key={fullHref}>
-                <SidebarMenuSubButton
-                  asChild
-                  isActive={isActiveChild}
-                  onClick={() => handleItemClick(fullHref)}
-                  className="h-auto p-0 bg-transparent hover:bg-transparent"
-                >
-                  <button>
-                    <div className={`text-xs pl-6 p-2 rounded-md cursor-pointer ${isActiveChild ? "text-primary-300 font-medium" : "text-neutral-500"}`}>
-                      <div className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100 ml-2"}`}>
-                        {subItem.name}
-                      </div>
-                    </div>
-                  </button>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            );
-          })}
-        </SidebarMenuSub>
       )}
     </SidebarMenuItem>
   );

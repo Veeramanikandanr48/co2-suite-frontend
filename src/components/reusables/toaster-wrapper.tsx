@@ -1,7 +1,13 @@
 "use client"
 
-import { Toaster } from "./toaster"
+import { Toaster as RadixToaster } from "./toaster"
+import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 
 export function ToasterWrapper() {
-  return <Toaster />
+  return (
+    <>
+      <RadixToaster />
+      <SonnerToaster position="top-right" richColors closeButton />
+    </>
+  )
 } 

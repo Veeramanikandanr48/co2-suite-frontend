@@ -26,6 +26,7 @@ import {
 } from "../ui/breadcrumb";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
+import { useTheme } from "next-themes";
 import {
   CircleUserRound,
   LogOut,
@@ -38,6 +39,8 @@ import {
   CheckCircle2,
   Info,
   Menu,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 interface NotificationItem {
@@ -82,6 +85,7 @@ interface HeaderProps {
 
 export default function Header({ onOpenMobileSidebar }: HeaderProps) {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
 
@@ -94,24 +98,33 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", nextTheme);
+      document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    }
+  };
+
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <header className="w-full min-h-[52px] flex items-center justify-between py-2 px-3 sm:px-6 border-b border-gray-100 shadow-[0px_2px_6px_0px_rgba(0,0,0,0.03)] z-10 bg-white gap-3 sm:gap-4">
+    <header className="shrink-0 w-full min-h-[52px] flex items-center justify-between py-2 px-3 sm:px-6 border-b border-neutral-200 dark:border-neutral-800 shadow-xs z-10 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 gap-3 sm:gap-4 transition-colors">
       {/* Left side: Mobile Menu Toggle & Breadcrumb Navigation */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onOpenMobileSidebar}
-          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors md:hidden text-gray-700 outline-none cursor-pointer shrink-0"
+          className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors md:hidden text-neutral-700 dark:text-neutral-300 outline-none cursor-pointer shrink-0"
           aria-label="Open menu"
         >
-          <Menu className="w-5 h-5 text-gray-700" />
+          <Menu className="w-5 h-5" />
         </button>
 
         <Breadcrumb className="hidden sm:flex min-w-0">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-gray-500 hover:text-gray-900 font-medium text-xs sm:text-sm">
+              <BreadcrumbLink href="/dashboard" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white font-medium text-xs sm:text-sm">
                 Home
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -125,11 +138,11 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className="font-semibold text-gray-900 capitalize text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
+                      <BreadcrumbPage className="font-semibold text-neutral-900 dark:text-white capitalize text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
                         {title}
                       </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={href} className="text-gray-500 hover:text-gray-900 capitalize font-medium text-xs sm:text-sm truncate">
+                      <BreadcrumbLink href={href} className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white capitalize font-medium text-xs sm:text-sm truncate">
                         {title}
                       </BreadcrumbLink>
                     )}
@@ -141,17 +154,28 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
         </Breadcrumb>
       </div>
 
-      {/* Right side: Search, Notifications Popover, User Dropdown Menu */}
+      {/* Right side: Theme Toggle, Search, Notifications Popover, User Dropdown Menu */}
       <div className="flex items-center gap-3">
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-600 dark:text-neutral-300 outline-none cursor-pointer flex items-center justify-center"
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          aria-label="Toggle Theme"
+        >
+          <Sun className="w-5 h-5 hidden dark:block text-amber-400" />
+          <Moon className="w-5 h-5 block dark:hidden text-neutral-600" />
+        </button>
+
         {/* Search Bar */}
         <div className="relative hidden md:flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-3 w-4 h-4 text-neutral-400 pointer-events-none" />
           <Input
             type="text"
             placeholder="Search parameters, data..."
-            className="pl-9 pr-12 h-9 w-64 bg-gray-50/80 border-gray-200 text-xs rounded-lg focus-visible:ring-1 focus-visible:ring-primary"
+            className="pl-9 pr-12 h-9 w-64 bg-neutral-50 dark:bg-neutral-800/60 border-neutral-200 dark:border-neutral-700 text-xs rounded-lg focus-visible:ring-1 focus-visible:ring-primary text-neutral-900 dark:text-neutral-100"
           />
-          <kbd className="absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono text-gray-400 bg-white border border-gray-200 rounded shadow-2xs pointer-events-none">
+          <kbd className="absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-2xs pointer-events-none">
             ⌘K
           </kbd>
         </div>
@@ -160,10 +184,10 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 outline-none cursor-pointer"
+              className="relative p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-600 dark:text-neutral-300 outline-none cursor-pointer"
               aria-label="Notifications"
             >
-              <Bell className="w-5 h-5 text-gray-600" />
+              <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

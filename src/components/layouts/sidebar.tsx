@@ -100,16 +100,30 @@ const workspaceLogos: WorkspaceLogo[] = [
 function hasActiveDescendant(item: SidebarItemType, pathname: string): boolean {
   if (!item.child) return false;
   return item.child.some((child: SidebarItemType) => {
-    const fullHref = `${item.href}${child.href}`;
+    const fullHref = child.href.startsWith(item.href)
+      ? child.href
+      : `${item.href}${child.href}`;
     return pathname.startsWith(fullHref) || hasActiveDescendant({ ...child, href: fullHref }, pathname);
   });
 }
 
-const Sidebar = () => {
+interface SidebarProps {
+  collapsed?: boolean;
+  setCollapsed?: React.Dispatch<React.SetStateAction<boolean>> | ((collapsed: boolean) => void);
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
+  collapsed: externalCollapsed,
+  setCollapsed: externalSetCollapsed,
+}) => {
   const pathname = usePathname();
   const router = useRouter();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [internalCollapsed, setInternalCollapsed] = useState<boolean>(false);
+
+  const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
+  const setCollapsed = externalSetCollapsed || setInternalCollapsed;
+
   const [activeLogo, setActiveLogo] = useState<WorkspaceLogo>(workspaceLogos[0]);
   const { user, logout } = useAuth();
 
@@ -122,7 +136,10 @@ const Sidebar = () => {
     sidebarList.forEach((item) => {
       map.set(item.href, item);
       item?.child?.forEach((child: SidebarItemType) => {
-        map.set(`${item.href}${child.href}`, { ...child, parentHref: item.href });
+        const fullHref = child.href.startsWith(item.href)
+          ? child.href
+          : `${item.href}${child.href}`;
+        map.set(fullHref, { ...child, parentHref: item.href });
       });
     });
     return map;
@@ -149,7 +166,11 @@ const Sidebar = () => {
 
     const parentItem = indexedSidebar.get(pathname);
     if (parentItem?.child?.length && pathname === parentItem.href) {
-      router.replace(`${parentItem.href}${parentItem.child[0].href}`);
+      const firstChild = parentItem.child[0];
+      const targetHref = firstChild.href.startsWith(parentItem.href)
+        ? firstChild.href
+        : `${parentItem.href}${firstChild.href}`;
+      router.replace(targetHref);
     }
   }, [pathname, router, indexedSidebar]);
 

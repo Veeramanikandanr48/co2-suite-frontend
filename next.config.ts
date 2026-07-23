@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import WebpackObfuscator from "webpack-obfuscator";
 
 const nextConfig: NextConfig = {
+  turbopack: {},
   images: {
     remotePatterns: [],
   },
