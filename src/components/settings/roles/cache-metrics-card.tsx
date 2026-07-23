@@ -4,11 +4,10 @@ import React, { useState, useEffect } from "react";
 import { CacheMetrics, EffectivePermissionResponse } from "@/types/roles-permissions";
 import { apiService } from "@/lib/api-service";
 import { API_LIST } from "@/lib/api-list";
-import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Activity, RefreshCw, Zap, ShieldCheck, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { Activity, RefreshCw, Zap, ShieldCheck, CheckCircle2, XCircle } from "lucide-react";
 
 export const CacheMetricsCard: React.FC = () => {
   const [metrics, setMetrics] = useState<CacheMetrics | null>(null);
@@ -19,13 +18,13 @@ export const CacheMetricsCard: React.FC = () => {
     try {
       setLoading(true);
       const metricsRes = await apiService.get<CacheMetrics>(API_LIST.CACHE_METRICS);
-      const metricsData = (metricsRes as any)?.data ?? metricsRes;
+      const metricsData = (metricsRes as unknown as { data?: CacheMetrics })?.data ?? (metricsRes as unknown as CacheMetrics);
       setMetrics(metricsData);
 
       const effectiveRes = await apiService.get<EffectivePermissionResponse>(API_LIST.EFFECTIVE_PERMISSIONS);
-      const effectiveResData = (effectiveRes as any)?.data ?? effectiveRes;
+      const effectiveResData = (effectiveRes as unknown as { data?: EffectivePermissionResponse })?.data ?? (effectiveRes as unknown as EffectivePermissionResponse);
       setEffectiveData(effectiveResData);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to load cache metrics:", error);
     } finally {
       setLoading(false);

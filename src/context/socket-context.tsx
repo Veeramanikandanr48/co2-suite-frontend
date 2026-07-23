@@ -46,12 +46,12 @@ export function SocketProvider({ children, url = (process.env.NEXT_PUBLIC_SOCKET
       })
 
       newSocket.on("connect", () => {
-        console.log("Socket connected:", newSocket.id)
+        console.warn("Socket connected:", newSocket.id)
         setIsConnected(true)
       })
 
       newSocket.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason)
+        console.warn("Socket disconnected:", reason)
         setIsConnected(false)
       })
 

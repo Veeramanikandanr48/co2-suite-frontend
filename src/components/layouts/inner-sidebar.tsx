@@ -21,6 +21,8 @@ import {
   FolderKanban,
   PanelLeftClose,
   ChevronRight,
+  Users,
+  Lock,
 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import EventBus from "@/lib/eventbus";
@@ -44,6 +46,8 @@ const iconMap: Record<string, React.ReactNode> = {
   Star: <Star className="w-4 h-4" />,
   Shield: <Shield className="w-4 h-4" />,
   Megaphone: <Megaphone className="w-4 h-4" />,
+  Users: <Users className="w-4 h-4" />,
+  Lock: <Lock className="w-4 h-4" />,
 };
 
 export const InnerSidebar: React.FC<InnerSidebarProps> = ({ parentItem, onClose }) => {

@@ -28,18 +28,9 @@ import { API_LIST } from "@/lib/api-list";
 import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import { Role } from "@/types/roles-permissions";
 import { ShieldPlus, Loader2 } from "lucide-react";
+import { CreateRoleSchema } from "@/lib/schemas";
 
-const createRoleSchema = z.object({
-  roleKey: z
-    .string()
-    .min(2, "Role Key must be at least 2 characters")
-    .regex(/^[A-Z0-9_]+$/, "Role Key must be uppercase letters, numbers, and underscores only"),
-  roleName: z.string().min(2, "Role Name is required"),
-  roleShortName: z.string().optional(),
-  description: z.string().optional(),
-});
-
-type CreateRoleFormValues = z.infer<typeof createRoleSchema>;
+type CreateRoleFormValues = z.infer<typeof CreateRoleSchema>;
 
 interface CreateRoleDialogProps {
   open: boolean;
@@ -55,7 +46,7 @@ export const CreateRoleDialog: React.FC<CreateRoleDialogProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(createRoleSchema),
+    resolver: zodResolver(CreateRoleSchema),
     defaultValues: {
       roleKey: "",
       roleName: "",
@@ -74,13 +65,14 @@ export const CreateRoleDialog: React.FC<CreateRoleDialogProps> = ({
         description: values.description?.trim() || undefined,
       });
 
-      const newRole = (res as any)?.data ?? res;
+      const newRole = (res as unknown as { data?: Role })?.data ?? (res as unknown as Role);
       showSuccessToast(`Role "${values.roleName}" created successfully!`);
       onRoleCreated(newRole);
       form.reset();
       onOpenChange(false);
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Failed to create role";
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to create role";
       showErrorToast(msg);
     } finally {
       setSubmitting(false);

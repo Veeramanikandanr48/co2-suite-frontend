@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { ChevronRight } from "lucide-react";
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setCollapsed }) => {
+const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen: _isOpen, collapsed, setCollapsed: _setCollapsed }) => {
   const pathname = usePathname();
   const router = useRouter();
 

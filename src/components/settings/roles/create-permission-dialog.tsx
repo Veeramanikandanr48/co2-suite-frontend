@@ -29,16 +29,9 @@ import { API_LIST } from "@/lib/api-list";
 import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import { Permission, MasterModule } from "@/types/roles-permissions";
 import { KeyRound, Loader2 } from "lucide-react";
+import { CreatePermissionSchema } from "@/lib/schemas";
 
-const createPermissionSchema = z.object({
-  moduleId: z.number().min(1, "Module is required"),
-  resource: z.string().min(2, "Resource is required (e.g. users, emissions, reports)"),
-  action: z.string().min(2, "Action is required (e.g. read, create, update, delete)"),
-  scope: z.enum(["any", "own"]).default("any"),
-  description: z.string().optional(),
-});
-
-type CreatePermissionFormValues = z.infer<typeof createPermissionSchema>;
+type CreatePermissionFormValues = z.infer<typeof CreatePermissionSchema>;
 
 interface CreatePermissionDialogProps {
   open: boolean;
@@ -56,7 +49,7 @@ export const CreatePermissionDialog: React.FC<CreatePermissionDialogProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(createPermissionSchema),
+    resolver: zodResolver(CreatePermissionSchema),
     defaultValues: {
       moduleId: modules[0]?.moduleId || 1,
       resource: "",
@@ -77,13 +70,14 @@ export const CreatePermissionDialog: React.FC<CreatePermissionDialogProps> = ({
         description: values.description?.trim() || undefined,
       });
 
-      const newPerm = (res as any)?.data ?? res;
+      const newPerm = (res as unknown as { data?: Permission })?.data ?? (res as unknown as Permission);
       showSuccessToast(`Permission "${values.action} ${values.resource}" created!`);
       onPermissionCreated(newPerm);
       form.reset();
       onOpenChange(false);
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Failed to create permission";
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to create permission";
       showErrorToast(msg);
     } finally {
       setSubmitting(false);

@@ -33,14 +33,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ArrowLeft, Save, Loader2, Users, Edit3, Shield } from "lucide-react";
+import { EditRoleSchema } from "@/lib/schemas";
 
-const editRoleSchema = z.object({
-  roleName: z.string().min(2, "Role Name is required"),
-  roleShortName: z.string().optional(),
-  description: z.string().optional(),
-});
-
-type EditRoleFormValues = z.infer<typeof editRoleSchema>;
+type EditRoleFormValues = z.infer<typeof EditRoleSchema>;
 
 export default function EditRolePage() {
   const router = useRouter();
@@ -55,7 +50,7 @@ export default function EditRolePage() {
   const [editInfoDialogOpen, setEditInfoDialogOpen] = useState<boolean>(false);
 
   const form = useForm<EditRoleFormValues>({
-    resolver: zodResolver(editRoleSchema),
+    resolver: zodResolver(EditRoleSchema),
     defaultValues: {
       roleName: "",
       roleShortName: "",
@@ -78,7 +73,7 @@ export default function EditRolePage() {
       const rawRoles = (rolesRes as any)?.data ?? rolesRes ?? [];
       const rolesList: Role[] = Array.isArray(rawRoles) ? rawRoles : [];
       const matchedRole = rolesList.find(
-        (r) => String(r.roleId) === String(roleId) || String((r as any).id) === String(roleId)
+        (r) => String(r.roleId) === String(roleId) || String((r as unknown as { id?: number }).id) === String(roleId)
       );
 
       if (matchedRole) {
@@ -91,18 +86,18 @@ export default function EditRolePage() {
       }
 
       // 2. Load All Master Permissions
-      const rawAllPerms = (permsRes as any)?.data ?? permsRes ?? [];
+      const rawAllPerms = (permsRes as unknown as { data?: Permission[] })?.data ?? (permsRes as unknown as Permission[]) ?? [];
       const safeAllPerms: Permission[] = Array.isArray(rawAllPerms) ? rawAllPerms : [];
       setAllPermissions(safeAllPerms);
 
       // 3. Load Role's Assigned Permissions
-      const rawRolePerms = (rolePermsRes as any)?.data ?? rolePermsRes ?? [];
+      const rawRolePerms = (rolePermsRes as unknown as { data?: Permission[] })?.data ?? (rolePermsRes as unknown as Permission[]) ?? [];
       const safeRolePerms: Permission[] = Array.isArray(rawRolePerms)
         ? rawRolePerms
-        : (rawRolePerms as any)?.permissions || [];
-      const assignedIds = new Set(safeRolePerms.map((p) => p.permissionId || (p as any).id!));
+        : (rawRolePerms as unknown as { permissions?: Permission[] })?.permissions || [];
+      const assignedIds = new Set(safeRolePerms.map((p) => p.permissionId || (p as unknown as { id?: number }).id!));
       setSelectedPermissionIds(assignedIds);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to load role edit data:", error);
       showErrorToast("Failed to fetch role and permissions details");
     } finally {
@@ -134,8 +129,9 @@ export default function EditRolePage() {
 
       showSuccessToast(`Role "${values.roleName}" updated successfully!`);
       router.push("/settings/roles");
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Failed to update role";
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to update role";
       showErrorToast(msg);
     } finally {
       setSubmitting(false);

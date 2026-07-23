@@ -11,8 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, DropdownProps } from "react-day-picker";
+import { DayPicker, DropdownProps as _DropdownProps } from "react-day-picker";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -20,7 +19,11 @@ const CalendarDropdown = ({
     value,
     onChange,
     children,
-}: any) => {
+}: {
+    value?: string | number;
+    onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    children?: React.ReactNode;
+}) => {
     const options = React.Children.toArray(children) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
     const selected = options.find((child) => child.props.value === value);
     const handleChange = (value: string) => {
@@ -56,9 +59,6 @@ const CalendarDropdown = ({
         </Select>
     );
 };
-
-const CalendarIconLeft = () => <ChevronLeft className="h-4 w-4" />;
-const CalendarIconRight = () => <ChevronRight className="h-4 w-4" />;
 
 function Calendar({
     className,
@@ -98,11 +98,11 @@ function Calendar({
                     "aria-selected:bg-accent aria-selected:text-accent-foreground",
                 hidden: "invisible",
                 ...classNames,
-            } as any}
+            } as unknown as Record<string, string>}
             components={{
                 Dropdown: CalendarDropdown,
-            } as any}
-            {...(props as any)}
+            } as unknown as Record<string, React.ComponentType>}
+            {...(props as Record<string, unknown>)}
         />
     );
 }

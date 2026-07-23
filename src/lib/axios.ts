@@ -76,6 +76,36 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(new Error(error))
 );
 
+/**
+ * Attempts to recover a lost session signing key by re-fetching it from the server.
+ * Called when the backend returns 403 due to a missing/expired signing key (e.g. after a server restart).
+ * @returns true if the key was successfully refreshed, false otherwise
+ */
+async function tryRefreshSessionKey(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  try {
+    const token = encryptedStorage.getItem<string>('access_token');
+    if (!token) return false;
+    const res = await axios.get(
+      `${axiosInstance.defaults.baseURL}/registration/session-key`,
+      { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+    );
+    const key = res.data?.data?.signingKey || res.data?.signingKey;
+    if (key) {
+      SessionKey.set(key);
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+const SESSION_KEY_ERROR_MESSAGES = [
+  'Session signing key invalid or expired',
+  'No active signing key',
+];
+
 const handleHttpError = (error: AxiosError, skipToast: boolean) => {
   const status: number | undefined = error.response?.status;
   
@@ -84,10 +114,21 @@ const handleHttpError = (error: AxiosError, skipToast: boolean) => {
     throw new Error("Connection Refused");
   }
 
-  if (status === HttpStatus.UNAUTHORIZED || status === HttpStatus.FORBIDDEN) {
+  if (status === HttpStatus.UNAUTHORIZED) {
     showErrorToast("You are not authorized to access this resource.");
     handleUnauthorized();
-    throw new Error(status === HttpStatus.UNAUTHORIZED ? "Unauthorized" : "Forbidden");
+    throw new Error("Unauthorized");
+  }
+
+  if (status === HttpStatus.FORBIDDEN) {
+    const serverMsg: string = (error.response?.data as { message?: string })?.message ?? '';
+    const isSigningKeyError = SESSION_KEY_ERROR_MESSAGES.some((m) => serverMsg.includes(m));
+    // Signing key errors are handled upstream with retry — don't show toast or logout here
+    if (!isSigningKeyError) {
+      showErrorToast("You are not authorized to access this resource.");
+      handleUnauthorized();
+    }
+    throw new Error("Forbidden");
   }
 
   if (status === HttpStatus.BAD_REQUEST) {
@@ -120,8 +161,26 @@ axiosInstance.interceptors.response.use(
     }
     return resData;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     const skipToast: boolean = error.config?.headers?.['X-Skip-Toast'] === 'true';
+    const status: number | undefined = error.response?.status;
+    const serverMsg: string = (error.response?.data as { message?: string })?.message ?? '';
+
+    // Auto-recover: if the server lost the signing key (e.g. after restart), re-fetch and retry once
+    const isSigningKeyError =
+      status === HttpStatus.FORBIDDEN &&
+      SESSION_KEY_ERROR_MESSAGES.some((m) => serverMsg.includes(m)) &&
+      !(error.config as any)?._retried;
+
+    if (isSigningKeyError) {
+      const recovered = await tryRefreshSessionKey();
+      if (recovered && error.config) {
+        (error.config as any)._retried = true;
+        // Re-sign and retry the original request
+        const retryConfig = await signAxiosRequest(error.config as any);
+        return axiosInstance.request(retryConfig);
+      }
+    }
 
     if (error?.response) {
       handleHttpError(error, skipToast);

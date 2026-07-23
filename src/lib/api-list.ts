@@ -27,6 +27,18 @@ export enum API_LIST {
   CACHE_METRICS       = '/permissions/cache/metrics',
   CHECK_PERMISSION    = '/permissions/check',
 
-  // Users
-  GET_ALL_USERS       = '/registration/users',
+  // Users Management
+  GET_ALL_USERS       = '/users',
+  CREATE_USER         = '/users',
+  UPDATE_USER         = '/users',
+  DELETE_USER         = '/users',
+  TOGGLE_USER_STATUS  = '/users',
+  RESET_USER_PASSWORD = '/users',
+  GET_SELF_2FA        = '/users/me/2fa',
+  TOGGLE_SELF_2FA     = '/users/me/2fa/toggle',
+  VERIFY_SELF_2FA     = '/users/me/2fa/verify',
+  DISABLE_SELF_2FA    = '/users/me/2fa/disable',
+  VALIDATE_MFA        = '/registration/mfa/validate',
 }
+
+

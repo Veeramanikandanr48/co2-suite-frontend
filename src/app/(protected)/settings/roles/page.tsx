@@ -11,7 +11,6 @@ import { ReusableTable } from "@/components/reusables/reusable-table";
 import { CreatePermissionDialog } from "@/components/settings/roles/create-permission-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -40,8 +39,8 @@ export default function RolesSettingsPage() {
   const router = useRouter();
 
   const [roles, setRoles] = useState<Role[]>([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [modules, setModules] = useState<MasterModule[]>([]);
+  const [_permissions, setPermissions] = useState<Permission[]>([]);
+  const [modules, _setModules] = useState<MasterModule[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -62,15 +61,15 @@ export default function RolesSettingsPage() {
         apiService.get<Permission[]>(API_LIST.GET_PERMISSIONS),
       ]);
 
-      const rawRoles = (rolesRes as any)?.data ?? rolesRes ?? [];
+      const rawRoles = (rolesRes as unknown as { data?: Role[] })?.data ?? (rolesRes as unknown as Role[]) ?? [];
       const safeRoles: Role[] = Array.isArray(rawRoles) ? rawRoles : [];
 
-      const rawPerms = (permsRes as any)?.data ?? permsRes ?? [];
+      const rawPerms = (permsRes as unknown as { data?: Permission[] })?.data ?? (permsRes as unknown as Permission[]) ?? [];
       const safePerms: Permission[] = Array.isArray(rawPerms) ? rawPerms : [];
 
       setRoles(safeRoles);
       setPermissions(safePerms);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to load roles and permissions:", error);
       showErrorToast("Error loading roles table");
     } finally {
@@ -89,16 +88,17 @@ export default function RolesSettingsPage() {
 
   const handleDeleteRole = async () => {
     if (!roleToDelete) return;
-    const roleId = roleToDelete.roleId || (roleToDelete as any).id;
+    const roleId = roleToDelete.roleId || (roleToDelete as unknown as { id: number }).id;
     try {
       setDeletingRole(true);
       await apiService.delete(`${API_LIST.DELETE_ROLE}/${roleId}`);
       showSuccessToast(`Role "${roleToDelete.roleName}" deleted successfully!`);
-      setRoles((prev) => prev.filter((r) => (r.roleId || (r as any).id) !== roleId));
+      setRoles((prev) => prev.filter((r) => (r.roleId || (r as unknown as { id: number }).id) !== roleId));
       setDeleteRoleOpen(false);
       setRoleToDelete(null);
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Failed to delete role";
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to delete role";
       showErrorToast(msg);
     } finally {
       setDeletingRole(false);

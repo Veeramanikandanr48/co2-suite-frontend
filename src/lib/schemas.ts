@@ -1,11 +1,7 @@
-// React
+// Centralized Zod Schemas for Application Forms
 
 import { z } from "zod";
-
-// Helpers
 import { formatNumberWithCommas } from "@/lib/helpers";
-
-// Variables
 import { DATE_OPTIONS, REGEX } from "./variables";
 
 const CustomInputSchema = z.object({
@@ -96,7 +92,6 @@ const fieldValidators = {
     nonNegativeNumber: z.coerce.number().nonnegative({
         message: "Must be a positive number",
     }),
-    // ! This is unused
     numWithCommas: z.coerce
         .number()
         .nonnegative({
@@ -116,12 +111,8 @@ const fieldValidators = {
     }),
     password: z.string()
         .min(1, "Password is required")
-        .min(8, { message: "Password must be at least 8 characters" })
-        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-        .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-        .regex(/\d/, { message: "Password must contain at least one number" })
-        .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" })
-        .or(z.literal("********")), // Allow asterisk password to pass validation
+        .min(6, { message: "Password must be at least 6 characters" })
+        .or(z.literal("********")),
 
     roleId: z.number().min(1, { message: "Please select a role" }),
     customInput: z.array(CustomInputSchema).optional(),
@@ -129,14 +120,73 @@ const fieldValidators = {
     attachments: typeof window !== 'undefined' ? z.array(z.instanceof(File)) : z.array(z.any()),
 };
 
-const LoginFormSchema = z.object({
+// ─── AUTH SCHEMAS ─────────────────────────────────────────────────────────────
+
+export const LoginFormSchema = z.object({
     username: z.string()
         .min(1, "Username is required")
-        .email("Please enter a valid username"),
+        .email("Please enter a valid email address"),
     password: fieldValidators.password,
 });
 
-const UserFormSchema = z.object({
+export const TotpFormSchema = z.object({
+    code: z
+        .string()
+        .min(6, "Verification code must be 6 digits")
+        .max(6, "Verification code must be 6 digits")
+        .regex(/^\d+$/, "Verification code must be numbers only"),
+});
+
+export const SignUpSchema = z
+    .object({
+        userName: z.string().min(2, "Full Name is required"),
+        email: z.string().email("Invalid email address"),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z.string().min(6, "Confirm Password is required"),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+export const ForgotPasswordSchema = z.object({
+    email: z.string().email("Invalid email address"),
+});
+
+// ─── USER MANAGEMENT SCHEMAS ──────────────────────────────────────────────────
+
+export const CreateUserSchema = z
+    .object({
+        userName: z.string().min(2, "Full Name is required"),
+        email: z.string().email("Invalid email address"),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z.string().min(6, "Confirm Password is required"),
+        roleId: z.string().min(1, "Please select a primary role"),
+        additionalRoleIds: z.array(z.union([z.number(), z.string()])).optional(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+export const UpdateUserSchema = z.object({
+    userName: z.string().min(2, "Full Name is required"),
+    email: z.string().email("Invalid email address"),
+    roleId: z.string().min(1, "Please select a primary role"),
+    additionalRoleIds: z.array(z.union([z.number(), z.string()])).optional(),
+});
+
+export const ResetPasswordSchema = z
+    .object({
+        newPassword: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z.string().min(6, "Confirm Password is required"),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+export const UserFormSchema = z.object({
     name: fieldValidators.name,
     email: fieldValidators.email,
     description: z.string()
@@ -145,7 +195,28 @@ const UserFormSchema = z.object({
     roleId: fieldValidators.roleId,
 });
 
-export {
-    LoginFormSchema,
-    UserFormSchema
-};
+// ─── ROLES & PERMISSIONS SCHEMAS ─────────────────────────────────────────────
+
+export const CreateRoleSchema = z.object({
+    roleKey: z
+        .string()
+        .min(2, "Role Key must be at least 2 characters")
+        .regex(/^[A-Z0-9_]+$/, "Role Key must be UPPERCASE (e.g. CARBON_MANAGER)"),
+    roleName: z.string().min(2, "Role Name is required"),
+    roleShortName: z.string().optional(),
+    description: z.string().optional(),
+});
+
+export const EditRoleSchema = z.object({
+    roleName: z.string().min(2, "Role Name is required"),
+    roleShortName: z.string().optional(),
+    description: z.string().optional(),
+});
+
+export const CreatePermissionSchema = z.object({
+    moduleId: z.number().min(1, "Module is required"),
+    resource: z.string().min(2, "Resource is required (e.g. users, emissions, reports)"),
+    action: z.string().min(2, "Action is required (e.g. read, create, update, delete)"),
+    scope: z.enum(["any", "own"]).default("any"),
+    description: z.string().optional(),
+});

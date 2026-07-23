@@ -145,7 +145,7 @@ jest.mock('@/app/(auth)/sign-in/page', () => {
       try {
         await signIn(values.username, values.password);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         setIsLoading(false);
       }

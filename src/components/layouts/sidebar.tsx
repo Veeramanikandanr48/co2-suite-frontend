@@ -18,7 +18,6 @@ import {
   ChevronsUpDown,
   Check,
   Plus,
-  Building2,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { ScrollArea } from "../ui/scroll-area";
@@ -34,7 +33,6 @@ import {
 const SidebarItem = dynamic(() => import("./sidebar-items"), { ssr: false });
 import { SidebarItemType } from "@/types/sidebar";
 import { useAuth } from "@/context/auth-provider";
-import Image from "next/image";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "@/lib/eventbus";
 

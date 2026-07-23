@@ -28,14 +28,9 @@ import { API_LIST } from "@/lib/api-list";
 import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import { Role } from "@/types/roles-permissions";
 import { Edit3, Loader2 } from "lucide-react";
+import { EditRoleSchema } from "@/lib/schemas";
 
-const editRoleSchema = z.object({
-  roleName: z.string().min(2, "Role Name is required"),
-  roleShortName: z.string().optional(),
-  description: z.string().optional(),
-});
-
-type EditRoleFormValues = z.infer<typeof editRoleSchema>;
+type EditRoleFormValues = z.infer<typeof EditRoleSchema>;
 
 interface EditRoleDialogProps {
   role: Role | null;
@@ -53,7 +48,7 @@ export const EditRoleDialog: React.FC<EditRoleDialogProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(editRoleSchema),
+    resolver: zodResolver(EditRoleSchema),
     defaultValues: {
       roleName: role?.roleName || "",
       roleShortName: role?.roleShortName || "",
@@ -73,21 +68,21 @@ export const EditRoleDialog: React.FC<EditRoleDialogProps> = ({
 
   const onSubmit = async (values: EditRoleFormValues) => {
     if (!role) return;
-    const targetRoleId = role.roleId || (role as any).id;
+    const targetRoleId = role.roleId || (role as unknown as { id: number }).id;
     try {
       setSubmitting(true);
-      const res = await apiService.put<Role>(API_LIST.UPDATE_ROLE, targetRoleId, {
+      await apiService.put<Role>(API_LIST.UPDATE_ROLE, targetRoleId, {
         roleName: values.roleName.trim(),
         roleShortName: values.roleShortName?.trim() || undefined,
         description: values.description?.trim() || undefined,
       });
 
-      const updated = (res as any)?.data ?? res;
       showSuccessToast(`Role "${values.roleName}" updated!`);
       onRoleUpdated({ ...role, ...values });
       onOpenChange(false);
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Failed to update role";
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to update role";
       showErrorToast(msg);
     } finally {
       setSubmitting(false);

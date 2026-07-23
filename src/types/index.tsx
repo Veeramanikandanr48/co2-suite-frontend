@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { ReactNode } from "react"
-import { Subject, MongoAbility } from "@casl/ability"
+import { MongoAbility } from "@casl/ability"
 import { EAdditionalFieldError } from "@/enums/base-enum";
 
 interface LayoutProps {

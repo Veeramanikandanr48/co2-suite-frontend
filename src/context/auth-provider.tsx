@@ -15,6 +15,7 @@ import { useLoader } from "@/context/loader-context";
 import { useSocket } from "@/context/socket-context";
 import { encryptedStorage } from "@/lib/crypto";
 import { SessionKey } from "@/lib/request-signer";
+import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import type { LoginResponse, PermissionEntry, RoleInfo, UserProfile } from "@/types/users";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -33,8 +34,17 @@ interface AuthState {
   roles: RoleInfo[];
 }
 
+interface Pending2FASession {
+  accessToken: string;
+  user: any;
+  roles: any;
+  permissions: any;
+}
+
 export interface AuthContextType extends AuthState {
-  signIn: (username: string, password: string) => Promise<void>;
+  signIn: (username: string, password: string) => Promise<{ requires2FA?: boolean }>;
+  complete2FALogin: (code: string) => Promise<boolean>;
+  cancel2FALogin: () => void;
   signOut: () => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: AuthUser) => void;
@@ -62,6 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     permissions: [],
     roles: [],
   });
+
+  const [pending2FASession, setPending2FASession] = useState<Pending2FASession | null>(null);
 
   const router = useRouter();
   const { showLoader, hideLoader } = useLoader();
@@ -124,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isLoading, showLoader, hideLoader]);
 
   const signIn = useCallback(
-    async (emailId: string, password: string) => {
+    async (emailId: string, password: string): Promise<{ requires2FA?: boolean }> => {
       try {
         setIsLoading(true);
         const response = await apiService.post<LoginResponse>(API_LIST.LOGIN, {
@@ -139,17 +151,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const user = loginData?.user ?? resObj?.user;
         const roles = loginData?.roles ?? resObj?.roles;
         const permissions = loginData?.permissions ?? resObj?.permissions;
+        const is2FA = !!(loginData?.isTwoFactorAuthenticationEnabled ?? resObj?.isTwoFactorAuthenticationEnabled);
 
         if (!accessToken || !user) {
           console.error("Login response missing token/user:", response);
-          return;
+          return { requires2FA: false };
         }
 
-        // Store accessToken and user_data in AES-256 encrypted storage
+        // Check if 2FA TOTP verification is required
+        if (is2FA) {
+          setPending2FASession({
+            accessToken,
+            user,
+            roles,
+            permissions,
+          });
+          return { requires2FA: true };
+        }
+
+        // Standard direct login (no 2FA)
         encryptedStorage.setItem("access_token", accessToken);
         encryptedStorage.setItem("user_data", user);
 
-        // Fetch dedicated session signing key for HMAC signature calculations
         try {
           const keyRes = await apiService.get<{ data: { signingKey: string } }>(
             "/registration/session-key",
@@ -172,8 +195,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         connectSocket();
         router.push("/dashboard");
-      } catch (err) {
+        return { requires2FA: false };
+      } catch (err: any) {
         console.error("Sign in failed:", err);
+        const msg = err?.response?.data?.message || err?.message || "Invalid credentials";
+        showErrorToast(msg);
+        return { requires2FA: false };
       } finally {
         setIsLoading(false);
       }
@@ -181,10 +208,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [router, connectSocket]
   );
 
-  /**
-   * Re-fetches permissions from the API.
-   * Call this after role switching to update the in-memory ability.
-   */
+  const complete2FALogin = useCallback(
+    async (code: string): Promise<boolean> => {
+      if (!pending2FASession) {
+        showErrorToast("Session expired. Please log in again.");
+        return false;
+      }
+
+      try {
+        setIsLoading(true);
+        // Validate 2FA TOTP code with backend
+        await apiService.post(
+          API_LIST.VALIDATE_MFA,
+          { code: code.trim() },
+          { headers: { Authorization: `Bearer ${pending2FASession.accessToken}` } }
+        );
+
+        // Finalize login session
+        encryptedStorage.setItem("access_token", pending2FASession.accessToken);
+        encryptedStorage.setItem("user_data", pending2FASession.user);
+
+        try {
+          const keyRes = await apiService.get<{ data: { signingKey: string } }>(
+            "/registration/session-key",
+            undefined,
+            { headers: { Authorization: `Bearer ${pending2FASession.accessToken}` } }
+          );
+          const key = (keyRes as any)?.data?.signingKey || (keyRes as any)?.signingKey;
+          if (key) SessionKey.set(key);
+        } catch {
+          // Ignore key error
+        }
+
+        setState({
+          user: pending2FASession.user,
+          isLoading: false,
+          accessToken: pending2FASession.accessToken,
+          permissions: extractPermissions(pending2FASession.permissions),
+          roles: Array.isArray(pending2FASession.roles) ? pending2FASession.roles : [],
+        });
+
+        setPending2FASession(null);
+        showSuccessToast("2FA Verification Successful");
+        connectSocket();
+        router.push("/dashboard");
+        return true;
+      } catch (err: any) {
+        console.error("2FA validation failed:", err);
+        const msg = err?.response?.data?.message || err?.message || "Invalid 2FA Verification Code";
+        showErrorToast(msg);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [pending2FASession, router, connectSocket]
+  );
+
+  const cancel2FALogin = useCallback(() => {
+    setPending2FASession(null);
+  }, []);
+
   const refreshPermissions = useCallback(async () => {
     try {
       const token = encryptedStorage.getItem<string>("access_token");
@@ -196,17 +280,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
       setState((prev) => ({ ...prev, permissions: extractPermissions(response) }));
     } catch {
-      // Silently fail — permissions stay as-is
+      // Silently fail
     }
   }, []);
 
-  /**
-   * Switches the active role by calling POST /roles/switch.
-   * The backend now issues a fresh JWT with the updated currentRoleId,
-   * roleKey, and permissionsVersion, and returns the new permissions.
-   * This function stores the new token and rebuilds auth state atomically —
-   * no separate refreshPermissions() call is needed.
-   */
   const switchRole = useCallback(async (roleId: number) => {
     try {
       const token = encryptedStorage.getItem<string>("access_token");
@@ -226,7 +303,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!newToken || !currentRole) return;
 
-      // Store the new token and update state atomically
       encryptedStorage.setItem("access_token", newToken);
       setState((prev) => ({
         ...prev,
@@ -256,11 +332,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
     } catch {
-      // Always clear session even if logout API fails
+      // Clear session regardless
     } finally {
       setIsLoading(false);
       SessionKey.clear();
       encryptedStorage.clear();
+      setPending2FASession(null);
       setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
       router.push("/sign-in");
     }
@@ -269,6 +346,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     SessionKey.clear();
     encryptedStorage.clear();
+    setPending2FASession(null);
     setState({ user: null, isLoading: false, accessToken: null, permissions: [], roles: [] });
     router.push("/sign-in");
   }, [router]);
@@ -279,8 +357,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const contextValue = useMemo(
-    () => ({ ...state, signIn, signOut, logout, updateUser, refreshPermissions, switchRole }),
-    [state, signIn, signOut, logout, updateUser, refreshPermissions, switchRole]
+    () => ({
+      ...state,
+      signIn,
+      complete2FALogin,
+      cancel2FALogin,
+      signOut,
+      logout,
+      updateUser,
+      refreshPermissions,
+      switchRole,
+    }),
+    [state, signIn, complete2FALogin, cancel2FALogin, signOut, logout, updateUser, refreshPermissions, switchRole]
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

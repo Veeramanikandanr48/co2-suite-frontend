@@ -9,6 +9,13 @@ export const sidebarList: SidebarItemType[] = [
     child: [],
   },
   {
+    name: "User Management",
+    href: "/users",
+    icon: "UserManagementIcon",
+    isActive: false,
+    child: [],
+  },
+  {
     name: "Settings",
     href: "/settings",
     icon: "SettingsIcon",
@@ -19,6 +26,12 @@ export const sidebarList: SidebarItemType[] = [
         href: "/roles",
         group: "Options",
         icon: "Shield",
+      },
+      {
+        name: "Security & 2FA",
+        href: "/security",
+        group: "Options",
+        icon: "Lock",
       },
     ],
   },

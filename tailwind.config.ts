@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 import animate from "tailwindcss-animate";
 
-export default {
+const config: Config = {
     darkMode: "class",
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -211,4 +211,6 @@ export default {
     'bg-violet-300',
     'bg-blue-400',
   ],
-} as any;
+} as unknown as Config;
+
+export default config;
