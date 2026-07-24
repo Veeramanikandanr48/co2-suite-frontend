@@ -35,6 +35,7 @@ import {
   Check,
   FileCode,
   HardDrive,
+  Edit,
 } from "lucide-react";
 
 interface ModuleItem {
@@ -53,6 +54,7 @@ interface OrganizationItem {
   slug: string;
   schemaName: string;
   contactEmail?: string;
+  contactPhone?: string;
   subscriptionPlan: string;
   status: string;
   migrationVersion: number;
@@ -78,12 +80,23 @@ export default function OrganizationManagementPage() {
   const [planFilter, setPlanFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // Modal dialog states
+  // Onboarding Modal dialog states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedOrgForLogs, setSelectedOrgForLogs] = useState<OrganizationItem | null>(null);
 
-  // Form State
+  // Edit Modal dialog states
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editingOrg, setEditingOrg] = useState<OrganizationItem | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    contactEmail: "",
+    contactPhone: "",
+    subscriptionPlan: "STANDARD",
+    selectedModules: [] as string[],
+  });
+
+  // Create Form State
   const [formData, setFormData] = useState({
     name: "",
     contactEmail: "",
@@ -112,7 +125,6 @@ export default function OrganizationManagementPage() {
       setMasterModules(safeModules);
     } catch (error: unknown) {
       console.error("Failed to load organization data:", error);
-      // Fallback demo data for preview if needed
       setOrganizations([
         {
           id: "org-001",
@@ -121,6 +133,7 @@ export default function OrganizationManagementPage() {
           slug: "acme_global",
           schemaName: "t_000001",
           contactEmail: "sustainability@acme.com",
+          contactPhone: "+44 20 7946 0912",
           subscriptionPlan: "ENTERPRISE",
           status: "ACTIVE",
           migrationVersion: 1,
@@ -139,6 +152,7 @@ export default function OrganizationManagementPage() {
           slug: "apex_metals",
           schemaName: "t_000002",
           contactEmail: "esg@apexmetals.io",
+          contactPhone: "+1 555-019-2834",
           subscriptionPlan: "STANDARD",
           status: "ACTIVE",
           migrationVersion: 1,
@@ -167,15 +181,38 @@ export default function OrganizationManagementPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleToggleModule = (moduleKey: string) => {
-    setFormData((prev) => {
-      const exists = prev.selectedModules.includes(moduleKey);
-      if (exists) {
-        if (prev.selectedModules.length === 1) return prev;
-        return { ...prev, selectedModules: prev.selectedModules.filter((m) => m !== moduleKey) };
-      }
-      return { ...prev, selectedModules: [...prev.selectedModules, moduleKey] };
+  const handleToggleModule = (moduleKey: string, isEdit: boolean = false) => {
+    if (isEdit) {
+      setEditFormData((prev) => {
+        const exists = prev.selectedModules.includes(moduleKey);
+        if (exists) {
+          if (prev.selectedModules.length === 1) return prev;
+          return { ...prev, selectedModules: prev.selectedModules.filter((m) => m !== moduleKey) };
+        }
+        return { ...prev, selectedModules: [...prev.selectedModules, moduleKey] };
+      });
+    } else {
+      setFormData((prev) => {
+        const exists = prev.selectedModules.includes(moduleKey);
+        if (exists) {
+          if (prev.selectedModules.length === 1) return prev;
+          return { ...prev, selectedModules: prev.selectedModules.filter((m) => m !== moduleKey) };
+        }
+        return { ...prev, selectedModules: [...prev.selectedModules, moduleKey] };
+      });
+    }
+  };
+
+  const handleOpenEdit = (org: OrganizationItem) => {
+    setEditingOrg(org);
+    setEditFormData({
+      name: org.name,
+      contactEmail: org.contactEmail || "",
+      contactPhone: org.contactPhone || "",
+      subscriptionPlan: org.subscriptionPlan || "STANDARD",
+      selectedModules: org.subscriptions ? org.subscriptions.map((s) => s.moduleKey) : ["carbon"],
     });
+    setIsEditModalOpen(true);
   };
 
   const handleSubmitOnboarding = async (e: React.FormEvent) => {
@@ -210,6 +247,33 @@ export default function OrganizationManagementPage() {
     } catch (error: unknown) {
       const errObj = error as { response?: { data?: { message?: string } }; message?: string };
       const msg = errObj?.response?.data?.message || errObj?.message || "Failed to onboard organization";
+      showErrorToast(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOrg) return;
+    setIsSubmitting(true);
+
+    try {
+      await apiService.put(`/organizations/${editingOrg.id}`, {
+        name: editFormData.name,
+        contactEmail: editFormData.contactEmail,
+        contactPhone: editFormData.contactPhone,
+        subscriptionPlan: editFormData.subscriptionPlan,
+        moduleKeys: editFormData.selectedModules,
+      });
+
+      showSuccessToast(`Organization '${editFormData.name}' updated successfully!`);
+      fetchData();
+      setIsEditModalOpen(false);
+      setEditingOrg(null);
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to update organization";
       showErrorToast(msg);
     } finally {
       setIsSubmitting(false);
@@ -480,9 +544,16 @@ export default function OrganizationManagementPage() {
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="text-xs w-48">
-                            <DropdownMenuLabel>Tenant Options</DropdownMenuLabel>
+                          <DropdownMenuContent align="end" className="text-xs w-52">
+                            <DropdownMenuLabel>Organization Options</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleOpenEdit(org)}
+                              className="gap-2 cursor-pointer"
+                            >
+                              <Edit className="w-3.5 h-3.5 text-blue-500" />
+                              <span>Edit Organization & Apps</span>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setSelectedOrgForLogs(org)}
                               className="gap-2 cursor-pointer"
@@ -494,7 +565,7 @@ export default function OrganizationManagementPage() {
                               onClick={() => alert(`Tenant Schema: ${org.schemaName}\nTenant Code: ${org.tenantCode}`)}
                               className="gap-2 cursor-pointer"
                             >
-                              <HardDrive className="w-3.5 h-3.5 text-blue-500" />
+                              <HardDrive className="w-3.5 h-3.5 text-teal-500" />
                               <span>View Schema Details</span>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -530,7 +601,6 @@ export default function OrganizationManagementPage() {
             </div>
 
             <form onSubmit={handleSubmitOnboarding} className="p-4 space-y-4 max-h-[75vh] overflow-y-auto">
-              {/* Organization Details */}
               <div className="space-y-3">
                 <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">1. Organization Details</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -582,7 +652,6 @@ export default function OrganizationManagementPage() {
                 </div>
               </div>
 
-              {/* Module Licensing Selector */}
               <div className="space-y-2 pt-2">
                 <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">2. Application Access & Licensing</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -591,7 +660,7 @@ export default function OrganizationManagementPage() {
                     return (
                       <div
                         key={mod.moduleKey}
-                        onClick={() => handleToggleModule(mod.moduleKey)}
+                        onClick={() => handleToggleModule(mod.moduleKey, false)}
                         className={`p-2.5 rounded-lg border cursor-pointer transition-all flex items-center justify-between gap-2 ${
                           isChecked
                             ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
@@ -615,7 +684,6 @@ export default function OrganizationManagementPage() {
                 </div>
               </div>
 
-              {/* Admin Account */}
               <div className="space-y-3 pt-2">
                 <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">3. Initial Organization Admin User</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -654,7 +722,6 @@ export default function OrganizationManagementPage() {
                 </div>
               </div>
 
-              {/* Footer Actions */}
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-200 dark:border-neutral-800">
                 <Button
                   type="button"
@@ -678,6 +745,139 @@ export default function OrganizationManagementPage() {
                   ) : (
                     <>
                       <Zap className="w-3.5 h-3.5 fill-white" /> Provision Tenant Schema
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Organization Dialog Modal */}
+      {isEditModalOpen && editingOrg && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl w-full max-w-xl overflow-hidden shadow-2xl space-y-4">
+            <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
+              <div className="flex items-center gap-2">
+                <Edit className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div>
+                  <h2 className="text-sm font-bold text-neutral-900 dark:text-white">Edit Organization & Subscriptions</h2>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">{editingOrg.name} ({editingOrg.tenantCode})</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitEdit} className="p-4 space-y-4 max-h-[75vh] overflow-y-auto">
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Organization Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Organization Name *</label>
+                    <Input
+                      required
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      className="h-8 text-xs bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Subscription Plan</label>
+                    <Select
+                      value={editFormData.subscriptionPlan}
+                      onValueChange={(val) => setEditFormData({ ...editFormData, subscriptionPlan: val })}
+                    >
+                      <SelectTrigger className="h-8 text-xs bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="text-xs">
+                        <SelectItem value="ENTERPRISE">ENTERPRISE</SelectItem>
+                        <SelectItem value="STANDARD">STANDARD</SelectItem>
+                        <SelectItem value="DEMO">DEMO</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Contact Email</label>
+                    <Input
+                      type="email"
+                      value={editFormData.contactEmail}
+                      onChange={(e) => setEditFormData({ ...editFormData, contactEmail: e.target.value })}
+                      className="h-8 text-xs bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Contact Phone</label>
+                    <Input
+                      value={editFormData.contactPhone}
+                      onChange={(e) => setEditFormData({ ...editFormData, contactPhone: e.target.value })}
+                      className="h-8 text-xs bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Application Subscriptions & Licensing</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {masterModules.map((mod) => {
+                    const isChecked = editFormData.selectedModules.includes(mod.moduleKey);
+                    return (
+                      <div
+                        key={mod.moduleKey}
+                        onClick={() => handleToggleModule(mod.moduleKey, true)}
+                        className={`p-2.5 rounded-lg border cursor-pointer transition-all flex items-center justify-between gap-2 ${
+                          isChecked
+                            ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                            : "bg-neutral-50 dark:bg-neutral-900/50 border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-xs font-semibold">
+                          {getModuleIcon(mod.moduleKey)}
+                          <span>{mod.name}</span>
+                        </div>
+                        <div
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
+                            isChecked ? "bg-emerald-600 border-emerald-600 text-white" : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                          }`}
+                        >
+                          {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="h-8 text-xs"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-medium h-8 text-xs px-3 shadow-xs cursor-pointer gap-1.5"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Saving Changes...
+                    </>
+                  ) : (
+                    <>
+                      <Edit className="w-3.5 h-3.5" /> Save Changes
                     </>
                   )}
                 </Button>
