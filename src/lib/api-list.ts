@@ -49,6 +49,10 @@ export enum API_LIST {
   DELETE_SIDEBAR_ITEM = '/sidebar',
   REORDER_SIDEBAR     = '/sidebar/reorder',
   PREVIEW_SIDEBAR     = '/sidebar/preview',
+
+  // Organizations & Multi-Tenancy
+  GET_ORGANIZATIONS   = '/organizations',
+  CREATE_ORGANIZATION = '/organizations',
+  UPDATE_ORGANIZATION = '/organizations',
+  GET_MASTER_MODULES  = '/organizations/modules/master',
 }
-
-
