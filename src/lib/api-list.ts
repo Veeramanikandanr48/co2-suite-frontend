@@ -39,6 +39,16 @@ export enum API_LIST {
   VERIFY_SELF_2FA     = '/users/me/2fa/verify',
   DISABLE_SELF_2FA    = '/users/me/2fa/disable',
   VALIDATE_MFA        = '/registration/mfa/validate',
+
+  // Sidebar Navigation Framework
+  GET_MY_SIDEBAR_MENU = '/sidebar/my-menu',
+  GET_SIDEBAR_VERSION = '/sidebar/version',
+  GET_SIDEBAR_ITEMS   = '/sidebar',
+  CREATE_SIDEBAR_ITEM = '/sidebar',
+  UPDATE_SIDEBAR_ITEM = '/sidebar',
+  DELETE_SIDEBAR_ITEM = '/sidebar',
+  REORDER_SIDEBAR     = '/sidebar/reorder',
+  PREVIEW_SIDEBAR     = '/sidebar/preview',
 }
 
 

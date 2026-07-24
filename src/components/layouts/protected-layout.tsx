@@ -6,8 +6,47 @@ import { PermissionsProvider } from "@/context/permissions-provider";
 import Header from "./header";
 import Sidebar from "./sidebar";
 import InnerSidebar from "./inner-sidebar";
-import { sidebarList } from "@/components/constants/sidebar-list";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useSidebarMenu } from "@/hooks/use-sidebar-menu";
+import { SidebarItemType } from "@/types/sidebar";
+
+/**
+ * Recursively searches menu tree for active group item that owns child sub-menus.
+ */
+function findActiveGroupItem(items: SidebarItemType[], pathname: string): SidebarItemType | null {
+  for (const item of items) {
+    if (item.itemType !== "HEADER" && item.child && item.child.length > 0) {
+      const isParentMatch =
+        (item.href && item.href !== "#" && pathname.startsWith(item.href)) ||
+        (item.activeMatch &&
+          (item.activeMatch.endsWith("/*")
+            ? pathname.startsWith(item.activeMatch.slice(0, -2))
+            : pathname === item.activeMatch));
+
+      const isChildMatch = item.child.some((child) => {
+        if (!child.href || child.href === "#") return false;
+        const cleanHref = child.href.split("?")[0];
+        const fullHref = cleanHref.startsWith("/") ? cleanHref : `${item.href}${cleanHref}`;
+        return (
+          pathname === cleanHref ||
+          pathname === fullHref ||
+          (cleanHref !== "/" && pathname.startsWith(cleanHref)) ||
+          (fullHref !== "/" && pathname.startsWith(fullHref))
+        );
+      });
+
+      if (isParentMatch || isChildMatch) {
+        return item;
+      }
+    }
+
+    if (item.child && item.child.length > 0) {
+      const foundInChild = findActiveGroupItem(item.child, pathname);
+      if (foundInChild) return foundInChild;
+    }
+  }
+  return null;
+}
 
 interface ProtectedLayoutProps {
   readonly children: React.ReactNode;
@@ -18,35 +57,14 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [innerSidebarOpen, setInnerSidebarOpen] = useState(true);
   const pathname = usePathname();
+  const { menuItems } = useSidebarMenu();
 
-  // Find active parent item in sidebar list
+  // Find active parent item for secondary sub-sidebar
   const activeParent = useMemo(() => {
-    return (
-      sidebarList.find((item) => {
-        if (!item.child || item.child.length === 0) return false;
-        // Check if current route matches parent href
-        if (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))) {
-          return true;
-        }
-        // Check if current route matches any child href
-        return item.child.some((child) => {
-          if (!child.href) return false;
-          const cleanChildHref = child.href.split("?")[0];
-          const fullHref = cleanChildHref.startsWith("/")
-            ? cleanChildHref
-            : `${item.href}${cleanChildHref}`;
-          return (
-            pathname === cleanChildHref ||
-            pathname === fullHref ||
-            (cleanChildHref !== "/" && pathname.startsWith(cleanChildHref)) ||
-            (fullHref !== "/" && pathname.startsWith(fullHref))
-          );
-        });
-      }) || null
-    );
-  }, [pathname]);
+    return findActiveGroupItem(menuItems, pathname);
+  }, [pathname, menuItems]);
 
-  // When navigating to a new parent section with sub-items, auto-collapse main rail to icon mode
+  // When navigating to a section with sub-items, auto-collapse main rail to icon mode and open sub-sidebar
   useEffect(() => {
     if (activeParent) {
       setCollapsed(true);
@@ -100,7 +118,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
           <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden p-0 md:py-2">
             <main className="flex-1 flex flex-col min-w-0 min-h-0 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 md:rounded-tl-[20px] md:rounded-bl-[20px] overflow-hidden shadow-xs transition-colors">
               <Header onOpenMobileSidebar={() => setMobileOpen(true)} />
-              <div className="flex-1 min-h-0 flex flex-col overflow-hidden p-3 sm:p-5">{children}</div>
+              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto p-3 sm:p-5 pb-24 sm:pb-32">{children}</div>
             </main>
           </div>
         </div>

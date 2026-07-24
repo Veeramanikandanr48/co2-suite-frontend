@@ -1,13 +1,22 @@
 interface SidebarChildItem {
+  id?: number;
+  itemKey?: string;
   name: string;
   href: string;
   group?: string;
   badge?: string;
   icon?: string | null;
   description?: string;
+  itemType?: 'LINK' | 'MENU' | 'GROUP' | 'HEADER' | 'DIVIDER' | string;
+  activeMatch?: string;
+  disabled?: boolean;
+  disabledReason?: string;
+  target?: string;
 }
 
 type SidebarItemType = {
+  id?: number;
+  itemKey?: string;
   name: string;
   href: string;
   icon?: string | null;
@@ -15,6 +24,11 @@ type SidebarItemType = {
   badge?: string;
   child?: SidebarChildItem[];
   parentHref?: string;
+  itemType?: 'LINK' | 'MENU' | 'GROUP' | 'HEADER' | 'DIVIDER' | string;
+  activeMatch?: string;
+  disabled?: boolean;
+  disabledReason?: string;
+  target?: string;
 };
 
 interface SidebarItemProps {

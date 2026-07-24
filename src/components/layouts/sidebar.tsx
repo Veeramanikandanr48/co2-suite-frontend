@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { sidebarList } from "@/components/constants/sidebar-list";
 import {
   ChevronLeft,
   ChevronRight,
@@ -35,6 +34,7 @@ import { SidebarItemType } from "@/types/sidebar";
 import { useAuth } from "@/context/auth-provider";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "@/lib/eventbus";
+import { useSidebarMenu } from "@/hooks/use-sidebar-menu";
 
 const CmpLogoIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
   <svg viewBox="0 0 100 100" fill="none" className={className}>
@@ -124,14 +124,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const [activeLogo, setActiveLogo] = useState<WorkspaceLogo>(workspaceLogos[0]);
   const { user, logout } = useAuth();
+  const { menuItems } = useSidebarMenu();
 
   const displayName: string = user
     ? user.userName || user.name || (user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user.email?.split('@')[0] || '')
     : '';
 
+  const displayRole: string = user?.roleKey
+    ? user.roleKey.replace(/_/g, ' ')
+    : 'Super Admin';
+
   const indexedSidebar = useMemo(() => {
     const map = new Map();
-    sidebarList.forEach((item) => {
+    menuItems.forEach((item) => {
       map.set(item.href, item);
       item?.child?.forEach((child: SidebarItemType) => {
         const fullHref = child.href.startsWith(item.href)
@@ -141,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       });
     });
     return map;
-  }, []);
+  }, [menuItems]);
 
   const handleItemClick = (requestHref: string) => {
     const currentroute: string = pathname;
@@ -156,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   useEffect(() => {
-    const activeParent = sidebarList.find((item) =>
+    const activeParent = menuItems.find((item) =>
       hasActiveDescendant(item, pathname)
     );
 
@@ -170,7 +175,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         : `${parentItem.href}${firstChild.href}`;
       router.replace(targetHref);
     }
-  }, [pathname, router, indexedSidebar]);
+  }, [pathname, router, indexedSidebar, menuItems]);
 
   return (
     <SidebarProvider open={!collapsed} onOpenChange={(open) => setCollapsed(!open)} className="h-full">
@@ -236,9 +241,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <ScrollArea className="h-[calc(100%-160px)]">
           <SidebarMenu className="mt-[10px] transition-all duration-300 ease-in-out pb-4">
-            {sidebarList.map((item) => (
+            {menuItems.map((item, index) => (
               <SidebarItem
-                key={item.href}
+                key={item.itemKey || item.id || item.name}
                 item={item}
                 isOpen={openMenu === item.href}
                 setOpenMenu={setOpenMenu}
@@ -259,7 +264,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                   <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
                     <p className="text-text-sidebar font-medium text-sm capitalize whitespace-nowrap truncate max-w-[110px]">{displayName || "User"}</p>
-                    <p className="text-xs font-normal text-gray-400 capitalize whitespace-nowrap">Admin</p>
+                    <p className="text-xs font-normal text-gray-400 capitalize whitespace-nowrap">{displayRole}</p>
                   </div>
                 </div>
                 {!collapsed && (
