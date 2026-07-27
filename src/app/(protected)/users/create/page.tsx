@@ -124,11 +124,11 @@ export default function CreateUserPage() {
             <div className="flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               <h1 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
-                Create User Account
+                Create Root User Account
               </h1>
             </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-              Provision a new user account with credentials, security settings, and assigned roles.
+              Provision a new root system administrator account with credentials and system role assignments.
             </p>
           </div>
         </div>

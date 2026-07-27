@@ -9,6 +9,9 @@ export interface UserListItem {
   userId: number;
   userName?: string;
   emailId: string;
+  organizationId?: string | null;
+  organizationName?: string | null;
+  organizationSlug?: string | null;
   isActive: boolean;
   isVerified: boolean;
   isTwoFactorAuthenticationEnabled?: boolean;
@@ -32,6 +35,7 @@ export interface CreateUserPayload {
   password: string;
   roleId?: number;
   additionalRoleIds?: number[];
+  organizationId?: string;
   isActive?: boolean;
   isVerified?: boolean;
   isTwoFactorAuthenticationEnabled?: boolean;
@@ -41,6 +45,7 @@ export interface CreateUserPayload {
 export interface UpdateUserPayload {
   userName?: string;
   email?: string;
+  organizationId?: string;
   isActive?: boolean;
   isVerified?: boolean;
   isTwoFactorAuthenticationEnabled?: boolean;
@@ -52,4 +57,6 @@ export interface UserQueryParams {
   limit?: number;
   search?: string;
   status?: "active" | "inactive" | "all";
+  scope?: "root" | "organization" | "all";
+  organizationId?: string;
 }

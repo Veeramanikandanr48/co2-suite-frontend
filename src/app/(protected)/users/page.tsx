@@ -52,12 +52,12 @@ export default function UserManagementPage() {
   const [disable2FADialogOpen, setDisable2FADialogOpen] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserListItem | null>(null);
 
-  // Fetch all users & roles
+  // Fetch root users & roles
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [usersRes, rolesRes] = await Promise.all([
-        apiService.get<UserListResponse>(`${API_LIST.GET_ALL_USERS}?limit=100&status=${statusFilter}`),
+        apiService.get<UserListResponse>(`${API_LIST.GET_ALL_USERS}?limit=100&status=${statusFilter}&scope=root`),
         apiService.get<Role[]>(API_LIST.GET_ROLES),
       ]);
 
@@ -116,14 +116,14 @@ export default function UserManagementPage() {
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <h1 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
-              User Management
+              Root User Management
             </h1>
-            <Badge variant="outline" className="font-mono text-[11px] border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-              {users.length} Users
+            <Badge variant="outline" className="font-mono text-[11px] border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold">
+              {users.length} Root Users
             </Badge>
           </div>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Manage system user accounts, credentials, security policies, and role assignments.
+            Manage system root administrator accounts, super admins, credentials, and security policies. Organization users are managed under Organization Management.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export default function UserManagementPage() {
           className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium h-8 text-xs px-3 shadow-xs cursor-pointer gap-1.5 shrink-0"
         >
           <UserPlus className="w-3.5 h-3.5" />
-          <span>Add New User</span>
+          <span>Add Root User</span>
         </Button>
       </div>
 
@@ -142,7 +142,7 @@ export default function UserManagementPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
         <div className="border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 rounded-lg p-3 flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Total Users</p>
+            <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Total Root Users</p>
             <p className="text-xl font-bold text-neutral-900 dark:text-white mt-0.5">{users.length}</p>
           </div>
           <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api-service";
+import type { UserListResponse } from "@/types/user-management";
 import { showSuccessToast, showErrorToast } from "@/components/reusables/toast-variant";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,10 @@ import {
   FileCode,
   HardDrive,
   Edit,
+  Users,
+  UserPlus,
+  UserCheck,
+  UserX,
 } from "lucide-react";
 
 interface ModuleItem {
@@ -45,6 +51,17 @@ interface ModuleItem {
   category: string;
   icon: string;
   description?: string;
+}
+
+interface OrgUserItem {
+  userId: number;
+  userName: string;
+  emailId: string;
+  isActive: boolean;
+  isVerified: boolean;
+  isTwoFactorAuthenticationEnabled?: boolean;
+  createdOn?: string;
+  roles?: any[];
 }
 
 interface OrganizationItem {
@@ -59,6 +76,8 @@ interface OrganizationItem {
   status: string;
   migrationVersion: number;
   createdAt: string;
+  userCount?: number;
+  users?: OrgUserItem[];
   subscriptions: {
     moduleKey: string;
     name: string;
@@ -73,6 +92,7 @@ interface OrganizationItem {
 }
 
 export default function OrganizationManagementPage() {
+  const router = useRouter();
   const [organizations, setOrganizations] = useState<OrganizationItem[]>([]);
   const [masterModules, setMasterModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -83,7 +103,18 @@ export default function OrganizationManagementPage() {
   // Onboarding Modal dialog states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [selectedOrgForLogs, setSelectedOrgForLogs] = useState<OrganizationItem | null>(null);
+
+  // Overview & Users Modal dialog states
+  const [selectedOrgForOverview, setSelectedOrgForOverview] = useState<OrganizationItem | null>(null);
+  const [orgUsersList, setOrgUsersList] = useState<OrgUserItem[]>([]);
+  const [loadingOrgUsers, setLoadingOrgUsers] = useState<boolean>(false);
+  const [isAddOrgUserModalOpen, setIsAddOrgUserModalOpen] = useState<boolean>(false);
+  const [newOrgUserData, setNewOrgUserData] = useState({
+    userName: "",
+    email: "",
+    password: "",
+  });
+  const [isSubmittingOrgUser, setIsSubmittingOrgUser] = useState<boolean>(false);
 
   // Edit Modal dialog states
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
@@ -280,6 +311,53 @@ export default function OrganizationManagementPage() {
     }
   };
 
+  const handleOpenOverview = useCallback(async (org: OrganizationItem) => {
+    setSelectedOrgForOverview(org);
+    setLoadingOrgUsers(true);
+    try {
+      const res = await apiService.get<UserListResponse>(`/users?organizationId=${org.id}&limit=100`);
+      const rawRes = (res as unknown as { data?: UserListResponse })?.data ?? (res as unknown as UserListResponse);
+      const items: OrgUserItem[] = Array.isArray((rawRes as unknown as { items?: OrgUserItem[] })?.items)
+        ? (rawRes as unknown as { items: OrgUserItem[] }).items
+        : Array.isArray(rawRes)
+        ? (rawRes as unknown as OrgUserItem[])
+        : (org.users || []);
+      setOrgUsersList(items);
+    } catch (error) {
+      console.error("Failed to load organization users:", error);
+      setOrgUsersList(org.users || []);
+    } finally {
+      setLoadingOrgUsers(false);
+    }
+  }, []);
+
+  const handleAddOrgUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedOrgForOverview) return;
+    try {
+      setIsSubmittingOrgUser(true);
+      await apiService.post("/users", {
+        userName: newOrgUserData.userName.trim(),
+        email: newOrgUserData.email.trim(),
+        password: newOrgUserData.password,
+        organizationId: selectedOrgForOverview.id,
+        isActive: true,
+        isVerified: true,
+      });
+      showSuccessToast(`User "${newOrgUserData.userName}" added to ${selectedOrgForOverview.name}!`);
+      setNewOrgUserData({ userName: "", email: "", password: "" });
+      setIsAddOrgUserModalOpen(false);
+      handleOpenOverview(selectedOrgForOverview);
+      fetchData();
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const msg = errObj?.response?.data?.message || errObj?.message || "Failed to add user to organization";
+      showErrorToast(msg);
+    } finally {
+      setIsSubmittingOrgUser(false);
+    }
+  };
+
   const filteredOrgs = organizations.filter((org) => {
     const matchesSearch =
       org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -442,9 +520,8 @@ export default function OrganizationManagementPage() {
                   <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Organization & Tenant</TableHead>
                   <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Isolated Schema</TableHead>
                   <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Plan</TableHead>
-                  <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Granted Applications</TableHead>
+                  <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Org Users</TableHead>
                   <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200">Status & Health</TableHead>
-                  <TableHead className="font-semibold text-xs py-2.5 text-neutral-800 dark:text-neutral-200 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-neutral-200 dark:divide-neutral-800">
@@ -454,7 +531,11 @@ export default function OrganizationManagementPage() {
                     : "ORG";
 
                   return (
-                    <TableRow key={org.id} className="border-b border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40">
+                    <TableRow
+                      key={org.id}
+                      onClick={() => router.push(`/organizations/${org.id}`)}
+                      className="border-b border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 cursor-pointer transition-colors"
+                    >
                       {/* Org Name & Tenant Code */}
                       <TableCell className="py-2.5">
                         <div className="flex items-center gap-2.5">
@@ -462,7 +543,7 @@ export default function OrganizationManagementPage() {
                             {initials}
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-neutral-900 dark:text-white">
+                            <p className="text-xs font-semibold text-neutral-900 dark:text-white group-hover:text-emerald-600 transition-colors">
                               {org.name}
                             </p>
                             <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 font-mono mt-0.5">
@@ -500,24 +581,15 @@ export default function OrganizationManagementPage() {
                         </Badge>
                       </TableCell>
 
-                      {/* Granted Subscriptions */}
+                      {/* Org Users Badge */}
                       <TableCell className="py-2.5">
-                        <div className="flex items-center gap-1 flex-wrap">
-                          {org.subscriptions && org.subscriptions.length > 0 ? (
-                            org.subscriptions.map((sub, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="outline"
-                                className="text-[10px] gap-1 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-300"
-                              >
-                                {getModuleIcon(sub.moduleKey)}
-                                <span className="capitalize">{sub.moduleKey}</span>
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-xs text-neutral-400">—</span>
-                          )}
-                        </div>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] font-mono border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300 gap-1 py-0.5"
+                        >
+                          <Users className="w-3 h-3 text-blue-500" />
+                          <span>{org.userCount ?? org.users?.length ?? 0} Users</span>
+                        </Badge>
                       </TableCell>
 
                       {/* Status & Health */}
@@ -534,42 +606,6 @@ export default function OrganizationManagementPage() {
                           )}
                           <span className="text-[10px] font-mono text-neutral-400">v{org.migrationVersion}</span>
                         </div>
-                      </TableCell>
-
-                      {/* Actions */}
-                      <TableCell className="py-2.5 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-neutral-500 hover:text-neutral-900 dark:hover:text-white">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="text-xs w-52">
-                            <DropdownMenuLabel>Organization Options</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleOpenEdit(org)}
-                              className="gap-2 cursor-pointer"
-                            >
-                              <Edit className="w-3.5 h-3.5 text-blue-500" />
-                              <span>Edit Organization & Apps</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setSelectedOrgForLogs(org)}
-                              className="gap-2 cursor-pointer"
-                            >
-                              <FileCode className="w-3.5 h-3.5 text-emerald-500" />
-                              <span>View Provision Logs</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => alert(`Tenant Schema: ${org.schemaName}\nTenant Code: ${org.tenantCode}`)}
-                              className="gap-2 cursor-pointer"
-                            >
-                              <HardDrive className="w-3.5 h-3.5 text-teal-500" />
-                              <span>View Schema Details</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   );
@@ -883,68 +919,6 @@ export default function OrganizationManagementPage() {
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Logs Drawer Dialog */}
-      {selectedOrgForLogs && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl w-full max-w-lg p-4 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
-              <div>
-                <h3 className="font-bold text-neutral-900 dark:text-white text-sm">Provisioning Audit Logs</h3>
-                <p className="text-xs text-neutral-500 font-mono mt-0.5">{selectedOrgForLogs.name} ({selectedOrgForLogs.tenantCode})</p>
-              </div>
-              <button
-                onClick={() => setSelectedOrgForLogs(null)}
-                className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-2 font-mono text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>STEP 1: CREATE_SETTINGS</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">COMPLETED</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>STEP 2: CREATE_SCHEMA ("{selectedOrgForLogs.schemaName}")</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">COMPLETED</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>STEP 3: RUN_MIGRATIONS (v1: 001_facilities - 004_emissions)</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">COMPLETED</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>STEP 4: SEED_MASTER_DATA (Defra/EPA Defaults)</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">COMPLETED</span>
-              </div>
-            </div>
-
-            <div className="pt-2 text-right">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedOrgForLogs(null)}
-                className="h-8 text-xs"
-              >
-                Close
-              </Button>
-            </div>
           </div>
         </div>
       )}
