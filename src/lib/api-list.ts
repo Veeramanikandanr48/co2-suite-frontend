@@ -10,6 +10,7 @@ export enum API_LIST {
   SERVICES = 'services',
   FACILITIES = 'facilities',
   EMISSION_FACTORS = 'emission-factors',
+  EMISSION_FACTORS_FILTER = 'emission-factors/filter',
   INVENTORY_ENTRIES = 'inventory-entries',
   INVENTORY_ENTRIES_FILTER = 'inventory-entries/filter',
   UPLOAD_INVENTORY_DOC = 'inventory-entries/upload-document',

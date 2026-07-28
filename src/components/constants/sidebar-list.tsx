@@ -27,6 +27,14 @@ export const sidebarList: SidebarItemType[] = [
     child: [],
   },
   {
+    name: "Emission Factors",
+    href: "/emission-factors",
+    icon: "Database",
+    isActive: true,
+    roles: [MasterRole.SUPER_ADMIN],
+    child: [],
+  },
+  {
     name: "Manage Account",
     href: "/manage-account",
     icon: "Settings",
