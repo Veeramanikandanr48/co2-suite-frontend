@@ -189,11 +189,11 @@ const Sidebar = () => {
               )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="start" className="w-60 mt-1 bg-white shadow-xl rounded-xl border border-gray-100 p-1.5 z-50">
+          <DropdownMenuContent side="bottom" align="start" className="w-60 mt-1 bg-background shadow-xl rounded-xl border border-border p-1.5 z-50">
             <DropdownMenuLabel className="text-[10px] font-bold text-gray-400 px-2 py-1 uppercase tracking-wider">
               Organizations & Logos
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="my-1 bg-gray-100" />
+            <DropdownMenuSeparator className="my-1 bg-border" />
             {workspaceLogos.map((item) => (
               <DropdownMenuItem
                 key={item.id}
@@ -201,15 +201,15 @@ const Sidebar = () => {
                   setActiveLogo(item);
                   handleItemClick('/');
                 }}
-                className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-background-inner cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center border ${item.iconBg}`}>
                     {item.icon}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-medium text-gray-900 truncate">{item.name}</span>
-                    <span className="text-[10px] text-gray-400">{item.plan}</span>
+                    <span className="text-xs font-medium text-header-primary truncate">{item.name}</span>
+                    <span className="text-[10px] text-header-secondary">{item.plan}</span>
                   </div>
                 </div>
                 {activeLogo.id === item.id && (
@@ -217,7 +217,7 @@ const Sidebar = () => {
                 )}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuSeparator className="my-1 bg-gray-100" />
+            <DropdownMenuSeparator className="my-1 bg-border" />
             <DropdownMenuItem className="flex items-center gap-2 p-2 text-xs font-medium text-primary hover:bg-primary/5 rounded-lg cursor-pointer">
               <Plus className="w-4 h-4" />
               <span>Add Organization</span>
@@ -260,26 +260,26 @@ const Sidebar = () => {
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align={isEffectiveCollapsed ? "start" : "end"} className="w-56 mb-2 bg-white shadow-xl rounded-xl border border-gray-100 p-1 z-50">
+            <DropdownMenuContent side="top" align={isEffectiveCollapsed ? "start" : "end"} className="w-56 mb-2 bg-background shadow-xl rounded-xl border border-border p-1 z-50">
               <DropdownMenuLabel className="font-normal p-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none text-gray-900 capitalize">{displayName || "User"}</p>
                   <p className="text-xs leading-none text-gray-500">{user?.email || "admin@co2suite.com"}</p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="my-1 bg-gray-100" />
+              <DropdownMenuSeparator className="my-1 bg-border" />
               <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer">
                 <UserIcon className="w-4 h-4 text-gray-500" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer">
+              <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer">
                 <Settings className="w-4 h-4 text-gray-500" />
                 <span>Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1 bg-gray-100" />
+              <DropdownMenuSeparator className="my-1 bg-border" />
               <DropdownMenuItem
                 onClick={() => logout()}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 focus:bg-red-50 rounded-lg cursor-pointer font-medium"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-negative-500 hover:bg-negative-50 focus:bg-negative-50 rounded-lg cursor-pointer font-medium"
               >
                 <LogOut className="w-4 h-4 text-red-600" />
                 <span>Log out</span>
@@ -294,7 +294,7 @@ const Sidebar = () => {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setCollapsed(!collapsed)}
-                  className="bg-white rounded-full p-1 hover:bg-gray-50 transition-all cursor-pointer shadow-[-3px_0px_10px_0px_#0000001A]">
+                  className="bg-background rounded-full p-1 hover:bg-background-inner transition-all cursor-pointer shadow-[-3px_0px_10px_0px_#0000001A]">
                   {collapsed ? <ChevronRight size={25} /> : <ChevronLeft size={25} />}
                 </button>
               </TooltipTrigger>

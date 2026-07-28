@@ -44,13 +44,13 @@ export function ServiceCard({
 }: ServiceCardProps) {
   return (
     <div
-      className={`relative group bg-white rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden ${
-        isSubscribed ? 'border-[#1454CC]/30 shadow-sm' : 'border-[#E6E8EB]'
+      className={`relative group bg-background rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden ${
+        isSubscribed ? 'border-primary/30 shadow-sm' : 'border-border'
       }`}
     >
       {/* Subscribed glow strip */}
       {isSubscribed && (
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#1454CC] to-[#22C55E]" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-positive-500" />
       )}
 
       <div className="p-5 flex flex-col gap-3 h-full">
@@ -93,7 +93,7 @@ export function ServiceCard({
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-1 border-t border-[#F0F2F5]">
+        <div className="flex items-center justify-between pt-1 border-t border-border">
           {/* Demo link */}
           <a
             href={
@@ -103,7 +103,7 @@ export function ServiceCard({
             }
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-[#1454CC] hover:text-[#1454CC]/80 transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
           >
             Demo
             <ExternalLink className="w-3 h-3" />
@@ -116,7 +116,7 @@ export function ServiceCard({
                 <button
                   onClick={() => onRemove?.(service)}
                   disabled={isRemoving}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#CC4529] hover:bg-[#FFDED8] px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-negative-500 hover:bg-negative-50 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
                 >
                   <Trash2 className="w-3 h-3" />
                   Remove
@@ -125,7 +125,7 @@ export function ServiceCard({
                 <button
                   onClick={() => onAssign?.(service)}
                   disabled={isAssigning}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1454CC] hover:bg-[#1454CC]/10 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:bg-primary/10 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
                 >
                   <Plus className="w-3 h-3" />
                   Assign

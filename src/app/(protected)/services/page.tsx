@@ -65,35 +65,35 @@ export default function ServicesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] gap-5">
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-[#1454CC]/10 border border-[#1454CC]/20 flex items-center justify-center">
-            <LayoutGrid className="w-8 h-8 text-[#1454CC]/40" />
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <LayoutGrid className="w-8 h-8 text-primary/40" />
           </div>
-          <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow border border-[#E6E8EB]">
-            <Loader2 className="w-4 h-4 text-[#1454CC] animate-spin" />
+          <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-background rounded-full flex items-center justify-center shadow border border-border">
+            <Loader2 className="w-4 h-4 text-primary animate-spin" />
           </div>
         </div>
         <div className="text-center">
-          <p className="text-base font-bold text-neutral-700">Loading Services</p>
-          <p className="text-sm text-neutral-400 mt-1">Fetching available modules…</p>
+          <p className="text-base font-bold text-header-primary">Loading Services</p>
+          <p className="text-muted-body mt-1">Fetching available modules…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6 bg-[#F8F9FA] min-h-full">
+    <div className="flex-1 p-6 space-y-6 bg-background-inner min-h-full">
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[#1454CC]/10 border border-[#1454CC]/15">
-              <LayoutGrid className="w-5 h-5 text-[#1454CC]" />
+            <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/15">
+              <LayoutGrid className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-neutral-800 tracking-tight">
+              <h1 className="page-title">
                 CageSuite Services
               </h1>
-              <p className="text-xs text-neutral-400 mt-0.5">
+              <p className="text-muted-xs mt-0.5">
                 {isSuperAdmin
                   ? `${services.length} module${services.length !== 1 ? 's' : ''} available in master catalog`
                   : `${services.length} active module${services.length !== 1 ? 's' : ''} subscribed to your organization`}
@@ -104,7 +104,7 @@ export default function ServicesPage() {
 
         <button
           onClick={fetchServices}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-700 px-3 py-2 rounded-lg border border-[#E6E8EB] bg-white hover:shadow-sm transition-all"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-header-secondary hover:text-header-primary px-3 py-2 rounded-lg border border-border bg-background hover:shadow-sm transition-all"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Refresh
@@ -114,7 +114,7 @@ export default function ServicesPage() {
       {/* Grid */}
       {services.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#F0F2F5] border-2 border-dashed border-[#D9E5F2] flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-background-outer border-2 border-dashed border-neutral-100 flex items-center justify-center">
             <LayoutGrid className="w-8 h-8 text-neutral-300" />
           </div>
           <p className="text-sm font-semibold text-neutral-500">No services found</p>

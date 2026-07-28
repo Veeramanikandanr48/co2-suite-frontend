@@ -77,6 +77,20 @@ class ApiService {
     const url = id !== undefined ? `${endpoint}/${id}` : endpoint;
     return axiosInstance.delete<T>(url, config) as Promise<CustomAxiosResponse<T>>;
   }
+
+  /**
+   * Fetches dynamic overall carbon summary from database
+   */
+  async getCarbonSummary<T>(serviceCode: string, queryParams?: { year?: string; facility?: string }): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(`services/${serviceCode}/summary`, { params: queryParams }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  /**
+   * Fetches dynamic main executive dashboard summary from database
+   */
+  async getMainDashboardSummary<T>(queryParams?: { year?: string; facility?: string }): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>('dashboard/summary', { params: queryParams }) as Promise<CustomAxiosResponse<T>>;
+  }
 }
  
 export const apiService = new ApiService();

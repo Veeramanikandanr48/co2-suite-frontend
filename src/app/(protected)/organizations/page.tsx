@@ -211,7 +211,7 @@ export default function OrganizationsPage() {
         accessorKey: 'code',
         size: 130,
         cell: ({ row }) => (
-          <Badge variant="outline" className="border-gray-200 bg-gray-50 font-mono text-[11px] font-normal">
+          <Badge variant="outline" className="border-border bg-background-inner font-mono text-[11px] font-normal">
             {row.original.code}
           </Badge>
         ),
@@ -221,7 +221,7 @@ export default function OrganizationsPage() {
         accessorKey: 'contactEmail',
         size: 240,
         cell: ({ row }) => (
-          <span className="text-gray-700 text-xs">{row.original.contactEmail}</span>
+          <span className="text-header-secondary text-xs">{row.original.contactEmail}</span>
         ),
       },
       {
@@ -230,7 +230,7 @@ export default function OrganizationsPage() {
         size: 180,
         cell: ({ row }) =>
           row.original.emailDomain ? (
-            <span className="text-gray-700 text-xs">{row.original.emailDomain}</span>
+            <span className="text-header-secondary text-xs">{row.original.emailDomain}</span>
           ) : (
             <span className="text-gray-400 font-mono">-</span>
           ),
@@ -241,13 +241,9 @@ export default function OrganizationsPage() {
         size: 130,
         cell: ({ row }) =>
           row.original.isActive ? (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Active
-            </span>
+            <span className="status-badge-positive">Active</span>
           ) : (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-700 border border-red-200">
-              Inactive
-            </span>
+            <span className="status-badge-negative">Inactive</span>
           ),
       },
     ],
@@ -257,15 +253,15 @@ export default function OrganizationsPage() {
   return (
     <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8 w-full">
       {/* Top Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+            <div className="stat-icon-primary">
               <Building2 className="w-5 h-5" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Organizations</h1>
+            <h1 className="text-2xl font-bold text-header-primary tracking-tight">Organizations</h1>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-header-secondary mt-1">
             Manage onboarded tenant organizations and provision organization administrator accounts.
           </p>
         </div>
@@ -274,7 +270,7 @@ export default function OrganizationsPage() {
           {isSuperAdmin && (
             <Button
               onClick={() => setIsOnboardOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs gap-2 rounded-lg"
+              className="bg-primary hover:bg-primary-300 text-primary-foreground font-medium shadow-xs gap-2 rounded-lg"
             >
               <Plus className="w-4 h-4" />
               Onboard Organization
@@ -284,23 +280,23 @@ export default function OrganizationsPage() {
       </div>
 
       {/* Control Bar: SearchBar & Record Count */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-2xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-background p-3 rounded-xl border border-border shadow-2xs">
         <SearchBar
           placeholder="Search by name, code, or email..."
           onSearch={setSearch}
-          className="w-full sm:w-80 border-gray-200 h-9"
+          className="w-full sm:w-80 border-border h-9"
         />
 
-        <div className="flex items-center gap-2 text-xs text-gray-500 self-end sm:self-center">
+        <div className="flex items-center gap-2 text-xs text-header-secondary self-end sm:self-center">
           <span>Total Records:</span>
-          <Badge variant="secondary" className="font-semibold bg-gray-100 text-gray-800">
+          <Badge variant="secondary" className="font-semibold bg-background-inner text-header-primary">
             {totalCount}
           </Badge>
         </div>
       </div>
 
       {/* Main Reusable Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-2xs overflow-hidden">
+      <div className="bg-background rounded-xl border border-border shadow-2xs overflow-hidden">
         <ReusableTable<TableOrganization>
           data={tableData}
           columns={columns}
@@ -316,7 +312,7 @@ export default function OrganizationsPage() {
       <Dialog open={isOnboardOpen} onOpenChange={setIsOnboardOpen}>
         <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center gap-2 text-emerald-600">
+            <div className="flex items-center gap-2 text-primary">
               <ShieldCheck className="w-5 h-5" />
               <DialogTitle className="text-lg font-bold">Onboard New Organization</DialogTitle>
             </div>

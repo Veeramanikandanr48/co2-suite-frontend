@@ -147,6 +147,7 @@ export default {
             },
             negative: {
 				50: "var(--negative-50)",
+                100: "var(--negative-100)",
                 300: "var(--negative-300)",
                 500: "var(--negative-500)",
                 700: "var(--negative-700)",

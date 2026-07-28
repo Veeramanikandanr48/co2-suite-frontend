@@ -38,8 +38,6 @@
     --ring: #2B6FFF;
     --radius: 0.5rem;
     --tab-border: #1E64FF;
-    --text-primary: #FF0000;
-
     --text-primary: #4D5059;
 
     --button-primary: #1454CC;
@@ -108,6 +106,8 @@
     --positive-950: #042A1C;
 
     --warning-50: #FFFEE7;
+    --warning-600: #D19100;
+    --warning-700: #A66702;
     --warning-100: #FFFCC1;
     --warning-200: #FFF686;
     --warning-300: #FFE941;
@@ -120,6 +120,7 @@
     --warning-950: #442204;
 
     --negative-50: #FFDED8;
+    --negative-100: #FFD0C7;
     --negative-300: #D95E45;
     --negative-500: #CC4529;
     --negative-700: #A83821;
@@ -362,3 +363,76 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+/* ─── Design System Utility Classes ────────────────────────────────────────── */
+/* Use these shared classes on every page to guarantee visual consistency.      */
+
+@layer components {
+  /* Base card — white surface, border, subtle shadow */
+  .card-base {
+    @apply bg-background border border-border rounded-2xl shadow-xs;
+  }
+
+  /* Page content wrapper — consistent inner bg + padding */
+  .page-content {
+    @apply bg-background-inner min-h-full;
+  }
+
+  /* Page title text */
+  .page-title {
+    @apply text-2xl font-bold text-header-primary tracking-tight;
+  }
+
+  /* Section / card title */
+  .section-title {
+    @apply text-sm font-bold text-header-primary;
+  }
+
+  /* KPI metric label (all-caps, small) */
+  .kpi-label {
+    @apply text-[11px] font-bold text-header-secondary uppercase tracking-wider;
+  }
+
+  /* KPI metric value */
+  .kpi-value {
+    @apply text-xl font-bold text-header-primary;
+  }
+
+  /* Icon container for stat/kpi icons — inline shared properties on each variant */
+  .stat-icon-primary {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary;
+  }
+  .stat-icon-positive {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-positive-50 text-positive-600;
+  }
+  .stat-icon-negative {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-negative-50 text-negative-500;
+  }
+  .stat-icon-warning {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-warning-50 text-warning-700;
+  }
+
+  /* Status badge variants */
+  .status-badge-positive {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-positive-100 text-positive-700;
+  }
+  .status-badge-negative {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-negative-50 text-negative-500;
+  }
+  .status-badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-warning-100 text-warning-700;
+  }
+
+  /* Standard page/section header controls row */
+  .page-header-bar {
+    @apply flex items-center justify-between gap-4 flex-wrap;
+  }
+
+  /* Muted body text */
+  .text-muted-body {
+    @apply text-sm text-header-secondary;
+  }
+  .text-muted-xs {
+    @apply text-xs text-header-secondary;
+  }
+}
