@@ -96,10 +96,13 @@ export function ServiceCard({
         <div className="flex items-center justify-between pt-1 border-t border-[#F0F2F5]">
           {/* Demo link */}
           <a
-            href={service.demoUrl || '#'}
+            href={
+              service.demoUrl && service.demoUrl !== '#'
+                ? service.demoUrl
+                : `/services/${service.code.toLowerCase()}`
+            }
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => service.demoUrl === '#' && e.preventDefault()}
             className="inline-flex items-center gap-1 text-xs font-semibold text-[#1454CC] hover:text-[#1454CC]/80 transition-colors"
           >
             Demo

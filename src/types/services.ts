@@ -24,4 +24,16 @@ interface AssignServicesPayload {
   serviceIds: number[];
 }
 
-export type { Service, OrganizationService, AssignServicesPayload };
+interface ServiceScopeItem {
+  id: number;
+  serviceCode: string;
+  scope: string;
+  scopeCode: string;
+  name: string;
+  code: string;
+  description?: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export type { Service, OrganizationService, AssignServicesPayload, ServiceScopeItem };
