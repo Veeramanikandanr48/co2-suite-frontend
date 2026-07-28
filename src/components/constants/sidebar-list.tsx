@@ -15,7 +15,7 @@ export const sidebarList: SidebarItemType[] = [
     href: "/organizations",
     icon: "Building2",
     isActive: true,
-    roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
+    roles: [MasterRole.SUPER_ADMIN],
     child: [],
   },
   {
@@ -24,6 +24,14 @@ export const sidebarList: SidebarItemType[] = [
     icon: "LayoutGrid",
     isActive: true,
     roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
+    child: [],
+  },
+  {
+    name: "Manage Account",
+    href: "/manage-account",
+    icon: "Settings",
+    isActive: true,
+    roles: [MasterRole.ADMIN, MasterRole.USER],
     child: [],
   },
 ];
