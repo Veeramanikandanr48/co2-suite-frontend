@@ -145,7 +145,39 @@ const UserFormSchema = z.object({
     roleId: fieldValidators.roleId,
 });
 
+const OnboardOrganizationSchema = z.object({
+    name: z.string().min(1, "Organization Name is required").max(100, "Organization Name must be 100 characters or less"),
+    code: z.string().min(2, "Organization Code must be at least 2 characters").max(20, "Organization Code must be 20 characters or less"),
+    contactEmail: fieldValidators.email,
+    emailDomain: z.string().optional(),
+    adminUserName: fieldValidators.userId,
+    adminEmail: fieldValidators.email,
+    adminPassword: fieldValidators.password,
+    adminFirstName: z.string().optional(),
+    adminLastName: z.string().optional(),
+});
+
+const EditOrganizationSchema = z.object({
+    name: z.string().min(1, "Organization Name is required").max(100, "Organization Name must be 100 characters or less"),
+    code: z.string().min(2, "Organization Code must be at least 2 characters").max(20, "Organization Code must be 20 characters or less"),
+    contactEmail: fieldValidators.email,
+    emailDomain: z.string().optional(),
+    phone: z.string().optional(),
+    website: z.string().optional(),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    country: z.string().optional(),
+    postalCode: z.string().optional(),
+    taxId: z.string().optional(),
+    industry: z.string().optional(),
+    timezone: z.string().optional(),
+    isActive: z.boolean(),
+});
+
 export {
     LoginFormSchema,
-    UserFormSchema
+    UserFormSchema,
+    OnboardOrganizationSchema,
+    EditOrganizationSchema,
 };

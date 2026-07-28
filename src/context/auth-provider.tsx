@@ -17,6 +17,7 @@ export interface User {
   idpId: string;
   profilePath: string | null;
   roleId: number;
+  organizationId?: number | null;
 }
 
 interface AuthState {

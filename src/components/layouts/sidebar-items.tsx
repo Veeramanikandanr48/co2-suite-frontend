@@ -15,9 +15,33 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 
+import * as LucideIcons from "lucide-react";
+
+const getSidebarIcon = (iconName?: string) => {
+  if (!iconName) return LucideIcons.LayoutDashboard;
+  
+  const iconsMap = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
+  const DirectIcon = iconsMap[iconName];
+  if (DirectIcon) return DirectIcon;
+
+  const strippedName = iconName.replace(/Icon$/, "");
+  const StrippedIcon = iconsMap[strippedName];
+  if (StrippedIcon) return StrippedIcon;
+
+  if (iconName.toLowerCase().includes("organization") || iconName.toLowerCase().includes("building")) {
+    return LucideIcons.Building2;
+  }
+
+  return LucideIcons.LayoutDashboard;
+};
+
+import { useAuth } from "@/context/auth-provider";
+import { MasterRole } from "@/enums/base-enum";
+
 const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setCollapsed }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useAuth();
 
   const isActiveParent = pathname.startsWith(item.href);
 
@@ -35,18 +59,23 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
   };
 
   const handleItemClick = (requestHref: string) => {
+    let targetHref = requestHref;
+    if (requestHref === "/organizations" && user?.roleId !== MasterRole.SUPER_ADMIN) {
+      targetHref = `/organizations/${user?.organizationId || 1}`;
+    }
+
     const currentroute: string = pathname;
     let modifiedRoute = currentroute;
     modifiedRoute = modifiedRoute.replace(/\d+/g, '[id]');
     const formExit: boolean = FORM_CONFIGURATION[modifiedRoute];
     if (formExit) {
-      EventBus.$emit(`${currentroute}`, requestHref);
+      EventBus.$emit(`${currentroute}`, targetHref);
     } else {
-      router.push(requestHref);
+      router.push(targetHref);
     }
   };
 
-  const IconComponent = (Icons as Record<string, React.FC<{ className?: string; stroke?: string }>>)[item.icon ?? ""];
+  const LucideIcon = getSidebarIcon(item.icon ?? undefined);
 
   const renderButton = () => (
     <SidebarMenuButton
@@ -57,8 +86,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
       className={`text-sm mx-auto ${collapsed ? "w-[64%]" : "w-[86%]"} px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400 hover:bg-transparent
       ${isActiveParent ? "bg-background-sidebarActive text-light-100" : ""} ${collapsed ? "justify-center" : ""}`}
     >
-      <button>
-        {IconComponent && <IconComponent className={`${!collapsed && "mr-2"}`} stroke={isActiveParent ? "var(--icon-color-active)" : "var(--icon-color)"} />}
+      <button className="flex items-center w-full">
+        <LucideIcon className={`w-5 h-5 shrink-0 ${!collapsed ? "mr-2.5" : ""} ${isActiveParent ? "text-emerald-400" : "text-gray-400 group-hover:text-gray-200"}`} />
 
         <div
           className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "text-light-100 font-medium" : "text-text-sidebar"}`}

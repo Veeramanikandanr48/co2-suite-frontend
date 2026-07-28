@@ -1,6 +1,9 @@
+import { MasterRole } from "@/enums/base-enum";
+
 interface SidebarChildItem {
   name: string;
   href: string;
+  roles?: MasterRole[];
 }
   
 type SidebarItemType = {
@@ -8,6 +11,7 @@ type SidebarItemType = {
   href: string;
   icon?: string | null;
   isActive?: boolean;
+  roles?: MasterRole[];
   child?: SidebarItemType[];
   parentHref?: string;
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiService } from '~/lib/api-service';
-import { ListResponse, ListFilter, UseFetchListReturn } from '~/types/fetch';
+import { apiService } from '@/lib/api-service';
+import { ListResponse, ListFilter, UseFetchListReturn } from '@/types/fetch';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_FILTER: ListFilter = {
@@ -32,6 +32,9 @@ export function useFetchList<T>(
   }>({});
 
   const fetchList = useCallback(async (append = false) => {
+    // Skip fetching if no endpoint is provided (e.g. access-gated callers)
+    if (!endpoint) return;
+
     try {
       if (!append) setIsLoading(true);
       

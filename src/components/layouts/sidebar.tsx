@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { sidebarList } from "@/components/constants/sidebar-list";
+import { sidebarList, getVisibleSidebarItems } from "@/components/constants/sidebar-list";
 import {
   ChevronLeft,
   ChevronRight,
@@ -34,6 +34,7 @@ import {
 const SidebarItem = dynamic(() => import("./sidebar-items"), { ssr: false });
 import { SidebarItemType } from "@/types/sidebar";
 import { useAuth } from "@/context/auth-provider";
+import { MasterRole } from "@/enums/base-enum";
 import Image from "next/image";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "@/lib/eventbus";
@@ -215,7 +216,7 @@ const Sidebar = () => {
 
         <ScrollArea className="h-[calc(100%-160px)]">
           <SidebarMenu className="mt-[10px] transition-all duration-300 ease-in-out pb-4">
-            {sidebarList.map((item) => (
+            {getVisibleSidebarItems(user?.roleId).map((item) => (
               <SidebarItem
                 key={item.href}
                 item={item}

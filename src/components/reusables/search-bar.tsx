@@ -1,9 +1,18 @@
-"use client"
+"use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import { Command, CommandInput, CommandList, CommandEmpty } from "~/components/ui/command";
-import { debounce } from "lodash";
-import { cn } from "~/lib/utils";
+import { Command, CommandInput, CommandList, CommandEmpty } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+function createDebounce<T extends (...args: any[]) => any>(fn: T, delay: number): (...args: Parameters<T>) => void {
+  let timer: NodeJS.Timeout | null = null;
+  return function (...args: Parameters<T>) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
 
 interface SearchBarProps {
   placeholder?: string;
@@ -22,12 +31,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [lastNonEmptyQuery, setLastNonEmptyQuery] = useState("");
 
   useEffect(() => {
-    setQuery("");
-    setLastNonEmptyQuery("");
-    onSearch?.("");
-  }, [resetTrigger, onSearch]);
+    if (resetTrigger > 0) {
+      setQuery("");
+      setLastNonEmptyQuery("");
+      onSearch?.("");
+    }
+  }, [resetTrigger]);
 
-  const debouncedSearch = useMemo(() => debounce((value: string) => {
+  const debouncedSearch = useMemo(() => createDebounce((value: string) => {
     const normalizedValue = value.trim();
     if (normalizedValue || lastNonEmptyQuery) {
       onSearch?.(normalizedValue);
@@ -37,7 +48,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     } else {
       setLastNonEmptyQuery("");
     }
-  }, 500), [onSearch, lastNonEmptyQuery]);
+  }, 400), [onSearch, lastNonEmptyQuery]);
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
@@ -46,9 +57,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div>
-      <Command className={cn(`border border-neutral-300 rounded-lg h-[30px] w-[200px]`, className)}>
+      <Command className={cn(`border border-neutral-300 rounded-lg h-[34px] w-[220px]`, className)}>
         <CommandInput
-          className=" text-[13px] text-header-secondary placeholder:text-input-placeholder placeholder:italic"
+          className="text-[13px] text-header-secondary placeholder:text-input-placeholder placeholder:italic"
           placeholder={placeholder}
           value={query}
           onValueChange={handleQueryChange}

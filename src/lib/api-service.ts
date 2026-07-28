@@ -64,6 +64,19 @@ class ApiService {
     return axiosInstance.put<T>(`${endpoint}/${id}`, data, config) as Promise<CustomAxiosResponse<T>>;
   }
  
+  /**
+   * Performs a DELETE request to remove or deactivate data
+   * @param endpoint - The base API endpoint
+   * @param id - Optional ID of the item to delete
+   * @param config - Optional axios configuration
+   * @returns Promise with the response data
+   * @example
+   * await apiService.delete<void>('/users', 123);
+   */
+  async delete<T>(endpoint: string, id?: string | number, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
+    const url = id !== undefined ? `${endpoint}/${id}` : endpoint;
+    return axiosInstance.delete<T>(url, config) as Promise<CustomAxiosResponse<T>>;
+  }
 }
  
 export const apiService = new ApiService();

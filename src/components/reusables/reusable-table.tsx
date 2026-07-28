@@ -9,18 +9,22 @@ interface ReusableTableProps<T> {
     data: T[];
     columns: ColumnDef<T>[];
     isLoadingMore: boolean;
+    hasMore?: boolean;
     handleLoadMore: () => void;
     onRowClick?: (id: string) => void;
     tableHeight?: string;
+    rowHeight?: string;
 }
 
 export function ReusableTable<T extends { id: string }>({
     data,
     columns,
     isLoadingMore,
+    hasMore,
     handleLoadMore,
     onRowClick,
-    tableHeight = "calc(100vh - 210px)"
+    tableHeight = "calc(100vh - 210px)",
+    rowHeight = "h-[52px]"
 }: Readonly<ReusableTableProps<T>>) {
     const [container, setContainer] = useState<HTMLDivElement | null>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -28,9 +32,11 @@ export function ReusableTable<T extends { id: string }>({
     const scrollTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const checkIfNearBottom = useCallback(() => {
-        if (!container || isLoadingMore || isFetchingRef.current) return;
+        if (!container || isLoadingMore || isFetchingRef.current || hasMore === false) return;
 
         const { scrollTop, scrollHeight, clientHeight } = container;
+        if (scrollHeight <= clientHeight) return;
+
         const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
         
         if (distanceFromBottom <= SCROLL_THRESHOLD) {
@@ -41,7 +47,7 @@ export function ReusableTable<T extends { id: string }>({
                 isFetchingRef.current = false;
             }, DEBOUNCE_DELAY);
         }
-    }, [container, handleLoadMore, isLoadingMore]);
+    }, [container, handleLoadMore, isLoadingMore, hasMore]);
 
     useEffect(() => {
         if (!container) return;
@@ -90,12 +96,12 @@ export function ReusableTable<T extends { id: string }>({
                         {table.getHeaderGroups().map(headerGroup => (
                             <TableRow 
                                 key={headerGroup.id} 
-                                className="h-11 bg-light-500"
+                                className="h-10 bg-light-500 border-b border-gray-200"
                             >
                                 {headerGroup.headers.map(header => (
                                     <TableHead 
                                         key={header.id} 
-                                        className="px-5 py-3"
+                                        className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
                                         style={{ 
                                             width: `${header.column.getSize()}px`,
                                             minWidth: `${header.column.getSize()}px`,
@@ -119,9 +125,9 @@ export function ReusableTable<T extends { id: string }>({
                         {table.getRowModel().rows.map((row, index) => (
                             <TableRow 
                                 key={row.id} 
-                                className={`h-[73px] border-b border-gray-200 ${
-                                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                                } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-light-600`}
+                                className={`${rowHeight} border-b border-gray-100 ${
+                                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                                } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
                                 onClick={() => onRowClick && handleRowClick(row.original.id)}
                             >
                                 {row.getVisibleCells().map(cell => (
@@ -130,7 +136,7 @@ export function ReusableTable<T extends { id: string }>({
                                         className={`${
                                             cell.column.id === 'actions' 
                                                 ? 'p-0 h-full' 
-                                                : 'py-4 px-3 gap-2.5'
+                                                : 'py-2 px-4 gap-2 text-xs'
                                         }`}
                                         style={{ 
                                             width: `${cell.column.getSize()}px`,

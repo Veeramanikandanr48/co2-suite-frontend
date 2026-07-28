@@ -42,6 +42,12 @@ enum EAction {
     CREATE = 'create'
 }
 
+enum MasterRole {
+    SUPER_ADMIN = 1,
+    ADMIN = 2,
+    USER = 3,
+}
+
 export {
     HttpStatus,
     EAdditionalFieldError,
@@ -49,5 +55,6 @@ export {
     UploadType,
     ToastType,
     ESelectedStatus,
-    EAction
+    EAction,
+    MasterRole,
 };
