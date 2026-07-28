@@ -75,6 +75,11 @@ export function ReusableTable<T extends { id: string }>({
     const table = useReactTable({
         data,
         columns,
+        defaultColumn: {
+            size: 100,
+            minSize: 40,
+            maxSize: 250,
+        },
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
@@ -88,24 +93,25 @@ export function ReusableTable<T extends { id: string }>({
         }
     };
 
-    return (
-        <div className="flex flex-col rounded-none overflow-hidden" style={{ height: tableHeight }}>
-            <div className="w-full">
-                <Table>
+    if (tableHeight === "auto") {
+        return (
+            <div 
+                ref={setContainer}
+                className="w-full overflow-x-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
+            >
+                <Table className="w-full text-left border-collapse text-xs min-w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
                             <TableRow 
                                 key={headerGroup.id} 
-                                className="h-10 bg-light-500 border-b border-gray-200"
+                                className="h-9 bg-neutral-100 border-b border-neutral-200"
                             >
                                 {headerGroup.headers.map(header => (
                                     <TableHead 
                                         key={header.id} 
-                                        className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                        className="px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
                                         style={{ 
-                                            width: `${header.column.getSize()}px`,
-                                            minWidth: `${header.column.getSize()}px`,
-                                            maxWidth: `${header.column.getSize()}px`
+                                            width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
                                         }}
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -114,19 +120,12 @@ export function ReusableTable<T extends { id: string }>({
                             </TableRow>     
                         ))}
                     </TableHeader>
-                </Table>
-            </div>
-            <div 
-                ref={setContainer}
-                className="flex-1 overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400"
-            >
-                <Table>
                     <TableBody>
                         {table.getRowModel().rows.map((row, index) => (
                             <TableRow 
                                 key={row.id} 
-                                className={`${rowHeight} border-b border-gray-100 ${
-                                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                                className={`${rowHeight} border-b border-neutral-100 ${
+                                    index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
                                 } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
                                 onClick={() => onRowClick && handleRowClick(row.original.id)}
                             >
@@ -135,13 +134,11 @@ export function ReusableTable<T extends { id: string }>({
                                         key={cell.id} 
                                         className={`${
                                             cell.column.id === 'actions' 
-                                                ? 'p-0 h-full' 
-                                                : 'py-2 px-4 gap-2 text-xs'
+                                                ? 'py-1 px-2 h-full' 
+                                                : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
                                         }`}
                                         style={{ 
-                                            width: `${cell.column.getSize()}px`,
-                                            minWidth: `${cell.column.getSize()}px`,
-                                            maxWidth: `${cell.column.getSize()}px`
+                                            width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
                                         }}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -153,7 +150,7 @@ export function ReusableTable<T extends { id: string }>({
                             <TableRow>
                                 <TableCell 
                                     colSpan={columns.length} 
-                                    className="h-24 text-center text-gray-500"
+                                    className="h-16 text-center text-neutral-500 text-xs"
                                 >
                                     Loading more...
                                 </TableCell>
@@ -163,7 +160,7 @@ export function ReusableTable<T extends { id: string }>({
                             <TableRow>
                                 <TableCell 
                                     colSpan={columns.length} 
-                                    className="h-24 text-center text-gray-500"
+                                    className="h-16 text-center text-neutral-500 text-xs"
                                 >
                                     No data found
                                 </TableCell>
@@ -171,6 +168,91 @@ export function ReusableTable<T extends { id: string }>({
                         )}
                     </TableBody>
                 </Table>
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600">
+            <div className="flex flex-col rounded-none min-w-full" style={{ height: tableHeight }}>
+                <div className="w-full">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <TableRow 
+                                    key={headerGroup.id} 
+                                    className="h-9 bg-neutral-100 border-b border-neutral-200"
+                                >
+                                    {headerGroup.headers.map(header => (
+                                        <TableHead 
+                                            key={header.id} 
+                                            className="px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
+                                            style={{ 
+                                                width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
+                                            }}
+                                        >
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                        </TableHead>
+                                    ))}
+                                </TableRow>     
+                            ))}
+                        </TableHeader>
+                    </Table>
+                </div>
+                <div 
+                    ref={setContainer}
+                    className="flex-1 overflow-auto [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
+                >
+                    <Table>
+                        <TableBody>
+                            {table.getRowModel().rows.map((row, index) => (
+                                <TableRow 
+                                    key={row.id} 
+                                    className={`${rowHeight} border-b border-neutral-100 ${
+                                        index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
+                                    } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
+                                    onClick={() => onRowClick && handleRowClick(row.original.id)}
+                                >
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell  
+                                            key={cell.id} 
+                                            className={`${
+                                                cell.column.id === 'actions' 
+                                                    ? 'py-1 px-2 h-full' 
+                                                    : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
+                                            }`}
+                                            style={{ 
+                                                width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
+                                            }}
+                                        >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                            {isLoadingMore && (
+                                <TableRow>
+                                    <TableCell 
+                                        colSpan={columns.length} 
+                                        className="h-16 text-center text-neutral-500 text-xs"
+                                    >
+                                        Loading more...
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {data.length === 0 && (
+                                <TableRow>
+                                    <TableCell 
+                                        colSpan={columns.length} 
+                                        className="h-16 text-center text-neutral-500 text-xs"
+                                    >
+                                        No data found
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </div>
     );

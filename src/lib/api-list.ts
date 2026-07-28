@@ -11,4 +11,6 @@ export enum API_LIST {
   FACILITIES = 'facilities',
   EMISSION_FACTORS = 'emission-factors',
   INVENTORY_ENTRIES = 'inventory-entries',
+  INVENTORY_ENTRIES_FILTER = 'inventory-entries/filter',
+  UPLOAD_INVENTORY_DOC = 'inventory-entries/upload-document',
 }

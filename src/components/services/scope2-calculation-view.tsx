@@ -9,10 +9,24 @@ import {
   Trash2,
   Plus,
   Loader2,
+  AlertTriangle,
+  Paperclip,
+  X,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 import { API_LIST } from '@/lib/api-list';
+import {
+  ActivityNotRelevantModal,
+  shouldSkipActivityNotRelevantModal,
+} from '@/components/reusables/activity-not-relevant-modal';
+import { ReusableTable } from '@/components/reusables/reusable-table';
+import { useFetchList } from '@/hooks/use-fetchlist';
+import { ColumnDef } from '@tanstack/react-table';
 
 export type Scope2CategoryType =
   | 'Purchased Electricity'
@@ -50,6 +64,7 @@ interface InventoryItem {
   status?: string;
   comment?: string;
   approvalStatus?: string;
+  documentPath?: string;
 }
 
 export function Scope2CalculationView({ category }: Scope2CalculationViewProps) {
@@ -59,6 +74,20 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   const [selectedYear, setSelectedYear] = useState('2026');
   const [selectedFacilityHeader, setSelectedFacilityHeader] = useState('All Facilities');
   const [isNotRelevant, setIsNotRelevant] = useState(false);
+  const [showNotRelevantModal, setShowNotRelevantModal] = useState(false);
+
+  /** Handle "Activity is not relevant" checkbox change */
+  const handleActivityNotRelevantChange = (checked: boolean) => {
+    if (!checked) {
+      setIsNotRelevant(false);
+      return;
+    }
+    if (shouldSkipActivityNotRelevantModal()) {
+      setIsNotRelevant(true);
+      return;
+    }
+    setShowNotRelevantModal(true);
+  };
 
   // Form State
   const [efSource, setEfSource] = useState('');
@@ -75,30 +104,53 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   const [comment, setComment] = useState('');
   const [approvalStatus, setApprovalStatus] = useState('');
 
+  // Proof of document file state
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
   // API Data State
   const [dbFactors, setDbFactors] = useState<DBEmissionFactor[]>([]);
-  const [inventoryList, setInventoryList] = useState<InventoryItem[]>([]);
   const [dbFacilities, setDbFacilities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch Emission Factors & Inventory Entries from DB
+  // Filters for useFetchList
+  const [filterFacility, setFilterFacility] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+
+  const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
+
+  // Server-side paginated & filtered inventory list hook
+  const {
+    list,
+    totalCount,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    searchInput,
+    setSearch,
+    setSorting,
+    setAdditionalFilter,
+    loadMore,
+    refetch,
+  } = useFetchList<InventoryItem>(API_LIST.INVENTORY_ENTRIES_FILTER, {
+    additionalFilter: { category: efCategory },
+    limit: 10,
+  });
+
+  // Fetch Emission Factors & Facilities from DB
   const fetchData = async () => {
     try {
       setLoading(true);
       const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
-      
-      const [efRes, invRes, facRes] = await Promise.all([
+
+      const [efRes, facRes] = await Promise.all([
         apiService.get<any>(`${API_LIST.EMISSION_FACTORS}?category=${encodeURIComponent(efCategory)}`),
-        apiService.get<any>(`${API_LIST.INVENTORY_ENTRIES}?category=${encodeURIComponent(efCategory)}`),
         apiService.get<any>(API_LIST.FACILITIES),
       ]);
 
       const efData = (efRes as any)?.data ?? efRes;
       setDbFactors(Array.isArray(efData) ? efData : []);
-
-      const invData = (invRes as any)?.data ?? invRes;
-      setInventoryList(Array.isArray(invData) ? invData : []);
 
       const facData = (facRes as any)?.data ?? facRes;
       setDbFacilities(Array.isArray(facData) ? facData : []);
@@ -129,11 +181,11 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
 
   // Calculate Total Emissions from Inventory Table
   const totalEmissions = useMemo(() => {
-    return inventoryList.reduce((acc, curr) => {
+    return list.reduce((acc, curr) => {
       const val = Number(curr.emission) || 0;
       return acc + val;
     }, 0);
-  }, [inventoryList]);
+  }, [list]);
 
   // Save Entry to DB
   const handleSaveToDatabase = async () => {
@@ -146,7 +198,23 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
       setSubmitting(true);
       const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
       const itemName = isElectricity ? country : inventoryName || 'Purchased Heating Item';
-      
+
+      let uploadedDocPath: string | undefined = undefined;
+      if (proofFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', proofFile);
+          const uploadRes = await apiService.post<any>(API_LIST.UPLOAD_INVENTORY_DOC, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+          const uploadData = (uploadRes as any)?.data ?? uploadRes;
+          uploadedDocPath = uploadData?.documentPath;
+        } catch (uploadErr) {
+          console.error('Failed to upload proof document:', uploadErr);
+          toast.error('Failed to upload proof document file.');
+        }
+      }
+
       const payload = {
         serviceCode: 'CARBON',
         category: efCategory,
@@ -160,14 +228,21 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
         status: 'completed',
         comment,
         approvalStatus,
+        documentPath: uploadedDocPath,
       };
 
-      await apiService.post(API_LIST.INVENTORY_ENTRIES, payload);
+      const response = await apiService.post<InventoryItem>(
+        API_LIST.INVENTORY_ENTRIES,
+        payload,
+      );
 
-      toast.success('Inventory entry saved successfully!');
+      toast.success(
+        `${isElectricity ? 'Purchased Electricity' : 'Purchased Heating'} inventory entry saved to Database successfully!`,
+      );
       setAmount('');
       setComment('');
-      fetchData();
+      setProofFile(null);
+      refetch();
     } catch (err: any) {
       toast.error(err.message || 'Error saving to database');
     } finally {
@@ -179,10 +254,11 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   const handleDeleteItem = async (id: number) => {
     try {
       await apiService.delete(`${API_LIST.INVENTORY_ENTRIES}/${id}`);
-      toast.success('Inventory entry deleted');
-      fetchData();
-    } catch (err) {
-      toast.error('Failed to delete item');
+      toast.success('Inventory entry deleted successfully!');
+      refetch();
+    } catch (error) {
+      console.error('Failed to delete inventory entry:', error);
+      toast.error('Failed to delete inventory entry.');
     }
   };
 
@@ -196,7 +272,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
               type="checkbox"
               id="notRelevant"
               checked={isNotRelevant}
-              onChange={(e) => setIsNotRelevant(e.target.checked)}
+              onChange={(e) => handleActivityNotRelevantChange(e.target.checked)}
               className="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4"
             />
             <label htmlFor="notRelevant" className="text-xs font-medium text-neutral-500">
@@ -250,6 +326,30 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
         </div>
       </div>
 
+      {/* Activity Not Relevant Modal */}
+      <ActivityNotRelevantModal
+        open={showNotRelevantModal}
+        onConfirm={() => {
+          setShowNotRelevantModal(false);
+          setIsNotRelevant(true);
+        }}
+        onCancel={() => {
+          setShowNotRelevantModal(false);
+          setIsNotRelevant(false);
+        }}
+      />
+
+      {/* Not-relevant notice banner */}
+      {isNotRelevant && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700 font-medium">
+          <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+          <span>
+            This activity has been marked as <strong>not relevant</strong>. The entries below
+            will not be included in the total emission calculations.
+          </span>
+        </div>
+      )}
+
       {/* Electricity Specific Note Alert */}
       {isElectricity && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3.5 flex items-start gap-2.5">
@@ -261,7 +361,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
       )}
 
       {/* Main Grid Forms */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${isNotRelevant ? 'opacity-40 pointer-events-none select-none' : ''}`}>
         {/* Left Card: Inventory Entry */}
         <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-neutral-800 tracking-wide border-b border-neutral-100 pb-3">
@@ -477,14 +577,48 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
               <label className="block text-xs font-semibold text-neutral-600 mb-1">
                 Proof of Documents if any (Invoices, SAP output, screenshot etc.)
               </label>
-              <div className="border-2 border-dashed border-neutral-200 hover:border-emerald-400 transition-colors rounded-xl p-6 text-center cursor-pointer bg-neutral-50/50 flex flex-col items-center justify-center gap-2">
-                <UploadCloud className="w-8 h-8 text-neutral-400" />
-                <div className="text-xs font-semibold text-neutral-700">
-                  Click to upload <span className="font-normal text-neutral-500">or drag and drop</span>
-                </div>
-                <div className="text-[10px] text-neutral-400">
-                  Allowed formats: JPEG, PNG, XLSX, PDF
-                </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".jpg,.jpeg,.png,.xlsx,.pdf"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setProofFile(e.target.files[0]);
+                  }
+                }}
+                className="hidden"
+              />
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-neutral-200 hover:border-emerald-400 transition-colors rounded-xl p-4 text-center cursor-pointer bg-neutral-50/50 flex flex-col items-center justify-center gap-2"
+              >
+                {proofFile ? (
+                  <div className="flex items-center gap-2 bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl px-3 py-2 text-xs font-semibold text-[#059669]">
+                    <Paperclip className="w-4 h-4 shrink-0" />
+                    <span className="truncate max-w-[200px]">{proofFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setProofFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      className="text-neutral-400 hover:text-red-600 ml-1"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <UploadCloud className="w-8 h-8 text-neutral-400" />
+                    <div className="text-xs font-semibold text-neutral-700">
+                      Click to upload <span className="font-normal text-neutral-500">or drag and drop</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">
+                      Allowed formats: JPEG, PNG, XLSX, PDF
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -545,81 +679,217 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
       </div>
 
       {/* Inventory Table Section */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-4">
+      <div className={`bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-4 ${isNotRelevant ? 'opacity-40 pointer-events-none select-none' : ''}`}>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-neutral-800 tracking-wide">
-            Inventory Table
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-neutral-800 tracking-wide">
+              Inventory Table ({totalCount})
+            </h2>
+            {isLoading && (
+              <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+            )}
+          </div>
+        </div>
+
+        {/* Toolbar: Search, Facility Filter, Status Filter, Clear Filters */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-neutral-50 p-3 rounded-xl border border-neutral-200">
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-[180px] max-w-xs">
+              <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search entries..."
+                value={searchInput}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-white border border-neutral-200 text-xs text-neutral-700 pl-8 pr-7 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+              />
+              {searchInput && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-2 top-2 text-neutral-400 hover:text-neutral-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Facility Filter */}
+            <select
+              value={filterFacility}
+              onChange={(e) => {
+                const fac = e.target.value;
+                setFilterFacility(fac);
+                setAdditionalFilter({ category: efCategory, facility: fac, status: filterStatus });
+              }}
+              className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+            >
+              <option value="">All Facilities</option>
+              {dbFacilities.map((fac) => (
+                <option key={fac.id} value={fac.name}>
+                  {fac.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => {
+                const stat = e.target.value;
+                setFilterStatus(stat);
+                setAdditionalFilter({ category: efCategory, facility: filterFacility, status: stat });
+              }}
+              className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+            >
+              <option value="">All Statuses</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
           <button
             type="button"
-            className="px-3 py-1.5 bg-navy-950 hover:bg-slate-900 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+            onClick={() => {
+              setSearch('');
+              setFilterFacility('');
+              setFilterStatus('');
+              setAdditionalFilter({ category: efCategory });
+              refetch();
+            }}
+            className="px-4 py-1.5 bg-navy-950 hover:bg-slate-900 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors shrink-0"
             style={{ backgroundColor: '#0B132B' }}
           >
             Clear All Filters
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-neutral-100 text-[11px] font-bold text-neutral-600 border-b border-neutral-200">
-                <th className="py-2.5 px-3">Actions</th>
-                <th className="py-2.5 px-3">Name</th>
-                <th className="py-2.5 px-3">EF Source</th>
-                <th className="py-2.5 px-3">From</th>
-                <th className="py-2.5 px-3">To</th>
-                <th className="py-2.5 px-3">Facility</th>
-                <th className="py-2.5 px-3">Emission (t CO₂-e)</th>
-                <th className="py-2.5 px-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 text-xs">
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="py-8 text-center text-neutral-400">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                    Loading inventory table...
-                  </td>
-                </tr>
-              ) : inventoryList.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-8 text-center text-neutral-400 font-medium">
-                    No data available.
-                  </td>
-                </tr>
-              ) : (
-                inventoryList.map((item) => (
-                  <tr key={item.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2 text-neutral-400">
-                        <Edit2 className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer" />
-                        <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
-                        <Trash2
-                          className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
-                          onClick={() => handleDeleteItem(item.id)}
-                        />
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 font-medium text-neutral-800">{item.name}</td>
-                    <td className="py-3 px-3 text-neutral-600">{item.efSource || '-'}</td>
-                    <td className="py-3 px-3 text-neutral-500">{item.dateFrom || item.from || '-'}</td>
-                    <td className="py-3 px-3 text-neutral-500">{item.dateTo || item.to || '-'}</td>
-                    <td className="py-3 px-3 text-neutral-700">{item.facility || '-'}</td>
-                    <td className="py-3 px-3 font-bold text-neutral-800">
-                      {Number(item.emission || 0).toLocaleString('en-US', {
-                        minimumFractionDigits: 3,
-                        maximumFractionDigits: 3,
-                      })}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-500" />
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {/* ReusableTable component */}
+        <ReusableTable
+          data={list.map((item) => ({ ...item, id: String(item.id) }))}
+          columns={[
+            {
+              id: 'actions',
+              header: 'Actions',
+              cell: ({ row }) => (
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <Edit2 className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer" />
+                  <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
+                  <Trash2
+                    className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteItem(Number(row.original.id));
+                    }}
+                  />
+                </div>
+              ),
+            },
+            {
+              accessorKey: 'name',
+              header: () => (
+                <button onClick={() => setSorting('name')} className="flex items-center gap-1 font-bold">
+                  <span>Name</span>
+                  <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                </button>
+              ),
+              cell: ({ row }: any) => <span className="font-medium text-neutral-800">{row.original.name}</span>,
+            },
+            {
+              accessorKey: 'efSource',
+              header: () => (
+                <button onClick={() => setSorting('efSource')} className="flex items-center gap-1 font-bold">
+                  <span>EF Source</span>
+                  <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                </button>
+              ),
+              cell: ({ row }: any) => row.original.efSource || '-',
+            },
+            {
+              accessorKey: 'dateFrom',
+              header: 'From',
+              cell: ({ row }: any) => row.original.dateFrom || row.original.from || '-',
+            },
+            {
+              accessorKey: 'dateTo',
+              header: 'To',
+              cell: ({ row }: any) => row.original.dateTo || row.original.to || '-',
+            },
+            {
+              accessorKey: 'facility',
+              header: () => (
+                <button onClick={() => setSorting('facility')} className="flex items-center gap-1 font-bold">
+                  <span>Facility</span>
+                  <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                </button>
+              ),
+              cell: ({ row }: any) => row.original.facility || '-',
+            },
+            {
+              id: 'documentPath',
+              header: 'Doc',
+              cell: ({ row }: any) => (
+                row.original.documentPath ? (
+                  <a
+                    href={(() => {
+                      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:5000/api/v1/';
+                      const baseUrl = serverUrl.replace(/\/api\/v1\/?$/, '').replace(/\/+$/, '');
+                      return `${baseUrl}/${row.original.documentPath.replace(/^\/+/, '')}`;
+                    })()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-emerald-600 hover:underline font-bold text-xs"
+                    title="View proof document"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Paperclip className="w-3.5 h-3.5" />
+                    <span>Doc</span>
+                  </a>
+                ) : (
+                  <span className="text-neutral-300">-</span>
+                )
+              ),
+            },
+            {
+              accessorKey: 'emission',
+              header: () => (
+                <button onClick={() => setSorting('emission')} className="flex items-center gap-1 font-bold">
+                  <span>Emission (t CO₂-e)</span>
+                  <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                </button>
+              ),
+              cell: ({ row }: any) => (
+                <span className="font-bold text-neutral-800">
+                  {Number(row.original.emission || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 3,
+                  })}
+                </span>
+              ),
+            },
+            {
+              accessorKey: 'status',
+              header: 'Status',
+              cell: ({ row }: any) => (
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    row.original.status === 'completed'
+                      ? 'bg-slate-500'
+                      : row.original.status === 'Approved'
+                      ? 'bg-emerald-500'
+                      : 'bg-amber-500'
+                  }`}
+                />
+              ),
+            },
+          ] as ColumnDef<any>[]}
+          isLoadingMore={isLoadingMore}
+          hasMore={hasMore}
+          handleLoadMore={loadMore}
+          tableHeight="auto"
+        />
       </div>
     </div>
   );
