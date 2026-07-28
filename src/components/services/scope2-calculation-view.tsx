@@ -163,7 +163,9 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
 
   useEffect(() => {
     fetchData();
-  }, [category]);
+    const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
+    setAdditionalFilter({ category: efCategory });
+  }, [category, isElectricity, setAdditionalFilter]);
 
   // Derived options for dropdowns strictly from DB
   const availableSources = useMemo(() => {

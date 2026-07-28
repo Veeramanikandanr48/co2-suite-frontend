@@ -213,7 +213,8 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
   useEffect(() => {
     fetchEmissionFactors();
     fetchFacilities();
-  }, [fetchEmissionFactors, fetchFacilities]);
+    setAdditionalFilter({ category });
+  }, [category, fetchEmissionFactors, fetchFacilities, setAdditionalFilter]);
 
   // Available unique EF Sources from DB
   const availableEfSources = useMemo(() => {

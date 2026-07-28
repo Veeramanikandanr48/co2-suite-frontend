@@ -196,11 +196,11 @@ export default function ServiceDetailPage() {
         {/* Dashboard Scrollable Body */}
         <main className="flex-1 overflow-y-auto p-5 space-y-5">
           {SCOPE_1_CATEGORIES.includes(activeTab) ? (
-            <Scope1CalculationView category={activeTab as Scope1CategoryType} />
+            <Scope1CalculationView key={activeTab} category={activeTab as Scope1CategoryType} />
           ) : SCOPE_2_CATEGORIES.includes(activeTab) ? (
-            <Scope2CalculationView category={activeTab as Scope2CategoryType} />
+            <Scope2CalculationView key={activeTab} category={activeTab as Scope2CategoryType} />
           ) : SCOPE_3_CATEGORIES.includes(activeTab) ? (
-            <Scope3CalculationView category={activeTab as Scope3CategoryType} />
+            <Scope3CalculationView key={activeTab} category={activeTab as Scope3CategoryType} />
           ) : (
             <>
               {/* Top Title & Filter Controls Bar */}

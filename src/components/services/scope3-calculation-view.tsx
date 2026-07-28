@@ -210,7 +210,8 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
 
   useEffect(() => {
     fetchData();
-  }, [category]);
+    setAdditionalFilter({ category });
+  }, [category, setAdditionalFilter]);
 
   // Total Emissions Sum
   const totalEmissions = useMemo(() => {
