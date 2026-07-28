@@ -11,6 +11,8 @@ import {
   Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { apiService } from '@/lib/api-service';
+import { API_LIST } from '@/lib/api-list';
 
 export type Scope2CategoryType =
   | 'Purchased Electricity'
@@ -76,6 +78,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   // API Data State
   const [dbFactors, setDbFactors] = useState<DBEmissionFactor[]>([]);
   const [inventoryList, setInventoryList] = useState<InventoryItem[]>([]);
+  const [dbFacilities, setDbFacilities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -85,19 +88,20 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
       setLoading(true);
       const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
       
-      const [efRes, invRes] = await Promise.all([
-        fetch(`http://localhost:3001/emission-factors?category=${encodeURIComponent(efCategory)}`),
-        fetch(`http://localhost:3001/inventory-entries?category=${encodeURIComponent(efCategory)}`),
+      const [efRes, invRes, facRes] = await Promise.all([
+        apiService.get<any>(`${API_LIST.EMISSION_FACTORS}?category=${encodeURIComponent(efCategory)}`),
+        apiService.get<any>(`${API_LIST.INVENTORY_ENTRIES}?category=${encodeURIComponent(efCategory)}`),
+        apiService.get<any>(API_LIST.FACILITIES),
       ]);
 
-      if (efRes.ok) {
-        const efJson = await efRes.json();
-        setDbFactors(efJson.data || []);
-      }
-      if (invRes.ok) {
-        const invJson = await invRes.json();
-        setInventoryList(invJson.data || []);
-      }
+      const efData = (efRes as any)?.data ?? efRes;
+      setDbFactors(Array.isArray(efData) ? efData : []);
+
+      const invData = (invRes as any)?.data ?? invRes;
+      setInventoryList(Array.isArray(invData) ? invData : []);
+
+      const facData = (facRes as any)?.data ?? facRes;
+      setDbFacilities(Array.isArray(facData) ? facData : []);
     } catch (err) {
       console.error('Failed to load Scope 2 data:', err);
     } finally {
@@ -152,21 +156,13 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
         efSource: efSource || 'IEA - 2023 Edition-2021',
         dateFrom: dateFrom || '01.01.2026',
         dateTo: dateTo || '31.12.2026',
-        facility: facility || 'Manchester Facility',
+        facility: facility || 'Central HQ',
         status: 'completed',
         comment,
         approvalStatus,
       };
 
-      const res = await fetch('http://localhost:3001/inventory-entries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to save inventory entry');
-      }
+      await apiService.post(API_LIST.INVENTORY_ENTRIES, payload);
 
       toast.success('Inventory entry saved successfully!');
       setAmount('');
@@ -182,13 +178,9 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   // Delete Entry from DB
   const handleDeleteItem = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:3001/inventory-entries/${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        toast.success('Inventory entry deleted');
-        fetchData();
-      }
+      await apiService.delete(`${API_LIST.INVENTORY_ENTRIES}/${id}`);
+      toast.success('Inventory entry deleted');
+      fetchData();
     } catch (err) {
       toast.error('Failed to delete item');
     }
@@ -248,8 +240,11 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
               className="text-[11px] bg-neutral-50 border border-neutral-200 rounded px-2 py-1 text-neutral-700"
             >
               <option value="All Facilities">All Facilities</option>
-              <option value="Manchester Facility">Manchester Facility</option>
-              <option value="Leeds Facility">Leeds Facility</option>
+              {dbFacilities.map((fac) => (
+                <option key={fac.id} value={fac.name}>
+                  {fac.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -445,8 +440,11 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
                 className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select your option</option>
-                <option value="Manchester Facility">Manchester Facility</option>
-                <option value="Leeds Facility">Leeds Facility</option>
+                {dbFacilities.map((fac) => (
+                  <option key={fac.id} value={fac.name}>
+                    {fac.name}
+                  </option>
+                ))}
               </select>
             </div>
 

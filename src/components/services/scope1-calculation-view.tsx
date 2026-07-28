@@ -14,6 +14,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { apiService } from '@/lib/api-service';
+import { API_LIST } from '@/lib/api-list';
 import { showSuccessToast, showErrorToast } from '@/components/reusables/toast-variant';
 
 export type Scope1CategoryType =
@@ -122,7 +123,7 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
   const fetchEmissionFactors = useCallback(async () => {
     try {
       setLoadingEF(true);
-      const response = await apiService.get<DBEmissionFactor[]>(`emission-factors?category=${encodeURIComponent(category)}`);
+      const response = await apiService.get<DBEmissionFactor[]>(`${API_LIST.EMISSION_FACTORS}?category=${encodeURIComponent(category)}`);
       const data = (response as any)?.data ?? response;
       const list = Array.isArray(data) ? data : [];
       setDbEmissionFactors(list);
@@ -144,7 +145,7 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
   const fetchInventoryEntries = useCallback(async () => {
     try {
       setLoadingInventory(true);
-      const response = await apiService.get<InventoryItem[]>(`inventory-entries?category=${encodeURIComponent(category)}`);
+      const response = await apiService.get<InventoryItem[]>(`${API_LIST.INVENTORY_ENTRIES}?category=${encodeURIComponent(category)}`);
       const data = (response as any)?.data ?? response;
       const items = Array.isArray(data) ? data : [];
       setInventoryItems(items);
@@ -155,10 +156,25 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
     }
   }, [category]);
 
+  // Dynamic Facilities state from DB
+  const [dbFacilities, setDbFacilities] = useState<any[]>([]);
+
+  const fetchFacilities = useCallback(async () => {
+    try {
+      const response = await apiService.get<any[]>(API_LIST.FACILITIES);
+      const data = (response as any)?.data ?? response;
+      const list = Array.isArray(data) ? data : [];
+      setDbFacilities(list);
+    } catch (error) {
+      console.error('Failed to fetch facilities from DB:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchEmissionFactors();
     fetchInventoryEntries();
-  }, [fetchEmissionFactors, fetchInventoryEntries]);
+    fetchFacilities();
+  }, [fetchEmissionFactors, fetchInventoryEntries, fetchFacilities]);
 
   // Available unique EF Sources from DB
   const availableEfSources = useMemo(() => {
@@ -323,8 +339,11 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
               className="bg-neutral-50 border border-[#E6E8EB] text-[10px] font-bold text-neutral-600 px-2 py-0.5 rounded cursor-pointer"
             >
               <option value="All Facilities">All Facilities</option>
-              <option value="Manchester Facility">Manchester Facility</option>
-              <option value="Leeds Facility">Leeds Facility</option>
+              {dbFacilities.map((fac) => (
+                <option key={fac.id} value={fac.name}>
+                  {fac.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -586,9 +605,11 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
                   className="w-full appearance-none bg-white border border-[#E6E8EB] text-xs text-neutral-700 px-3 py-2 rounded-xl focus:outline-none focus:border-[#00C9A7]"
                 >
                   <option value="">Select your option</option>
-                  <option value="Manchester Facility">Manchester Facility</option>
-                  <option value="Leeds Facility">Leeds Facility</option>
-                  <option value="London HQ">London HQ</option>
+                  {dbFacilities.map((fac) => (
+                    <option key={fac.id} value={fac.name}>
+                      {fac.name}
+                    </option>
+                  ))}
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-3 top-3 pointer-events-none" />
               </div>

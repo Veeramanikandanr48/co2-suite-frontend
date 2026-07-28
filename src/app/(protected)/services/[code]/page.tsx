@@ -160,11 +160,10 @@ export default function ServiceDetailPage() {
             </p>
             <button
               onClick={() => setActiveTab('Summary')}
-              className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left transition-colors text-xs ${
-                activeTab === 'Summary'
+              className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left transition-colors text-xs ${activeTab === 'Summary'
                   ? 'bg-[#ECFDF5] text-[#059669] font-bold border-l-4 border-[#059669]'
                   : 'text-neutral-600 hover:bg-[#F8F9FA]'
-              }`}
+                }`}
             >
               <TrendingUp className="w-3.5 h-3.5 text-[#059669]" />
               Summary
@@ -210,11 +209,10 @@ export default function ServiceDetailPage() {
                               key={item.id}
                               title={item.description || item.name}
                               onClick={() => setActiveTab(item.name)}
-                              className={`cursor-pointer py-0.5 truncate transition-colors ${
-                                isActive
+                              className={`cursor-pointer py-0.5 truncate transition-colors ${isActive
                                   ? 'text-[#059669] font-bold'
                                   : 'hover:text-[#059669]'
-                              }`}
+                                }`}
                             >
                               {item.name}
                             </p>

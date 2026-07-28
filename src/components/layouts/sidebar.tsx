@@ -111,8 +111,12 @@ const Sidebar = () => {
   const router = useRouter();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [activeLogo, setActiveLogo] = useState<WorkspaceLogo>(workspaceLogos[0]);
   const { user, logout } = useAuth();
+
+  const isServicePage = pathname.startsWith('/services');
+  const isEffectiveCollapsed = collapsed && !isHovered;
 
   const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
 
@@ -140,6 +144,12 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
+    if (isServicePage) {
+      setCollapsed(true);
+    }
+  }, [isServicePage]);
+
+  useEffect(() => {
     const activeParent = sidebarList.find((item) =>
       hasActiveDescendant(item, pathname)
     );
@@ -153,25 +163,28 @@ const Sidebar = () => {
   }, [pathname, router, indexedSidebar]);
 
   return (
-    <SidebarProvider open={!collapsed} onOpenChange={(open) => setCollapsed(!open)} className="h-full">
-      <div className={`h-full relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
-          shadow-[inset_0px_3px_10px_0px_#0000001A] transition-[width] duration-300 ease-in-out will-change-[width] ${collapsed ? "w-[80px]" : "w-[246px]"}`}
+    <SidebarProvider open={!isEffectiveCollapsed} onOpenChange={(open) => setCollapsed(!open)} className="h-full">
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`h-full relative before:absolute before:top-0 before:left-0 before:h-full before:w-full
+          shadow-[inset_0px_3px_10px_0px_#0000001A] transition-[width] duration-300 ease-in-out will-change-[width] z-30 ${isEffectiveCollapsed ? "w-[80px]" : "w-[246px]"}`}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className={`flex items-center justify-between mx-auto py-2.5 px-3 my-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer outline-none text-left group ${collapsed ? 'w-[80%]' : 'w-[90%]'}`}
+              className={`flex items-center justify-between mx-auto py-2.5 px-3 my-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer outline-none text-left group ${isEffectiveCollapsed ? 'w-[80%]' : 'w-[90%]'}`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center border shrink-0 ${activeLogo.iconBg}`}>
                   {activeLogo.icon}
                 </div>
-                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isEffectiveCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
                   <p className="text-base font-light text-text-sidebar whitespace-nowrap truncate">{activeLogo.name}</p>
                   <p className="text-[10px] font-normal text-gray-400 whitespace-nowrap">{activeLogo.plan}</p>
                 </div>
               </div>
-              {!collapsed && (
+              {!isEffectiveCollapsed && (
                 <ChevronsUpDown className="w-4 h-4 text-gray-400 group-hover:text-text-sidebar transition-colors shrink-0 ml-1" />
               )}
             </button>
@@ -212,7 +225,7 @@ const Sidebar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className={`${collapsed ? 'w-[64%]' : 'w-[86%]'} mx-auto border-b border-border-logo`}></div>
+        <div className={`${isEffectiveCollapsed ? 'w-[64%]' : 'w-[86%]'} mx-auto border-b border-border-logo`}></div>
 
         <ScrollArea className="h-[calc(100%-160px)]">
           <SidebarMenu className="mt-[10px] transition-all duration-300 ease-in-out pb-4">
@@ -222,7 +235,7 @@ const Sidebar = () => {
                 item={item}
                 isOpen={openMenu === item.href}
                 setOpenMenu={setOpenMenu}
-                collapsed={collapsed}
+                collapsed={isEffectiveCollapsed}
                 setCollapsed={setCollapsed}
               />
             ))}
@@ -237,17 +250,17 @@ const Sidebar = () => {
                   <div className="flex items-center justify-center min-w-[40px] h-[40px] rounded-full bg-background-sidebarActive border border-profile-border shrink-0">
                     <CircleUserRound className="w-6 h-6 text-text-sidebar" />
                   </div>
-                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isEffectiveCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
                     <p className="text-text-sidebar font-medium text-sm capitalize whitespace-nowrap truncate max-w-[110px]">{displayName || "User"}</p>
                     <p className="text-xs font-normal text-gray-400 capitalize whitespace-nowrap">Admin</p>
                   </div>
                 </div>
-                {!collapsed && (
+                {!isEffectiveCollapsed && (
                   <MoreVertical className="w-4 h-4 text-gray-400 group-hover:text-text-sidebar transition-colors shrink-0" />
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align={collapsed ? "start" : "end"} className="w-56 mb-2 bg-white shadow-xl rounded-xl border border-gray-100 p-1 z-50">
+            <DropdownMenuContent side="top" align={isEffectiveCollapsed ? "start" : "end"} className="w-56 mb-2 bg-white shadow-xl rounded-xl border border-gray-100 p-1 z-50">
               <DropdownMenuLabel className="font-normal p-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none text-gray-900 capitalize">{displayName || "User"}</p>
