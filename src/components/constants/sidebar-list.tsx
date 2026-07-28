@@ -18,6 +18,14 @@ export const sidebarList: SidebarItemType[] = [
     roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
     child: [],
   },
+  {
+    name: "Services",
+    href: "/services",
+    icon: "LayoutGrid",
+    isActive: true,
+    roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
+    child: [],
+  },
 ];
 
 /**

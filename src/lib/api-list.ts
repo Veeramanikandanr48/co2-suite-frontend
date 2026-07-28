@@ -7,4 +7,5 @@ export enum API_LIST {
     ORGANIZATIONS = 'organizations',
     ORGANIZATION_ONBOARD = 'organizations/onboard',
     ORGANIZATION_FILTER = 'organizations/filter',
+    SERVICES = 'services',
 };

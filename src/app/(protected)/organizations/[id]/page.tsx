@@ -11,6 +11,8 @@ import {
   Organization,
   EditOrganizationPayload,
 } from '@/types/organizations';
+import { Service, OrganizationService, AssignServicesPayload } from '@/types/services';
+import { ServiceCard } from '@/components/services/service-card';
 import { INITIAL_EDIT_FORM } from '@/components/constants/organization';
 import { useFetchList } from '@/hooks/use-fetchlist';
 import { ReusableTable } from '@/components/reusables/reusable-table';
@@ -46,6 +48,7 @@ import {
   MoreHorizontal,
   Activity,
   BarChart3,
+  LayoutGrid,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -320,6 +323,70 @@ export default function OrganizationDetailsPage() {
   const [orgDetails,       setOrgDetails]       = useState<Organization | null>(null);
   const [editForm,         setEditForm]         = useState<EditOrganizationPayload>(INITIAL_EDIT_FORM);
   const [addMemberForm,    setAddMemberForm]    = useState(INITIAL_ADD_MEMBER_FORM);
+
+  // Services tab state
+  const [allServices,       setAllServices]       = useState<Service[]>([]);
+  const [orgServices,       setOrgServices]       = useState<OrganizationService[]>([]);
+  const [servicesLoading,   setServicesLoading]   = useState(false);
+  const [assigningServiceId, setAssigningServiceId] = useState<number | null>(null);
+  const [removingServiceId,  setRemovingServiceId]  = useState<number | null>(null);
+
+  const subscribedServiceIds = useMemo(
+    () => new Set(orgServices.map((os) => os.serviceId)),
+    [orgServices],
+  );
+
+  const fetchOrgServices = useCallback(async () => {
+    if (!orgId) return;
+    try {
+      setServicesLoading(true);
+      if (isSuperAdmin) {
+        const [allRes, orgRes] = await Promise.all([
+          apiService.get<Service[]>('services'),
+          apiService.get<OrganizationService[]>(`organizations/${orgId}/services`),
+        ]);
+        const allData = (allRes as unknown as { data?: Service[] })?.data ?? (allRes as unknown as Service[]);
+        const orgData = (orgRes as unknown as { data?: OrganizationService[] })?.data ?? (orgRes as unknown as OrganizationService[]);
+        setAllServices(Array.isArray(allData) ? allData : []);
+        setOrgServices(Array.isArray(orgData) ? orgData : []);
+      } else {
+        const orgRes = await apiService.get<OrganizationService[]>(`organizations/${orgId}/services`);
+        const orgData = (orgRes as unknown as { data?: OrganizationService[] })?.data ?? (orgRes as unknown as OrganizationService[]);
+        setOrgServices(Array.isArray(orgData) ? orgData : []);
+      }
+    } catch {
+      // silently ignore — services tab is non-critical
+    } finally {
+      setServicesLoading(false);
+    }
+  }, [orgId, isSuperAdmin]);
+
+  const handleAssignService = useCallback(async (service: Service) => {
+    setAssigningServiceId(service.id);
+    try {
+      const payload: AssignServicesPayload = { serviceIds: [service.id] };
+      await apiService.post(`organizations/${orgId}/services`, payload);
+      showSuccessToast(`"${service.name}" assigned successfully`);
+      fetchOrgServices();
+    } catch (err: unknown) {
+      showErrorToast((err as { message?: string })?.message ?? 'Failed to assign service');
+    } finally {
+      setAssigningServiceId(null);
+    }
+  }, [orgId, fetchOrgServices]);
+
+  const handleRemoveService = useCallback(async (service: Service) => {
+    setRemovingServiceId(service.id);
+    try {
+      await apiService.delete(`organizations/${orgId}/services/${service.id}`);
+      showSuccessToast(`"${service.name}" removed successfully`);
+      fetchOrgServices();
+    } catch (err: unknown) {
+      showErrorToast((err as { message?: string })?.message ?? 'Failed to remove service');
+    } finally {
+      setRemovingServiceId(null);
+    }
+  }, [orgId, fetchOrgServices]);
 
   const usersFilterEndpoint = useMemo(
     () => (canEdit ? `organizations/${orgId}/users/filter` : ''),
@@ -760,6 +827,19 @@ export default function OrganizationDetailsPage() {
                     </span>
                   </TabsTrigger>
                 )}
+                <TabsTrigger
+                  value="services"
+                  onClick={() => { if (orgServices.length === 0 && allServices.length === 0) fetchOrgServices(); }}
+                  className="relative flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-none text-neutral-400 bg-transparent border-0 shadow-none hover:text-[#1454CC] data-[state=active]:text-[#1454CC] data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:rounded-t-full after:bg-[#1454CC] after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  Services
+                  {subscribedServiceIds.size > 0 && (
+                    <span className="ml-1.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#1454CC]/10 text-[#1454CC] text-[11px] font-bold">
+                      {subscribedServiceIds.size}
+                    </span>
+                  )}
+                </TabsTrigger>
               </TabsList>
             </div>
           </div>
@@ -1172,6 +1252,95 @@ export default function OrganizationDetailsPage() {
             </div>
           </TabsContent>
           )}
+
+          {/* ─── Services Tab ──────────────────────────────────────────── */}
+          <TabsContent
+            value="services"
+            className="flex-1 min-h-0 overflow-y-auto outline-none scrollBar"
+          >
+            <div className="p-6 space-y-5">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-700">CageSuite Services</h3>
+                  <p className="text-xs text-neutral-400 mt-0.5">
+                    {isSuperAdmin
+                      ? 'Assign or remove modules for this organization'
+                      : 'Modules subscribed to this organization'}
+                  </p>
+                </div>
+                {isSuperAdmin && (
+                  <button
+                    onClick={fetchOrgServices}
+                    disabled={servicesLoading}
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-700 px-3 py-2 rounded-lg border border-[#E6E8EB] bg-white hover:shadow-sm transition-all disabled:opacity-50"
+                  >
+                    {servicesLoading ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                    )}
+                    Refresh
+                  </button>
+                )}
+              </div>
+
+              {/* Loading */}
+              {servicesLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-6 h-6 text-[#1454CC] animate-spin" />
+                </div>
+              ) : isSuperAdmin ? (
+                /* Super Admin: show all master services with assign/remove */
+                allServices.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <div className="w-14 h-14 rounded-2xl bg-[#F0F2F5] border-2 border-dashed border-[#D9E5F2] flex items-center justify-center">
+                      <LayoutGrid className="w-7 h-7 text-neutral-300" />
+                    </div>
+                    <p className="text-sm text-neutral-500 font-medium">No services available</p>
+                    <p className="text-xs text-neutral-400">Services will appear after the backend seeds them.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {allServices.map((service) => (
+                      <ServiceCard
+                        key={service.id}
+                        service={service}
+                        isSubscribed={subscribedServiceIds.has(service.id)}
+                        showControls
+                        isAssigning={assigningServiceId === service.id}
+                        isRemoving={removingServiceId === service.id}
+                        onAssign={handleAssignService}
+                        onRemove={handleRemoveService}
+                      />
+                    ))}
+                  </div>
+                )
+              ) : (
+                /* Org Admin / User: read-only subscribed services */
+                orgServices.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <div className="w-14 h-14 rounded-2xl bg-[#F0F2F5] border-2 border-dashed border-[#D9E5F2] flex items-center justify-center">
+                      <LayoutGrid className="w-7 h-7 text-neutral-300" />
+                    </div>
+                    <p className="text-sm text-neutral-500 font-medium">No services subscribed</p>
+                    <p className="text-xs text-neutral-400">Contact your Super Admin to enable modules.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {orgServices.map((os) => (
+                      <ServiceCard
+                        key={os.id}
+                        service={os.service}
+                        isSubscribed
+                        showControls={false}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
