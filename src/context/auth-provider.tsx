@@ -69,32 +69,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (userName: string, password: string) => {
     try {
       setIsLoading(true);
-      // mock login
-      console.log('userName', userName, 'password', password);
-          const mockLogin: AuthState = {
-            user: {
-              id: 1,
-              userName,
-              firstName: "mock",
-              lastName: "user",
-              email: "mock-email",
-              roleId: 1,
-              profilePath: "mock-profile-path",
-              userId: "mock-user-id",
-              idpId: "mock-idp-id",
-            },
-            isLoading: false,
-            accessToken: "mock-token",
-          }
-    
-          localStorage.setItem("access_token", mockLogin.accessToken ?? "");
-          localStorage.setItem("user_data", JSON.stringify(mockLogin.user));
-          setState(mockLogin);
-          connectSocket();
-          router.push("/dashboard");
-    } catch  {
+      const response = await apiService.post<{
+        token: string;
+        user: User;
+        isTwoFactorAuthenticationEnabled?: boolean;
+      }>(API_LIST.LOGIN, {
+        emailId: userName,
+        password,
+      });
+
+      const responsePayload = response as unknown as { data?: { token: string; user: User }; token?: string; user?: User };
+      const loginData = responsePayload?.data || responsePayload;
+      const token = loginData?.token;
+      const user = loginData?.user || {
+        id: 1,
+        userName,
+        firstName: userName,
+        lastName: null,
+        email: userName,
+        roleId: 1,
+        profilePath: null,
+        userId: String(1),
+        idpId: "local",
+      };
+
+      if (token) {
+        const authState: AuthState = {
+          user,
+          isLoading: false,
+          accessToken: token,
+        };
+        localStorage.setItem("access_token", token);
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setState(authState);
+        connectSocket();
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }, [router, connectSocket]);
 
