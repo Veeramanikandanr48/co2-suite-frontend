@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils/utils";
 
 export default function WavyCircle ({ className = '', stroke = '#0C8F54'}) {
   return (

@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { apiService } from '@/lib/api-service';
-import { API_LIST } from '@/lib/api-list';
+﻿import { useState, useCallback, useEffect } from 'react';
+import { apiService } from '@/lib/api/api-service';
+import { API_LIST } from '@/lib/api/endpoints';
 
 export function useInventoryTableControls<T>(category: string) {
   const [items, setItems] = useState<T[]>([]);

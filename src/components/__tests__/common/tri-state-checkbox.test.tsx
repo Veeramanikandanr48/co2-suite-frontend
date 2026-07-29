@@ -1,8 +1,8 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import TriStateCheckbox from '~/components/reusables/form-fields/tri-state-checkbox';
-import { ESelectedStatus } from '~/enums/base-enum';
-import { APP_NAME, SRS_ID, generateTestId } from '~/components/test-ids/utc-global';
+import TriStateCheckbox from '@/components/shared/forms/tri-state-checkbox';
+import { ESelectedStatus } from '@/types/enums';
+import { APP_NAME, SRS_ID, generateTestId } from '@/components/test-ids/utc-global';
 import React from 'react';
 
 describe(`${APP_NAME}-${SRS_ID.PROTOCOL_CHECKBOX}: TriStateCheckbox`, () => {

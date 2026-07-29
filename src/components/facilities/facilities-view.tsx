@@ -15,11 +15,11 @@ import {
   Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { apiService } from '@/lib/api-service';
+import { apiService } from '@/lib/api/api-service';
 import { useAuth } from '@/context/auth-provider';
 import { FacilityModal, FacilityData } from './facility-modal';
-import { CompanyView } from '../manage-account/company-view';
-import { UsersView } from '../manage-account/users-view';
+import { CompanyView } from '@/features/manage-account/components/company-view';
+import { UsersView } from '@/features/manage-account/components/users-view';
 
 export function FacilitiesView() {
   const { user } = useAuth();

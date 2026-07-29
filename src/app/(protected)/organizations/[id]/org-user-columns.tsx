@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Mail, CalendarDays } from 'lucide-react';
-import { TableOrgUser } from '@/components/organizations/org-members-tab';
+import { TableOrgUser } from '@/features/organizations/components/tabs/org-members-tab';
 import {
   getOrgMonogram,
   getAvatarColors,

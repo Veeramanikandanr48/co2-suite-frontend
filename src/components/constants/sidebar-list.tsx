@@ -1,5 +1,5 @@
-import { SidebarItemType } from "@/types/sidebar";
-import { MasterRole } from "@/enums/base-enum";
+﻿import { SidebarItemType } from "@/types/sidebar";
+import { MasterRole } from "@/types/enums";
 
 export const sidebarList: SidebarItemType[] = [
   {

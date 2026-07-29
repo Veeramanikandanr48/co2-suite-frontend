@@ -1,15 +1,15 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { useAuth } from '@/context/auth-provider';
-import { MasterRole } from '@/enums/base-enum';
-import { apiService } from '@/lib/api-service';
-import { API_LIST } from '@/lib/api-list';
-import { useFetchList } from '@/hooks/use-fetchlist';
-import SearchBar from '@/components/reusables/search-bar';
-import { ReusableTable } from '@/components/reusables/reusable-table';
+import { MasterRole } from '@/types/enums';
+import { apiService } from '@/lib/api/api-service';
+import { API_LIST } from '@/lib/api/endpoints';
+import { useFetchList } from '@/hooks/use-fetch-list';
+import SearchBar from '@/components/shared/search-bar';
+import { ReusableTable } from '@/components/shared/table/reusable-table';
 import {
   Building2,
   Plus,
@@ -28,10 +28,10 @@ import {
 import {
   showErrorToast,
   showSuccessToast,
-} from '@/components/reusables/toast-variant';
+} from '@/components/shared/toast-variant';
 import {
   OnboardOrganizationSchema,
-} from '@/lib/schemas';
+} from '@/lib/schemas/schemas';
 import {
   Organization,
   TableOrganization,
@@ -42,7 +42,7 @@ import {
   INITIAL_ONBOARD_FORM,
   INITIAL_EDIT_FORM,
 } from '@/components/constants/organization';
-import { OrgOnboardDialog } from '@/components/organizations/org-onboard-dialog';
+import { OrgOnboardDialog } from '@/features/organizations/components/dialogs/org-onboard-dialog';
 
 export default function OrganizationsPage() {
   const { user } = useAuth();

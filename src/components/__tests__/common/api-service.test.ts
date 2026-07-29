@@ -1,5 +1,5 @@
 // Move jest.mock to the very top
-jest.mock('../../../lib/axios', () => {
+jest.mock('@/lib/api/axios-client', () => {
   return {
     __esModule: true,
     default: {
@@ -10,15 +10,15 @@ jest.mock('../../../lib/axios', () => {
   };
 });
 
-let apiService: typeof import('../../../lib/api-service').apiService;
-let axiosInstance: jest.Mocked<typeof import('../../../lib/axios').default>;
+let apiService: typeof import('@/lib/api/api-service').apiService;
+let axiosInstance: jest.Mocked<typeof import('@/lib/api/axios-client').default>;
 
 describe('ApiService', () => {
   beforeEach(async () => {
     jest.resetModules();
-    const apiServiceModule = await import('../../../lib/api-service');
+    const apiServiceModule = await import('@/lib/api/api-service');
     apiService = apiServiceModule.apiService;
-    const axiosModule = await import('../../../lib/axios');
+    const axiosModule = await import('@/lib/api/axios-client');
     axiosInstance = axiosModule.default as jest.Mocked<typeof axiosModule.default>;
     jest.clearAllMocks();
     axiosInstance.get.mockResolvedValue({ data: {} });

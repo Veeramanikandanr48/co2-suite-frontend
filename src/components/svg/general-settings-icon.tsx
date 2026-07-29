@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils/utils";
 export default function GeneralSettingsIcon ({ className = '', stroke='#5C5F66'}) {
   return (
   <svg className={cn(className)}  width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

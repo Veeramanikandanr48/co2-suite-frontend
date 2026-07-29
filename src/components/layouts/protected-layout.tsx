@@ -1,11 +1,11 @@
-"use client"
+﻿"use client"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useAuth } from "@/context/auth-provider"
 import { useRouter } from "next/navigation"
 import Header from "./header"
 import Sidebar from "./sidebar"
-import { Loader } from "../reusables/loader"
+import { Loader } from "@/components/shared/loader"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 interface ProtectedLayoutProps {

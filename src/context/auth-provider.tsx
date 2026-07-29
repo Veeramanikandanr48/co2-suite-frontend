@@ -2,10 +2,11 @@
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { apiService } from "@/lib/api-service";
-import { API_LIST } from "~/lib/api-list";
-import { useLoader } from "@/context/loader-context";
-import { useSocket } from "@/context/socket-context";
+import { apiService } from "@/lib/api/api-service";
+import { API_LIST } from "@/lib/api/endpoints";
+
+import { useLoader } from "@/context/loader-provider";
+import { useSocket } from "@/context/socket-provider";
 
 export interface User {
   id: number;

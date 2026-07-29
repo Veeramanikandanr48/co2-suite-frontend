@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
-import { Loader } from "@/components/reusables/loader";
+import { Loader } from "@/components/shared/loader";
 
 export default function AuthLayout({
     children,

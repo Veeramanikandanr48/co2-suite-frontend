@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 // Inspired by react-hot-toast library
 import * as React from "react"
@@ -6,7 +6,7 @@ import type {
   ToastActionElement,
   ToastProps,
 } from "@/components/ui/toast"
-import { ToastType } from "@/enums/base-enum"
+import { ToastType } from "@/types/enums"
 
 type ToasterToast = ToastProps & {
   id: string

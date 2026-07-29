@@ -1,6 +1,6 @@
+﻿
 
-
-import { cn } from "~/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 export default function Duplicate({ className = '', stroke = '#4D5059' }) {
     return (

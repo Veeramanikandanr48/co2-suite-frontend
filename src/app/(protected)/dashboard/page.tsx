@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
@@ -12,10 +12,10 @@ import {
   Loader2,
   ChevronDown,
 } from 'lucide-react';
-import { apiService } from '@/lib/api-service';
+import { apiService } from '@/lib/api/api-service';
 import { MainDashboardSummaryData } from '@/types/main-dashboard';
 import { useAuth } from '@/context/auth-provider';
-import { MasterRole } from '@/enums/base-enum';
+import { MasterRole } from '@/types/enums';
 
 import { DashboardAdminView } from './dashboard-admin-view';
 import { DashboardUserView } from './dashboard-user-view';

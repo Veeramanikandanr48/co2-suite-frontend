@@ -1,21 +1,21 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/auth-provider"
 import { EyeIcon, EyeOffIcon, Loader2, X } from "lucide-react"
-import FormInput from "~/components/reusables/form-fields/form-input";
-import { FORM_DEFAULT_VALUES } from "~/lib/variables"
+import FormInput from "@/components/shared/forms/form-input";
+import { FORM_DEFAULT_VALUES } from "@/lib/constants/app-variables"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form"
-import { LoginFormSchema } from "~/lib/schemas"
+import { LoginFormSchema } from "@/lib/schemas/schemas"
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { LOGIN_TEST_IDS } from "~/components/test-ids/login-ids";
-import { useLoader } from "@/context/loader-context";
+import { LOGIN_TEST_IDS } from "@/components/test-ids/login-ids";
+import { useLoader } from "@/context/loader-provider";
 import { LoginFormType } from "@/types/form"
 
 const RESEND_COUNTDOWN_TIME = 30;

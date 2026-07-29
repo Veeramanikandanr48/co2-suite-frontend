@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import FormTextarea from '~/components/reusables/form-fields/form-textarea';
-import { APP_NAME, SRS_ID, generateTestId } from '~/components/test-ids/utc-global';
+import FormTextarea from '@/components/shared/forms/form-textarea';
+import { APP_NAME, SRS_ID, generateTestId } from '@/components/test-ids/utc-global';
 import { FormProvider, useForm, FieldValues, UseFormReturn } from 'react-hook-form';
 import React from 'react';
 

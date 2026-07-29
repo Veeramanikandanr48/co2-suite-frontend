@@ -1,21 +1,21 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
-import { MasterRole } from '@/enums/base-enum';
-import { useFetchList } from '@/hooks/use-fetchlist';
+import { MasterRole } from '@/types/enums';
+import { useFetchList } from '@/hooks/use-fetch-list';
 import { Users, MapPin, FileText, Share2 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { showErrorToast } from '@/components/reusables/toast-variant';
+import { showErrorToast } from '@/components/shared/toast-variant';
 
 // Modularized Organization Components
-import { OrgHeader } from '@/components/organizations/org-header';
-import { OrgOverviewTab } from '@/components/organizations/org-overview-tab';
-import { OrgMembersTab, OrgUser, TableOrgUser } from '@/components/organizations/org-members-tab';
-import { OrgServicesTab } from '@/components/organizations/org-services-tab';
-import { OrgFacilitiesTab } from '@/components/organizations/org-facilities-tab';
-import { OrgDialogs } from '@/components/organizations/org-dialogs';
+import { OrgHeader } from '@/features/organizations/components/org-header';
+import { OrgOverviewTab } from '@/features/organizations/components/tabs/org-overview-tab';
+import { OrgMembersTab, OrgUser, TableOrgUser } from '@/features/organizations/components/tabs/org-members-tab';
+import { OrgServicesTab } from '@/features/organizations/components/tabs/org-services-tab';
+import { OrgFacilitiesTab } from '@/features/organizations/components/tabs/org-facilities-tab';
+import { OrgDialogs } from '@/features/organizations/components/dialogs/org-dialogs';
 import { useOrgDetails } from './use-org-details';
 import { createOrgUserColumns } from './org-user-columns';
 import { OrgLoadingState, OrgNotFoundState } from './org-loading-view';

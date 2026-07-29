@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { X, Search, MapPin, Loader2, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { apiService } from '@/lib/api-service';
+import { apiService } from '@/lib/api/api-service';
 
 import { FacilityData } from '@/types/facilities';
 

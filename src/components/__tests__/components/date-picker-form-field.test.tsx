@@ -1,8 +1,8 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
-import DatePickerFormField from '@/components/reusables/form-fields/date-picker-form-field';
-import { DATE_OPTIONS } from '@/lib/variables';
+import DatePickerFormField from '@/components/shared/forms/date-picker-form-field';
+import { DATE_OPTIONS } from '@/lib/constants/app-variables';
 import React from 'react';
 
 // Mock the CalendarIcon

@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { PanelLeft } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {

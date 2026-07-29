@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-provider";
 import { ThemeProvider } from "../context/theme-provider";
-import { PermissionsProvider } from "~/context/permissions-provider";
-import { LoaderProvider } from "@/context/loader-context";
-import { Loader } from "@/components/reusables/loader";
-import { SocketProvider } from "@/context/socket-context";
-import { ToasterWrapper } from "@/components/reusables/toaster-wrapper";
+import { PermissionsProvider } from "@/context/permissions-provider";
+import { LoaderProvider } from "@/context/loader-provider";
+import { Loader } from "@/components/shared/loader";
+import { SocketProvider } from "@/context/socket-provider";
+import { ToasterWrapper } from "@/components/shared/toaster-wrapper";
 
 export const metadata: Metadata = {
   title: "CO2 Suite | Enterprise Carbon Accounting",

@@ -1,6 +1,6 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
-import { Icons, Close, PlusCircle, Verified, NotVerified, Warning, WarningCircle, Gear, Probe, Barcode, Trash, Filter, Reset, Save, Vector, Duplicate, Triangle } from '~/components/svg';
+import { Icons, Close, PlusCircle, Verified, NotVerified, Warning, WarningCircle, Gear, Probe, Barcode, Trash, Filter, Reset, Save, Vector, Duplicate, Triangle } from '@/components/svg';
 import React from 'react';
 
 const testIconWithColor = (Icon: React.ComponentType<React.SVGProps<SVGSVGElement>  >, color: string) => {

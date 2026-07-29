@@ -1,5 +1,5 @@
-
-import { cn } from "@/lib/utils";
+﻿
+import { cn } from "@/lib/utils/utils";
 export default function Trash ({ className = '', stroke = '#4D5059'}) {
   return (
     <svg  className={cn(className)} width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">

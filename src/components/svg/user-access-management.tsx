@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils/utils";
 export default function UserManagementIcon ({ className = '', stroke='#5C5F66'}) {
   return (
     <svg className={cn(className)}  width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">

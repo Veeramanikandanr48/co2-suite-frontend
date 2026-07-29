@@ -1,14 +1,14 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { LayoutGrid, Loader2, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-provider';
-import { MasterRole } from '@/enums/base-enum';
-import { apiService } from '@/lib/api-service';
-import { API_LIST } from '@/lib/api-list';
+import { MasterRole } from '@/types/enums';
+import { apiService } from '@/lib/api/api-service';
+import { API_LIST } from '@/lib/api/endpoints';
 import { Service, OrganizationService } from '@/types/services';
-import { ServiceCard } from '@/components/services/service-card';
-import { showErrorToast } from '@/components/reusables/toast-variant';
+import { ServiceCard } from '@/features/services/components/shared/service-card';
+import { showErrorToast } from '@/components/shared/toast-variant';
 
 export default function ServicesPage() {
   const { user } = useAuth();

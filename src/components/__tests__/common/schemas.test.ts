@@ -1,8 +1,8 @@
-import { describe, it, expect } from '@jest/globals';
+﻿import { describe, it, expect } from '@jest/globals';
 import {
     LoginFormSchema,
     UserFormSchema,
-} from '~/lib/schemas';
+} from '@/lib/schemas/schemas';
 
 describe('LoginFormSchema', () => {
     it('validates a correct login payload', () => {

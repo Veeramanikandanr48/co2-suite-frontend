@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
-import { MasterRole } from '@/enums/base-enum';
-import { EmissionFactorsView } from '@/components/emission-factors/emission-factors-view';
+import { MasterRole } from '@/types/enums';
+import { EmissionFactorsView } from '@/features/emission-factors/components/emission-factors-view';
 import { ShieldAlert } from 'lucide-react';
 
 export default function EmissionFactorsPage() {

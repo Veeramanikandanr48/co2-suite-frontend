@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { apiService } from '@/lib/api-service';
-import { FacilityItem } from '@/components/organizations/org-facilities-tab';
-import { FacilityFormState } from '@/components/organizations/org-dialogs';
-import { showErrorToast, showSuccessToast } from '@/components/reusables/toast-variant';
+import { apiService } from '@/lib/api/api-service';
+import { FacilityItem } from '@/features/organizations/components/tabs/org-facilities-tab';
+import { FacilityFormState } from '@/features/organizations/components/dialogs/org-dialogs';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast-variant';
 
 export function useOrgFacilities(orgId: string) {
   const [facilities, setFacilities] = useState<FacilityItem[]>([]);

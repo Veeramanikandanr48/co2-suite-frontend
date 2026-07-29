@@ -1,8 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import { z } from 'zod';
 import { Shield, User } from 'lucide-react';
-import { MasterRole } from '@/enums/base-enum';
-import { AddMemberFormState } from '@/components/organizations/org-dialogs';
+import { MasterRole } from '@/types/enums';
+import { AddMemberFormState } from '@/features/organizations/components/dialogs/org-dialogs';
 
 export const AddMemberSchema = z.object({
   firstName: z.string().min(1, 'First Name is required'),

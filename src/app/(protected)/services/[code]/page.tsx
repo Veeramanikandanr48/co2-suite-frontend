@@ -1,14 +1,14 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { apiService } from '@/lib/api-service';
+import { apiService } from '@/lib/api/api-service';
 import { ServiceScopeItem } from '@/types/services';
 import { CarbonSummaryData } from '@/types/carbon-summary';
-import { ServiceSidebar } from '@/components/services/service-sidebar';
-import { Scope1CalculationView, Scope1CategoryType } from '@/components/services/scope1-calculation-view';
-import { Scope2CalculationView, Scope2CategoryType } from '@/components/services/scope2-calculation-view';
-import { Scope3CalculationView, Scope3CategoryType } from '@/components/services/scope3-calculation-view';
+import { ServiceSidebar } from '@/features/services/components/shared/service-sidebar';
+import { Scope1CalculationView, Scope1CategoryType } from '@/features/services/components/scope1/scope1-calculation-view';
+import { Scope2CalculationView, Scope2CategoryType } from '@/features/services/components/scope2/scope2-calculation-view';
+import { Scope3CalculationView, Scope3CategoryType } from '@/features/services/components/scope3/scope3-calculation-view';
 import { ServiceSummaryView } from './service-summary-view';
 
 const SCOPE_1_CATEGORIES = [

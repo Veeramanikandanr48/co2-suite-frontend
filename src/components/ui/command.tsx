@@ -1,11 +1,11 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
 import Search from "@/components/svg/search"
 
-import { cn } from "~/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 
 const Command = React.forwardRef<

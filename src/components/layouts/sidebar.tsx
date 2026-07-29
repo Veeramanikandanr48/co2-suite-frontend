@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -30,8 +30,8 @@ import {
 const SidebarItem = dynamic(() => import("./sidebar-items"), { ssr: false });
 import { SidebarItemType } from "@/types/sidebar";
 import { useAuth } from "@/context/auth-provider";
-import { FORM_CONFIGURATION } from "@/lib/variables";
-import EventBus from "@/lib/eventbus";
+import { FORM_CONFIGURATION } from "@/lib/constants/app-variables";
+import EventBus from "@/lib/utils/event-bus";
 import { WorkspaceLogo, workspaceLogos, hasActiveDescendant } from "./sidebar-constants";
 
 const Sidebar = () => {

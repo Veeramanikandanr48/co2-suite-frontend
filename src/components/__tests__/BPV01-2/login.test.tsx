@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react';
+﻿import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useAuth } from '@/context/auth-provider';
 import { useRouter } from 'next/navigation';
 import { APP_NAME, generateTestId, SRS_ID } from '@/components/test-ids/utc-global';
-import { LOGIN_TEST_IDS } from '~/components/test-ids/login-ids';
+import { LOGIN_TEST_IDS } from '@/components/test-ids/login-ids';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import SignIn from '@/app/(auth)/sign-in/admin/page';

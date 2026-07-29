@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { useSocket } from "@/context/socket-context"
+import { useSocket } from "@/context/socket-provider"
 
 type SocketData = Record<string, unknown>;
 type SocketResponse = Record<string, unknown>;

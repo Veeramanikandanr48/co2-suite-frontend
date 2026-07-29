@@ -1,4 +1,4 @@
-import { getByTestId, findByTestId, findAllByTestId } from '~/lib/utils';
+﻿import { getByTestId, findByTestId, findAllByTestId } from '@/lib/utils/utils';
 describe('Test ID Utility Functions', () => {
   // Test for getByTestId
   describe('getByTestId', () => {

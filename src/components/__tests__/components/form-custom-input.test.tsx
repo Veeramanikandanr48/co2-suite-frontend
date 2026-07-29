@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
-import FormCustomInput from '@/components/reusables/form-fields/form-custom-input';
+import FormCustomInput from '@/components/shared/forms/form-custom-input';
 
 type FormValues = {
   [key: string]: string | number | boolean | null;

@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { act, renderHook } from '@testing-library/react';
 import { useToast, toast } from '@/hooks/use-toast';
-import { ToastType } from '@/enums/base-enum';
+import { ToastType } from '@/types/enums';
 
 // Mock setTimeout
 jest.useFakeTimers();

@@ -1,11 +1,11 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
-import { ToastType } from "@/enums/base-enum"
-import { cn } from "@/lib/utils"
+import { ToastType } from "@/types/enums"
+import { cn } from "@/lib/utils/utils"
 
 const ToastProvider = ToastPrimitives.Provider
 

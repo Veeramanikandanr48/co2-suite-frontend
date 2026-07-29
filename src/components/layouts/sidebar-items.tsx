@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Icons } from "@/components/svg";
-import EventBus from "../../lib/eventbus";
-import { FORM_CONFIGURATION } from "@/lib/variables";
+import EventBus from "@/lib/utils/event-bus";
+
+import { FORM_CONFIGURATION } from "@/lib/constants/app-variables";
 import { SidebarItemProps } from "@/types/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import {
@@ -36,7 +37,7 @@ const getSidebarIcon = (iconName?: string) => {
 };
 
 import { useAuth } from "@/context/auth-provider";
-import { MasterRole } from "@/enums/base-enum";
+import { MasterRole } from "@/types/enums";
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setCollapsed }) => {
   const pathname = usePathname();

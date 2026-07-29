@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils/utils";
 export default function DeviceIntegrationIcon ({ className = '', stroke='#5C5F66'}) : React.ReactElement {
   return (
     <svg  className={cn(className)} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

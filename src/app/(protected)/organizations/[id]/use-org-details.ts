@@ -1,16 +1,16 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiService } from '@/lib/api-service';
-import { API_LIST } from '@/lib/api-list';
+import { apiService } from '@/lib/api/api-service';
+import { API_LIST } from '@/lib/api/endpoints';
 import { Organization, EditOrganizationPayload } from '@/types/organizations';
 import { Service, OrganizationService, AssignServicesPayload } from '@/types/services';
 import { INITIAL_EDIT_FORM } from '@/components/constants/organization';
-import { AddMemberFormState } from '@/components/organizations/org-dialogs';
+import { AddMemberFormState } from '@/features/organizations/components/dialogs/org-dialogs';
 import { INITIAL_ADD_MEMBER_FORM, AddMemberSchema } from './org-detail-utils';
-import { EditOrganizationSchema } from '@/lib/schemas';
-import { showErrorToast, showSuccessToast } from '@/components/reusables/toast-variant';
+import { EditOrganizationSchema } from '@/lib/schemas/schemas';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast-variant';
 import { useOrgFacilities } from './use-org-facilities';
 
 export function useOrgDetails(orgId: string, isSuperAdmin: boolean) {

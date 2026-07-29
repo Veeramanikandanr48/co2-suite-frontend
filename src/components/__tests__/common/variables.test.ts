@@ -1,9 +1,9 @@
-import { describe, it, expect } from '@jest/globals';
+﻿import { describe, it, expect } from '@jest/globals';
 import {
     FORM_DEFAULT_VALUES,
     FORM_FILL_VALUES,
     REGEX,
-} from '~/lib/variables';
+} from '@/lib/constants/app-variables';
 
 describe('FORM_DEFAULT_VALUES', () => {
     it('contains default login form values', () => {
