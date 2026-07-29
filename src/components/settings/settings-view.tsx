@@ -9,7 +9,12 @@ import {
   Save,
   CheckCircle2,
 } from 'lucide-react';
-import { PageHeader, NavTabButton } from '@/components/shared';
+import {
+  PageHeader,
+  NavTabButton,
+  SectionCard,
+  FormSelectField,
+} from '@/components/shared';
 import { AppSettings } from '@/types/settings';
 import { toast } from 'sonner';
 
@@ -99,134 +104,112 @@ export function SettingsView() {
         />
       </div>
 
-      {/* Main Settings Card */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-6 w-full">
+      {/* Settings Card Content */}
+      <SectionCard>
         {activeTab === 'general' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">General & Regional Settings</h2>
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+              General & Regional Settings
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Interface Language
-                </label>
-                <select
-                  value={settings.language}
-                  onChange={(e) => setSettings({ ...settings, language: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="en">English (US)</option>
-                  <option value="es">Español (Spanish)</option>
-                  <option value="fr">Français (French)</option>
-                  <option value="de">Deutsch (German)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Interface Language"
+                value={settings.language}
+                onChange={(val) => setSettings({ ...settings, language: val })}
+                options={[
+                  { value: 'en', label: 'English (US)' },
+                  { value: 'es', label: 'Español (Spanish)' },
+                  { value: 'fr', label: 'Français (French)' },
+                  { value: 'de', label: 'Deutsch (German)' },
+                ]}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Timezone
-                </label>
-                <select
-                  value={settings.timezone}
-                  onChange={(e) => setSettings({ ...settings, timezone: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="UTC">UTC (Coordinated Universal Time)</option>
-                  <option value="EST">EST (Eastern Standard Time)</option>
-                  <option value="PST">PST (Pacific Standard Time)</option>
-                  <option value="GMT">GMT (Greenwich Mean Time)</option>
-                  <option value="IST">IST (India Standard Time)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Timezone"
+                value={settings.timezone}
+                onChange={(val) => setSettings({ ...settings, timezone: val })}
+                options={[
+                  { value: 'UTC', label: 'UTC (Coordinated Universal Time)' },
+                  { value: 'EST', label: 'EST (Eastern Standard Time)' },
+                  { value: 'PST', label: 'PST (Pacific Standard Time)' },
+                  { value: 'GMT', label: 'GMT (Greenwich Mean Time)' },
+                  { value: 'IST', label: 'IST (India Standard Time)' },
+                ]}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Date Format
-                </label>
-                <select
-                  value={settings.dateFormat}
-                  onChange={(e) => setSettings({ ...settings, dateFormat: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="YYYY-MM-DD">YYYY-MM-DD (2026-07-29)</option>
-                  <option value="MM/DD/YYYY">MM/DD/YYYY (07/29/2026)</option>
-                  <option value="DD/MM/YYYY">DD/MM/YYYY (29/07/2026)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Date Format"
+                value={settings.dateFormat}
+                onChange={(val) => setSettings({ ...settings, dateFormat: val })}
+                options={[
+                  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (2026-07-29)' },
+                  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY (07/29/2026)' },
+                  { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (29/07/2026)' },
+                ]}
+              />
             </div>
           </div>
         )}
 
         {activeTab === 'emissions' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Carbon Accounting Preferences</h2>
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+              Carbon Accounting Preferences
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Default Carbon Unit
-                </label>
-                <select
-                  value={settings.carbonUnit}
-                  onChange={(e) => setSettings({ ...settings, carbonUnit: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="tCO2e">Metric Tonnes (tCO2e)</option>
-                  <option value="kgCO2e">Kilograms (kgCO2e)</option>
-                  <option value="lbCO2e">Pounds (lbCO2e)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Default Carbon Unit"
+                value={settings.carbonUnit}
+                onChange={(val) => setSettings({ ...settings, carbonUnit: val })}
+                options={[
+                  { value: 'tCO2e', label: 'Metric Tonnes (tCO2e)' },
+                  { value: 'kgCO2e', label: 'Kilograms (kgCO2e)' },
+                  { value: 'lbCO2e', label: 'Pounds (lbCO2e)' },
+                ]}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Accounting Standard
-                </label>
-                <select
-                  value={settings.reportingStandard}
-                  onChange={(e) => setSettings({ ...settings, reportingStandard: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="ghg-protocol">GHG Protocol Corporate Standard</option>
-                  <option value="iso-14064">ISO 14064-1 Standard</option>
-                  <option value="pcaf">PCAF Financial Standard</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Accounting Standard"
+                value={settings.reportingStandard}
+                onChange={(val) => setSettings({ ...settings, reportingStandard: val })}
+                options={[
+                  { value: 'ghg-protocol', label: 'GHG Protocol Corporate Standard' },
+                  { value: 'iso-14064', label: 'ISO 14064-1 Standard' },
+                  { value: 'pcaf', label: 'PCAF Financial Standard' },
+                ]}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Currency
-                </label>
-                <select
-                  value={settings.currency}
-                  onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                  <option value="INR">INR (₹)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Currency"
+                value={settings.currency}
+                onChange={(val) => setSettings({ ...settings, currency: val })}
+                options={[
+                  { value: 'USD', label: 'USD ($)' },
+                  { value: 'EUR', label: 'EUR (€)' },
+                  { value: 'GBP', label: 'GBP (£)' },
+                  { value: 'INR', label: 'INR (₹)' },
+                ]}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Decimal Precision
-                </label>
-                <select
-                  value={settings.decimalPrecision}
-                  onChange={(e) => setSettings({ ...settings, decimalPrecision: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="2">2 Decimal Places (0.00)</option>
-                  <option value="3">3 Decimal Places (0.000)</option>
-                  <option value="4">4 Decimal Places (0.0000)</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Decimal Precision"
+                value={settings.decimalPrecision}
+                onChange={(val) => setSettings({ ...settings, decimalPrecision: val })}
+                options={[
+                  { value: '2', label: '2 Decimal Places (0.00)' },
+                  { value: '3', label: '3 Decimal Places (0.000)' },
+                  { value: '4', label: '4 Decimal Places (0.0000)' },
+                ]}
+              />
             </div>
           </div>
         )}
 
         {activeTab === 'alerts' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Notification Preferences</h2>
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+              Notification Preferences
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
               {[
                 {
@@ -247,10 +230,15 @@ export function SettingsView() {
               ].map((item) => {
                 const k = item.key as keyof AppSettings;
                 return (
-                  <div key={item.key} className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
+                  <div
+                    key={item.key}
+                    className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between"
+                  >
                     <div>
                       <div className="text-xs font-bold text-neutral-900">{item.title}</div>
-                      <div className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">{item.desc}</div>
+                      <div className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">
+                        {item.desc}
+                      </div>
                     </div>
                     <input
                       type="checkbox"
@@ -267,12 +255,18 @@ export function SettingsView() {
 
         {activeTab === 'security' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Security Policies</h2>
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+              Security Policies
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-bold text-neutral-900">Enforce Two-Factor Authentication (2FA)</div>
-                  <div className="text-[11px] text-neutral-500 mt-0.5">Require multi-factor authentication codes during login</div>
+                  <div className="text-xs font-bold text-neutral-900">
+                    Enforce Two-Factor Authentication (2FA)
+                  </div>
+                  <div className="text-[11px] text-neutral-500 mt-0.5">
+                    Require multi-factor authentication codes during login
+                  </div>
                 </div>
                 <input
                   type="checkbox"
@@ -282,21 +276,17 @@ export function SettingsView() {
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Session Inactivity Timeout
-                </label>
-                <select
-                  value={settings.sessionTimeout}
-                  onChange={(e) => setSettings({ ...settings, sessionTimeout: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-                >
-                  <option value="15">15 Minutes</option>
-                  <option value="30">30 Minutes</option>
-                  <option value="60">1 Hour</option>
-                  <option value="240">4 Hours</option>
-                </select>
-              </div>
+              <FormSelectField
+                label="Session Inactivity Timeout"
+                value={settings.sessionTimeout}
+                onChange={(val) => setSettings({ ...settings, sessionTimeout: val })}
+                options={[
+                  { value: '15', label: '15 Minutes' },
+                  { value: '30', label: '30 Minutes' },
+                  { value: '60', label: '1 Hour' },
+                  { value: '240', label: '4 Hours' },
+                ]}
+              />
             </div>
 
             <div className="p-3.5 bg-neutral-100 border border-neutral-300 rounded-xl text-xs font-bold text-neutral-900 flex items-center gap-2 w-full">
@@ -305,7 +295,7 @@ export function SettingsView() {
             </div>
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   );
 }

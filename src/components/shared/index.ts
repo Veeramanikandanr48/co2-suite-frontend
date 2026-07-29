@@ -11,14 +11,18 @@ export { default as FormTextarea } from './forms/form-textarea';
 export { default as FormCustomInput } from './forms/form-custom-input';
 export { default as DatePickerFormField } from './forms/date-picker-form-field';
 export { default as TriStateCheckbox } from './forms/tri-state-checkbox';
+export { FormSelectField } from './forms/form-select-field';
+export { FormInputField } from './forms/form-input-field';
 
 // Modals
 export { ActivityNotRelevantModal } from './modals/activity-not-relevant-modal';
 
-// Layout & Navigation Primitives
+// Layout & Container Primitives
 export { NavTabButton } from './nav-tab-button';
 export { PageHeader } from './page-header';
 export { MetricCard } from './metric-card';
+export { SectionCard } from './section-card';
+export { StatusBadge } from './status-badge';
 
 // Core Utilities
 export { default as SearchBar } from './search-bar';

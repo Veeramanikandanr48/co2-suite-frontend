@@ -52,6 +52,40 @@ export interface MetricCardProps {
   className?: string;
 }
 
+export interface SectionCardProps {
+  title?: string;
+  subtitle?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export interface StatusBadgeProps {
+  status?: string | boolean;
+  label?: string;
+  variant?: 'active' | 'inactive' | 'success' | 'warning' | 'error' | 'neutral';
+  className?: string;
+}
+
+export interface FormSelectFieldProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  options: { value: string; label: string }[];
+  disabled?: boolean;
+  className?: string;
+}
+
+export interface FormInputFieldProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  type?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+}
+
 export interface NotificationItem {
   id: string;
   title: string;

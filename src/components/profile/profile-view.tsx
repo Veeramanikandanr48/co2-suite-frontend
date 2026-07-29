@@ -14,7 +14,13 @@ import {
   Key,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-provider';
-import { PageHeader, NavTabButton } from '@/components/shared';
+import {
+  PageHeader,
+  NavTabButton,
+  SectionCard,
+  FormInputField,
+  StatusBadge,
+} from '@/components/shared';
 import { toast } from 'sonner';
 
 export function ProfileView() {
@@ -113,26 +119,21 @@ export function ProfileView() {
         />
       </div>
 
-      {/* Top Card: User Profile Summary */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-4 w-full">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-          <div>
-            <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-              User Profile <span className="text-neutral-400">•</span>{' '}
-              <span className="text-neutral-700">{displayName}</span>
-            </h2>
-            <p className="text-xs text-neutral-400">Account overview and basic credentials</p>
-          </div>
-          {activeTab === 'personal' && (
+      {/* Profile Overview Card */}
+      <SectionCard
+        title={`User Profile • ${displayName}`}
+        subtitle="Account overview and basic credentials"
+        action={
+          activeTab === 'personal' && (
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="px-3.5 py-1.5 bg-[#0B132B] hover:bg-black text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Edit2 className="w-3.5 h-3.5" /> {isEditing ? 'Cancel Edit' : 'Edit Profile'}
             </button>
-          )}
-        </div>
-
+          )
+        }
+      >
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start w-full">
           {/* Avatar Box */}
           <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 flex flex-col items-center justify-center min-h-[200px] lg:col-span-1">
@@ -140,9 +141,7 @@ export function ProfileView() {
               {initials}
             </div>
             <span className="text-sm font-bold text-neutral-900">{displayName}</span>
-            <span className="text-xs font-bold text-neutral-900 mt-1.5 bg-neutral-100 px-2.5 py-0.5 rounded-md border border-neutral-300">
-              System Administrator
-            </span>
+            <StatusBadge label="System Administrator" className="mt-2" />
           </div>
 
           {/* Details List */}
@@ -180,91 +179,55 @@ export function ProfileView() {
             </div>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Tab Content: Personal Info */}
       {activeTab === 'personal' && (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-4 w-full">
-          <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Personal Details Form</h3>
+        <SectionCard title="Personal Details Form">
           <form onSubmit={handleProfileSubmit} className="space-y-4 w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  disabled={!isEditing}
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="First Name"
+                value={formData.firstName}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, firstName: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  disabled={!isEditing}
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="Last Name"
+                value={formData.lastName}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, lastName: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  disabled={!isEditing}
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="Email Address"
+                type="email"
+                value={formData.email}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, email: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  disabled={!isEditing}
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="Phone Number"
+                value={formData.phone}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, phone: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Job Title
-                </label>
-                <input
-                  type="text"
-                  disabled={!isEditing}
-                  value={formData.jobTitle}
-                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="Job Title"
+                value={formData.jobTitle}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, jobTitle: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Department
-                </label>
-                <input
-                  type="text"
-                  disabled={!isEditing}
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 disabled:bg-neutral-50 text-neutral-900 font-semibold"
-                />
-              </div>
+              <FormInputField
+                label="Department"
+                value={formData.department}
+                disabled={!isEditing}
+                onChange={(val) => setFormData({ ...formData, department: val })}
+              />
             </div>
 
             {isEditing && (
@@ -279,53 +242,37 @@ export function ProfileView() {
               </div>
             )}
           </form>
-        </div>
+        </SectionCard>
       )}
 
       {/* Tab Content: Security */}
       {activeTab === 'security' && (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-4 w-full">
-          <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Update Password</h3>
+        <SectionCard title="Update Password">
           <form onSubmit={handlePasswordSubmit} className="space-y-4 w-full max-w-2xl">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={passwords.currentPassword}
-                  onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold"
-                  placeholder="••••••••"
-                />
-              </div>
+              <FormInputField
+                label="Current Password"
+                type="password"
+                placeholder="••••••••"
+                value={passwords.currentPassword}
+                onChange={(val) => setPasswords({ ...passwords, currentPassword: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwords.newPassword}
-                  onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold"
-                  placeholder="••••••••"
-                />
-              </div>
+              <FormInputField
+                label="New Password"
+                type="password"
+                placeholder="••••••••"
+                value={passwords.newPassword}
+                onChange={(val) => setPasswords({ ...passwords, newPassword: val })}
+              />
 
-              <div>
-                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={passwords.confirmPassword}
-                  onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold"
-                  placeholder="••••••••"
-                />
-              </div>
+              <FormInputField
+                label="Confirm Password"
+                type="password"
+                placeholder="••••••••"
+                value={passwords.confirmPassword}
+                onChange={(val) => setPasswords({ ...passwords, confirmPassword: val })}
+              />
             </div>
 
             <div className="flex justify-end pt-2">
@@ -338,13 +285,12 @@ export function ProfileView() {
               </button>
             </div>
           </form>
-        </div>
+        </SectionCard>
       )}
 
       {/* Tab Content: Permissions */}
       {activeTab === 'permissions' && (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-4 w-full">
-          <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Assigned System Permissions</h3>
+        <SectionCard title="Assigned System Permissions">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full">
             {[
               'Facilities & Multi-location Management',
@@ -354,13 +300,16 @@ export function ProfileView() {
               'Compliance Report Generation',
               'User Access & Role Delegation',
             ].map((perm) => (
-              <div key={perm} className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center gap-2.5 text-xs font-bold text-neutral-900">
+              <div
+                key={perm}
+                className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center gap-2.5 text-xs font-bold text-neutral-900"
+              >
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
                 <span>{perm}</span>
               </div>
             ))}
           </div>
-        </div>
+        </SectionCard>
       )}
     </div>
   );
