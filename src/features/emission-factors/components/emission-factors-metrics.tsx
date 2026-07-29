@@ -9,6 +9,7 @@ import {
   FileSpreadsheet,
   Globe,
 } from 'lucide-react';
+import { MetricCard } from '@/components/shared';
 
 interface MetricsProps {
   metrics: {
@@ -46,47 +47,28 @@ export function EmissionFactorsMetrics({ metrics, onOpenCreateModal }: MetricsPr
         </button>
       </div>
 
-      {/* Summary Stat Cards */}
+      {/* Summary Stat Cards using MetricCard component */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-neutral-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-[#0B132B] text-white rounded-lg">
-            <FileSpreadsheet className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xl font-bold text-neutral-900">{metrics.total}</div>
-            <div className="text-[11px] font-semibold text-neutral-500">Total Emission Factors</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-neutral-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-[#0B132B] text-white rounded-lg">
-            <CheckCircle2 className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xl font-bold text-neutral-900">{metrics.active}</div>
-            <div className="text-[11px] font-semibold text-neutral-500">Active Factors</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-neutral-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-[#0B132B] text-white rounded-lg">
-            <Layers className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xl font-bold text-neutral-900">{metrics.categoriesCount}</div>
-            <div className="text-[11px] font-semibold text-neutral-500">Categories Covered</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-neutral-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-[#0B132B] text-white rounded-lg">
-            <Globe className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xl font-bold text-neutral-900">{metrics.sourcesCount}</div>
-            <div className="text-[11px] font-semibold text-neutral-500">DB Sources (DEFRA/IPCC)</div>
-          </div>
-        </div>
+        <MetricCard
+          title="Total Emission Factors"
+          value={metrics.total}
+          icon={FileSpreadsheet}
+        />
+        <MetricCard
+          title="Active Factors"
+          value={metrics.active}
+          icon={CheckCircle2}
+        />
+        <MetricCard
+          title="Categories Covered"
+          value={metrics.categoriesCount}
+          icon={Layers}
+        />
+        <MetricCard
+          title="DB Sources (DEFRA/IPCC)"
+          value={metrics.sourcesCount}
+          icon={Globe}
+        />
       </div>
     </>
   );

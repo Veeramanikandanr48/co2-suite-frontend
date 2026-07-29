@@ -14,6 +14,7 @@ import {
   Key,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-provider';
+import { PageHeader, NavTabButton } from '@/components/shared';
 import { toast } from 'sonner';
 
 export function ProfileView() {
@@ -84,50 +85,35 @@ export function ProfileView() {
 
   return (
     <div className="space-y-6 w-full p-4 md:p-6 bg-white text-neutral-900">
-      {/* Title Header */}
-      <div>
-        <h1 className="text-xl font-bold text-neutral-900 tracking-tight">Profile Details</h1>
-        <p className="text-xs text-neutral-500 mt-1">View and manage your account information and security credentials</p>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Profile Details"
+        description="View and manage your account information and security credentials"
+      />
 
       {/* Navigation Bar */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
-        <button
+        <NavTabButton
+          isActive={activeTab === 'personal'}
           onClick={() => setActiveTab('personal')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'personal'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'personal' ? '#0B132B' : undefined }}
-        >
-          <User className="w-3.5 h-3.5" /> Personal Details
-        </button>
-        <button
+          icon={User}
+          label="Personal Details"
+        />
+        <NavTabButton
+          isActive={activeTab === 'security'}
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'security'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'security' ? '#0B132B' : undefined }}
-        >
-          <Lock className="w-3.5 h-3.5" /> Security & Password
-        </button>
-        <button
+          icon={Lock}
+          label="Security & Password"
+        />
+        <NavTabButton
+          isActive={activeTab === 'permissions'}
           onClick={() => setActiveTab('permissions')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'permissions'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'permissions' ? '#0B132B' : undefined }}
-        >
-          <ShieldCheck className="w-3.5 h-3.5" /> Role & Permissions
-        </button>
+          icon={ShieldCheck}
+          label="Role & Permissions"
+        />
       </div>
 
-      {/* Top Card: User Profile Summary (Solid Black & White Theme) */}
+      {/* Top Card: User Profile Summary */}
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-4 w-full">
         <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
           <div>

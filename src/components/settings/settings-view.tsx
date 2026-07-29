@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Settings,
   Globe,
   Bell,
   ShieldCheck,
@@ -10,6 +9,7 @@ import {
   Save,
   CheckCircle2,
 } from 'lucide-react';
+import { PageHeader, NavTabButton } from '@/components/shared';
 import { toast } from 'sonner';
 
 interface AppSettings {
@@ -71,67 +71,47 @@ export function SettingsView() {
 
   return (
     <div className="space-y-6 w-full p-4 md:p-6 bg-white text-neutral-900">
-      {/* Title Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-neutral-900 tracking-tight">System & Account Settings</h1>
-          <p className="text-xs text-neutral-500 mt-1">Configure application preferences, reporting standards, and notification parameters</p>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="px-4 py-2 bg-[#0B132B] hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-        >
-          <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Preferences'}
-        </button>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title="System & Account Settings"
+        description="Configure application preferences, reporting standards, and notification parameters"
+        action={
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-4 py-2 bg-[#0B132B] hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
+            <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Preferences'}
+          </button>
+        }
+      />
 
       {/* Navigation Bar */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
-        <button
+        <NavTabButton
+          isActive={activeTab === 'general'}
           onClick={() => setActiveTab('general')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'general'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'general' ? '#0B132B' : undefined }}
-        >
-          <Globe className="w-3.5 h-3.5" /> General
-        </button>
-        <button
+          icon={Globe}
+          label="General"
+        />
+        <NavTabButton
+          isActive={activeTab === 'emissions'}
           onClick={() => setActiveTab('emissions')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'emissions'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'emissions' ? '#0B132B' : undefined }}
-        >
-          <Leaf className="w-3.5 h-3.5" /> Carbon Units
-        </button>
-        <button
+          icon={Leaf}
+          label="Carbon Units"
+        />
+        <NavTabButton
+          isActive={activeTab === 'alerts'}
           onClick={() => setActiveTab('alerts')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'alerts'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'alerts' ? '#0B132B' : undefined }}
-        >
-          <Bell className="w-3.5 h-3.5" /> Alerts
-        </button>
-        <button
+          icon={Bell}
+          label="Alerts"
+        />
+        <NavTabButton
+          isActive={activeTab === 'security'}
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'security'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
-          }`}
-          style={{ backgroundColor: activeTab === 'security' ? '#0B132B' : undefined }}
-        >
-          <ShieldCheck className="w-3.5 h-3.5" /> Security
-        </button>
+          icon={ShieldCheck}
+          label="Security"
+        />
       </div>
 
       {/* Main Settings Card */}

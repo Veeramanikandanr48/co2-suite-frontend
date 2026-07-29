@@ -15,7 +15,12 @@ export { default as TriStateCheckbox } from './forms/tri-state-checkbox';
 // Modals
 export { ActivityNotRelevantModal } from './modals/activity-not-relevant-modal';
 
-// Primitives
+// Layout & Navigation Primitives
+export { NavTabButton } from './nav-tab-button';
+export { PageHeader } from './page-header';
+export { MetricCard } from './metric-card';
+
+// Core Utilities
 export { default as SearchBar } from './search-bar';
 export { default as BaseButton } from './base-button';
 export { Loader } from './loader';
