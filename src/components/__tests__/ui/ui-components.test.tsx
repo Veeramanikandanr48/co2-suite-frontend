@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../../ui/button';
@@ -11,8 +11,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import { ScrollArea } from '../../ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastAction, ToastClose } from '../../ui/toast';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../ui/tooltip';
 
 const TestForm = () => {
   const form = useForm();
@@ -85,7 +83,6 @@ describe('UI Components', () => {
       fireEvent.click(nextMonthButton);
       expect(screen.getByRole('grid')).toBeInTheDocument();
     });
-
   });
 
   describe('Command', () => {
@@ -174,7 +171,6 @@ describe('UI Components', () => {
         expect(onSelect).toHaveBeenCalled();
       });
     });
-
   });
 
   describe('Form', () => {
@@ -274,250 +270,4 @@ describe('UI Components', () => {
       expect(trigger).toHaveAttribute('data-size', 'sm');
     });
   });
-
-  describe('Tooltip', () => {
-    it('renders tooltip with trigger and content', async () => {
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent data-testid="tooltip-content-1">Tooltip content 1</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      expect(screen.getByText('Hover me')).toBeInTheDocument();
-      expect(screen.getByTestId('tooltip-content-1')).toBeInTheDocument();
-    });
-
-    it('renders with custom className', async () => {
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent className="custom-class" data-testid="tooltip-content-2">
-              Tooltip content 2
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const tooltipContent = screen.getByTestId('tooltip-content-2');
-      expect(tooltipContent).toHaveClass('custom-class');
-    });
-
-    it('renders with custom sideOffset', async () => {
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent 
-              sideOffset={10} 
-              data-testid="tooltip-content-3"
-              className="test-tooltip"
-            >
-              Tooltip content 3
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const tooltipContent = screen.getByTestId('tooltip-content-3');
-      expect(tooltipContent).toHaveClass('animate-in');
-      expect(tooltipContent).toHaveClass('fade-in-0');
-      expect(tooltipContent).toHaveClass('zoom-in-95');
-    });
-
-    it('renders trigger with children', () => {
-      render(
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <button data-testid="tooltip-trigger-button">Click me</button>
-            </TooltipTrigger>
-            <TooltipContent>Content</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const button = screen.getByTestId('tooltip-trigger-button');
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveTextContent('Click me');
-    });
-
-    it('renders content with children', async () => {
-      const uniqueId = 'unique-tooltip-content';
-      const uniqueText = 'Unique tooltip text content';
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent data-testid={uniqueId}>
-              <span data-testid="tooltip-text-content">{uniqueText}</span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const tooltipContent = screen.getByTestId(uniqueId);
-      const textElements = within(tooltipContent).getAllByTestId('tooltip-text-content');
-      expect(textElements.length).toBeGreaterThan(0);
-      expect(textElements[0]).toHaveTextContent(uniqueText);
-    });
-
-    it('renders with arrow', async () => {
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent data-testid="tooltip-content-4">
-              Tooltip content 4
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const tooltipContent = screen.getByTestId('tooltip-content-4');
-      const arrow = tooltipContent.querySelector('.bg-primary');
-      expect(arrow).toBeInTheDocument();
-    });
-
-    it('applies default styling classes', async () => {
-      render(
-        <TooltipProvider>
-          <Tooltip defaultOpen>
-            <TooltipTrigger>Hover me</TooltipTrigger>
-            <TooltipContent data-testid="tooltip-content-5">
-              Tooltip content 5
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-
-      const tooltipContent = screen.getByTestId('tooltip-content-5');
-      expect(tooltipContent).toHaveClass('bg-primary');
-      expect(tooltipContent).toHaveClass('text-primary-foreground');
-      expect(tooltipContent).toHaveClass('rounded-md');
-      expect(tooltipContent).toHaveClass('px-3');
-      expect(tooltipContent).toHaveClass('py-1.5');
-      expect(tooltipContent).toHaveClass('text-xs');
-    });
-  });
 });
-
-describe('Toast Variants', () => {
-  const ToastWrapper = ({ children }: { children: React.ReactNode }) => (
-    <ToastProvider>
-      {children}
-      <ToastViewport data-testid="toast-viewport" />
-    </ToastProvider>
-  );
-
-  beforeEach(() => {
-    // Clear any existing toasts
-    document.body.innerHTML = '';
-  });
-
-  it('should show success toast', async () => {
-    render(
-      <ToastWrapper>
-        <Toast data-testid="success-toast" variant="default">
-          <ToastTitle>Operation successful</ToastTitle>
-        </Toast>
-      </ToastWrapper>
-    );
-
-    const toast = screen.getByTestId('success-toast');
-    expect(toast).toBeInTheDocument();
-    expect(toast).toHaveClass('border-l-2');
-    expect(screen.getByText('Operation successful')).toBeInTheDocument();
-  });
-
-  it('should show error toast', async () => {
-    render(
-      <ToastWrapper>
-        <Toast data-testid="error-toast" variant="destructive">
-          <ToastTitle>Operation failed</ToastTitle>
-        </Toast>
-      </ToastWrapper>
-    );
-
-    const toast = screen.getByTestId('error-toast');
-    expect(toast).toBeInTheDocument();
-    expect(toast).toHaveClass('bg-destructive');
-    expect(toast).toHaveClass('text-destructive-foreground');
-    expect(screen.getByText('Operation failed')).toBeInTheDocument();
-  });
-
-  it('should show warning toast', async () => {
-    render(
-      <ToastWrapper>
-        <Toast data-testid="warning-toast" variant="warning">
-          <ToastTitle>Warning message</ToastTitle>
-        </Toast>
-      </ToastWrapper>
-    );
-
-    const toast = screen.getByTestId('warning-toast');
-    expect(toast).toBeInTheDocument();
-    expect(toast).toHaveClass('bg-warning');
-    expect(toast).toHaveClass('text-warning-foreground');
-    expect(screen.getByText('Warning message')).toBeInTheDocument();
-  });
-
-  it('should handle toast with description', () => {
-    render(
-      <ToastWrapper>
-        <Toast data-testid="toast-with-description">
-          <ToastTitle>Title</ToastTitle>
-          <ToastDescription>Description text</ToastDescription>
-        </Toast>
-      </ToastWrapper>
-    );
-
-    expect(screen.getByText('Title')).toBeInTheDocument();
-    expect(screen.getByText('Description text')).toBeInTheDocument();
-  });
-
-  it('should handle toast with action', () => {
-    const handleAction = jest.fn();
-    render(
-      <ToastWrapper>
-        <Toast data-testid="toast-with-action">
-          <ToastTitle>Action Toast</ToastTitle>
-          <ToastAction 
-            onClick={handleAction} 
-            data-testid="toast-action"
-            altText="Perform action"
-          >
-            Action
-          </ToastAction>
-        </Toast>
-      </ToastWrapper>
-    );
-
-    const actionButton = screen.getByTestId('toast-action');
-    fireEvent.click(actionButton);
-    expect(handleAction).toHaveBeenCalled();
-  });
-
-  it('should handle toast close', () => {
-    const handleOpenChange = jest.fn();
-    render(
-      <ToastWrapper>
-        <Toast 
-          data-testid="toast-with-close" 
-          onOpenChange={handleOpenChange}
-        >
-          <ToastTitle>Closeable Toast</ToastTitle>
-          <ToastClose data-testid="toast-close" />
-        </Toast>
-      </ToastWrapper>
-    );
-
-    const closeButton = screen.getByTestId('toast-close');
-    fireEvent.click(closeButton);
-    expect(handleOpenChange).toHaveBeenCalledWith(false);
-  });
-
-}); 

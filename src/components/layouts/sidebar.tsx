@@ -12,13 +12,9 @@ import {
   User as UserIcon,
   Settings,
   MoreVertical,
-  Leaf,
-  Globe,
-  Zap,
   ChevronsUpDown,
   Check,
   Plus,
-  Building2,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { ScrollArea } from "../ui/scroll-area";
@@ -34,77 +30,9 @@ import {
 const SidebarItem = dynamic(() => import("./sidebar-items"), { ssr: false });
 import { SidebarItemType } from "@/types/sidebar";
 import { useAuth } from "@/context/auth-provider";
-import { MasterRole } from "@/enums/base-enum";
-import Image from "next/image";
 import { FORM_CONFIGURATION } from "@/lib/variables";
 import EventBus from "@/lib/eventbus";
-
-const CmpLogoIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
-  <svg viewBox="0 0 100 100" fill="none" className={className}>
-    <defs>
-      <linearGradient id="cmp-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#10B981" />
-        <stop offset="50%" stopColor="#059669" />
-        <stop offset="100%" stopColor="#0284C7" />
-      </linearGradient>
-      <linearGradient id="cmp-leaf" x1="0%" y1="100%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#34D399" />
-        <stop offset="100%" stopColor="#059669" />
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" rx="24" fill="url(#cmp-grad)" />
-    <circle cx="50" cy="50" r="34" stroke="white" strokeOpacity="0.25" strokeWidth="3" strokeDasharray="6 4" />
-    <path d="M50 22C35 22 26 35 26 50C26 65 37 78 50 78C63 78 74 65 74 50C74 35 65 22 50 22ZM50 70C40 70 33 60 33 50C33 40 41 30 50 30C50 42 42 50 33 50C42 50 50 58 50 70Z" fill="white" fillOpacity="0.95" />
-    <path d="M50 30C58 38 66 42 70 50C62 50 54 58 50 70C50 58 42 50 34 50C42 42 50 38 50 30Z" fill="url(#cmp-leaf)" />
-  </svg>
-);
-
-interface WorkspaceLogo {
-  id: string;
-  name: string;
-  plan: string;
-  iconBg: string;
-  icon: React.ReactNode;
-}
-
-const workspaceLogos: WorkspaceLogo[] = [
-  {
-    id: "co2-suite",
-    name: "CO2 Suite",
-    plan: "Enterprise",
-    icon: <CmpLogoIcon className="w-7 h-7" />,
-    iconBg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 p-0.5",
-  },
-  {
-    id: "ecotrack",
-    name: "EcoTrack",
-    plan: "Carbon Pro",
-    icon: <Leaf className="w-4 h-4 text-emerald-400" />,
-    iconBg: "bg-emerald-500/20 border-emerald-500/40",
-  },
-  {
-    id: "netzero",
-    name: "NetZero Cloud",
-    plan: "ESG Enterprise",
-    icon: <Zap className="w-4 h-4 text-amber-400" />,
-    iconBg: "bg-amber-500/20 border-amber-500/40",
-  },
-  {
-    id: "global-carbon",
-    name: "Global Carbon",
-    plan: "Multi-site Hub",
-    icon: <Globe className="w-4 h-4 text-cyan-400" />,
-    iconBg: "bg-cyan-500/20 border-cyan-500/40",
-  },
-];
-
-function hasActiveDescendant(item: SidebarItemType, pathname: string): boolean {
-  if (!item.child) return false;
-  return item.child.some((child: SidebarItemType) => {
-    const fullHref = `${item.href}${child.href}`;
-    return pathname.startsWith(fullHref) || hasActiveDescendant({ ...child, href: fullHref }, pathname);
-  });
-}
+import { WorkspaceLogo, workspaceLogos, hasActiveDescendant } from "./sidebar-constants";
 
 const Sidebar = () => {
   const pathname = usePathname();

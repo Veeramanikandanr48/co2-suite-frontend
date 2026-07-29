@@ -5,16 +5,9 @@ import { X, Building, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 
-export interface CompanyModalData {
-  id?: number;
-  name: string;
-  country?: string;
-  contactEmail: string;
-  contactPhone?: string;
-  address?: string;
-  taxId?: string;
-  allowedDomains?: string;
-}
+import { CompanyModalData } from '@/types/manage-account';
+
+export type { CompanyModalData };
 
 interface CompanyModalProps {
   isOpen: boolean;

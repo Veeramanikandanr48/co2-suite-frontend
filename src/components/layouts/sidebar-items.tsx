@@ -83,14 +83,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isOpen, collapsed, setC
       isActive={isActiveParent}
       tooltip={collapsed ? item.name : undefined}
       onClick={handleParentClick}
-      className={`text-sm mx-auto ${collapsed ? "w-[64%]" : "w-[86%]"} px-3 py-[10px] rounded-lg flex items-center cursor-pointer relative h-[50px] text-neutral-400 hover:bg-transparent
-      ${isActiveParent ? "bg-background-sidebarActive text-light-100" : ""} ${collapsed ? "justify-center" : ""}`}
+      className={`text-sm mx-auto ${collapsed ? "w-[64%]" : "w-[86%]"} px-3 py-[10px] rounded-xl flex items-center cursor-pointer relative h-[50px] transition-all duration-200
+      ${isActiveParent ? "!bg-background-sidebarActive !text-light-100 shadow-xs" : "hover:!bg-white/10 hover:!text-white"} ${collapsed ? "justify-center" : ""}`}
     >
       <button className="flex items-center w-full">
         <LucideIcon className={`w-5 h-5 shrink-0 ${!collapsed ? "mr-2.5" : ""} ${isActiveParent ? "text-emerald-400" : "text-gray-400 group-hover:text-gray-200"}`} />
 
         <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "text-light-100 font-medium" : "text-text-sidebar"}`}
+          className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap capitalize ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"} ${isActiveParent ? "!text-light-100 font-semibold" : "text-text-sidebar"}`}
         >
           {item.name}
         </div>

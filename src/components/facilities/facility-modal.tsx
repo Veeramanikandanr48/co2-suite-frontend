@@ -5,17 +5,9 @@ import { X, Search, MapPin, Loader2, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 
-export interface FacilityData {
-  id?: number;
-  name: string;
-  latitude?: number | string;
-  longitude?: number | string;
-  address?: string;
-  unLocode?: string;
-  postCode?: string;
-  countryCode?: string;
-  createdOn?: string | Date;
-}
+import { FacilityData } from '@/types/facilities';
+
+export type { FacilityData };
 
 interface FacilityModalProps {
   isOpen: boolean;

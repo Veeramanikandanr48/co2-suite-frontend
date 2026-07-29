@@ -11,12 +11,12 @@ interface ReusableTableProps<T> {
     isLoadingMore: boolean;
     hasMore?: boolean;
     handleLoadMore: () => void;
-    onRowClick?: (id: string) => void;
+    onRowClick?: (id: string | number) => void;
     tableHeight?: string;
     rowHeight?: string;
 }
 
-export function ReusableTable<T extends { id: string }>({
+export function ReusableTable<T extends { id: string | number }>({
     data,
     columns,
     isLoadingMore,
@@ -87,7 +87,7 @@ export function ReusableTable<T extends { id: string }>({
         manualSorting: true,
     });
 
-    const handleRowClick = (id: string) => {
+    const handleRowClick = (id: string | number) => {
         if (onRowClick) {
             onRowClick(id);
         }

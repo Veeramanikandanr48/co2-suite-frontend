@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Command, CommandInput, CommandList, CommandEmpty } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { SearchBarProps } from "@/types/components/reusables.types";
 
 function createDebounce<T extends (...args: any[]) => any>(fn: T, delay: number): (...args: Parameters<T>) => void {
   let timer: NodeJS.Timeout | null = null;
@@ -12,13 +13,6 @@ function createDebounce<T extends (...args: any[]) => any>(fn: T, delay: number)
       fn(...args);
     }, delay);
   };
-}
-
-interface SearchBarProps {
-  placeholder?: string;
-  onSearch?: (value: string) => void;
-  className?: string;
-  resetTrigger?: number;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ 

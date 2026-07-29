@@ -1,4 +1,4 @@
-interface Organization {
+export interface Organization {
   id: number;
   name: string;
   code: string;
@@ -19,12 +19,12 @@ interface Organization {
   createdOn?: string;
 }
 
-interface TableOrganization extends Omit<Organization, 'id'> {
+export interface TableOrganization extends Omit<Organization, 'id'> {
   id: string;
   rawId: number;
 }
 
-interface OnboardOrganizationPayload {
+export interface OnboardOrganizationPayload {
   name: string;
   code: string;
   contactEmail: string;
@@ -36,7 +36,7 @@ interface OnboardOrganizationPayload {
   adminLastName?: string;
 }
 
-interface EditOrganizationPayload {
+export interface EditOrganizationPayload {
   name: string;
   code: string;
   contactEmail: string;
@@ -54,9 +54,50 @@ interface EditOrganizationPayload {
   isActive: boolean;
 }
 
-export type {
-  Organization,
-  TableOrganization,
-  OnboardOrganizationPayload,
-  EditOrganizationPayload,
-};
+export interface OrgUser {
+  id: number;
+  firstName: string;
+  lastName?: string;
+  userName: string;
+  email: string;
+  roleId: number;
+  roleName?: string;
+  isActive: boolean;
+  createdOn?: string;
+}
+
+export interface TableOrgUser extends Omit<OrgUser, 'id'> {
+  id: string;
+  rawId: number;
+}
+
+export interface FacilityItem {
+  id: number | string;
+  name: string;
+  address?: string;
+  countryCode?: string;
+  postCode?: string;
+  unLocode?: string;
+  latitude?: string;
+  longitude?: string;
+  [key: string]: any;
+}
+
+export interface AddMemberFormState {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+  password: string;
+  roleId: number;
+}
+
+export interface FacilityFormState {
+  name: string;
+  address: string;
+  countryCode: string;
+  postCode: string;
+  unLocode: string;
+  latitude: string;
+  longitude: string;
+}

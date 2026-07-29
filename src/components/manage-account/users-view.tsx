@@ -5,20 +5,7 @@ import { Plus, Lock, Mail, Phone, Building, Loader2, Edit2 } from 'lucide-react'
 import { apiService } from '@/lib/api-service';
 import { useAuth } from '@/context/auth-provider';
 import { UserModal, UserFormData } from './user-modal';
-
-interface UserCardData {
-  id: number;
-  name: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-  phone: string;
-  facilities: string;
-  status: 'Active' | 'Inactive';
-  role: string;
-  roleId: number;
-  isProtected?: boolean;
-}
+import { UserCardData } from '@/types/manage-account';
 
 export function UsersView() {
   const { user } = useAuth();

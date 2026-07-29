@@ -10,20 +10,7 @@ import {
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ServiceScopeItem } from '@/types/services';
-
-interface ServiceSidebarProps {
-  readonly currentConfig: {
-    name: string;
-    tag: string;
-    daysLeft: number;
-  };
-  readonly activeTab: string;
-  readonly setActiveTab: (tab: string) => void;
-  readonly loadingScopes: boolean;
-  readonly groupedScopes: Record<string, ServiceScopeItem[]>;
-  readonly openScopes: Record<string, boolean>;
-  readonly toggleScope: (scopeName: string) => void;
-}
+import { ServiceSidebarProps } from '@/types/components/services.types';
 
 export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
   currentConfig,

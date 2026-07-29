@@ -1,27 +1,12 @@
 'use client';
 
 import React from 'react';
+import { UserPlus, Search } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ReusableTable } from '@/components/reusables/reusable-table';
-import SearchBar from '@/components/reusables/search-bar';
-import { Button } from '@/components/ui/button';
-import { Users, UserPlus } from 'lucide-react';
+import { OrgUser, TableOrgUser } from '@/types/organizations';
 
-export interface OrgUser {
-  id: number;
-  userName: string;
-  firstName: string;
-  lastName?: string | null;
-  email: string;
-  roleId: number;
-  isActive: boolean;
-  createdOn?: string;
-}
-
-export interface TableOrgUser extends Omit<OrgUser, 'id'> {
-  id: string;
-  rawId: number;
-}
+export type { OrgUser, TableOrgUser };
 
 interface OrgMembersTabProps {
   userTableData: TableOrgUser[];
@@ -29,7 +14,7 @@ interface OrgMembersTabProps {
   userTotalCount: number;
   userIsLoadingMore: boolean;
   userHasMore: boolean;
-  setUserSearch: (query: string) => void;
+  setUserSearch: (search: string) => void;
   userLoadMore: () => void;
   canEdit: boolean;
   onAddMemberOpen: () => void;
@@ -47,53 +32,35 @@ export function OrgMembersTab({
   onAddMemberOpen,
 }: OrgMembersTabProps) {
   return (
-    <div className="flex-1 flex flex-col min-h-0 p-6 pt-5">
-      <div className="flex-1 flex flex-col min-h-0 card-base overflow-hidden">
-        {/* Table Header Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 border-b border-border shrink-0 bg-background-inner/80">
-          <div className="flex items-center gap-3">
-            <div className="stat-icon-primary shrink-0">
-              <Users className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="section-title">Organization Members</h3>
-              <p className="text-muted-xs mt-0.5">
-                {userTotalCount} {userTotalCount === 1 ? 'user' : 'users'} in this organization
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <SearchBar
-              placeholder="Search by name or email…"
-              onSearch={setUserSearch}
-              className="w-full sm:w-64 h-9 text-sm border-[#D9E5F2]"
-            />
-            {canEdit && (
-              <Button
-                onClick={onAddMemberOpen}
-                className="h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1.5 px-4 shrink-0 shadow-xs"
-              >
-                <UserPlus className="w-4 h-4" />
-                Add Member
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Table Area */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <ReusableTable<TableOrgUser>
-            data={userTableData}
-            columns={userColumns}
-            isLoadingMore={userIsLoadingMore}
-            hasMore={userHasMore}
-            handleLoadMore={userLoadMore}
-            tableHeight="100%"
-            rowHeight="h-14"
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
+          <input
+            type="text"
+            placeholder="Search members by name or email..."
+            onChange={(e) => setUserSearch(e.target.value)}
+            className="w-full bg-background border border-border text-xs text-foreground pl-9 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
+        {canEdit && (
+          <button
+            onClick={onAddMemberOpen}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg shadow-xs transition-colors shrink-0 cursor-pointer"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            Add Member
+          </button>
+        )}
       </div>
+
+      <ReusableTable
+        data={userTableData}
+        columns={userColumns}
+        isLoadingMore={userIsLoadingMore}
+        hasMore={userHasMore}
+        handleLoadMore={userLoadMore}
+      />
     </div>
   );
 }

@@ -18,20 +18,7 @@ import {
   CalendarDays,
   Clock,
 } from 'lucide-react';
-
-interface OrgHeaderProps {
-  orgDetails: Organization;
-  userTotalCount: number;
-  isSuperAdmin: boolean;
-  canEdit: boolean;
-  isEditing: boolean;
-  isSubmitting: boolean;
-  onEditToggle: () => void;
-  onSave: (e: React.FormEvent) => void;
-  onCancelEdit: () => void;
-  onDeactivateOpen: () => void;
-  onBack: () => void;
-}
+import { OrgHeaderProps } from '@/types/components/organizations.types';
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return '—';

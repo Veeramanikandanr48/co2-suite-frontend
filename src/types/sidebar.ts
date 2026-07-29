@@ -1,12 +1,20 @@
 import { MasterRole } from "@/enums/base-enum";
 
-interface SidebarChildItem {
+export interface WorkspaceLogo {
+  id: string;
+  name: string;
+  plan: string;
+  iconBg: string;
+  icon: React.ReactNode;
+}
+
+export interface SidebarChildItem {
   name: string;
   href: string;
   roles?: MasterRole[];
 }
-  
-type SidebarItemType = {
+
+export type SidebarItemType = {
   name: string;
   href: string;
   icon?: string | null;
@@ -16,7 +24,7 @@ type SidebarItemType = {
   parentHref?: string;
 };
 
-interface SidebarItemProps {
+export interface SidebarItemProps {
   item: {
     name: string;
     href: string;
@@ -28,9 +36,3 @@ interface SidebarItemProps {
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-export type {
-  SidebarChildItem,
-  SidebarItemType,
-  SidebarItemProps
-};

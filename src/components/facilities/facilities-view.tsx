@@ -58,7 +58,7 @@ export function FacilitiesView() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteFacility = async (id: number) => {
+  const handleDeleteFacility = async (id: number | string) => {
     try {
       await apiService.delete('facilities', id);
       toast.success('Facility deleted');

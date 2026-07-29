@@ -1,30 +1,17 @@
 'use client';
 
 import React from 'react';
-import SearchBar from '@/components/reusables/search-bar';
-import { Button } from '@/components/ui/button';
-import { Building2, MapPin, Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, Search, Loader2 } from 'lucide-react';
+import { FacilityItem } from '@/types/organizations';
 
-export interface FacilityItem {
-  id: number;
-  organizationId: number;
-  name: string;
-  address?: string;
-  countryCode?: string;
-  postCode?: string;
-  unLocode?: string;
-  latitude?: number;
-  longitude?: number;
-  isActive?: boolean;
-  createdOn?: string;
-}
+export type { FacilityItem };
 
 interface OrgFacilitiesTabProps {
   facilities: FacilityItem[];
   filteredFacilities: FacilityItem[];
   facilitiesLoading: boolean;
   facilitySearch: string;
-  setFacilitySearch: (val: string) => void;
+  setFacilitySearch: (search: string) => void;
   canEdit: boolean;
   orgName: string;
   onOpenAddFacility: () => void;
@@ -33,6 +20,7 @@ interface OrgFacilitiesTabProps {
 }
 
 export function OrgFacilitiesTab({
+  facilities,
   filteredFacilities,
   facilitiesLoading,
   facilitySearch,
@@ -44,116 +32,80 @@ export function OrgFacilitiesTab({
   onDeleteFacilityConfirmOpen,
 }: OrgFacilitiesTabProps) {
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="section-title">Organization Facility Sites</h3>
-          <p className="text-muted-xs mt-0.5">
-            Manage operational plant locations, UN/LOCODEs, postcodes, and addresses for {orgName}.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <SearchBar
-            placeholder="Search site, UN/LOCODE, address..."
-            onSearch={setFacilitySearch}
-            className="w-full sm:w-64 h-9 text-sm border-[#D9E5F2]"
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
+          <input
+            type="text"
+            placeholder="Search facilities..."
+            value={facilitySearch}
+            onChange={(e) => setFacilitySearch(e.target.value)}
+            className="w-full bg-background border border-border text-xs text-foreground pl-9 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
-          {canEdit && (
-            <Button
-              onClick={onOpenAddFacility}
-              className="h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1.5 px-4 shrink-0 shadow-xs"
-            >
-              <Plus className="w-4 h-4" />
-              Add Facility Site
-            </Button>
-          )}
         </div>
+        {canEdit && (
+          <button
+            onClick={onOpenAddFacility}
+            className="flex items-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Facility
+          </button>
+        )}
       </div>
 
-      {/* Facility Cards Grid */}
       {facilitiesLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-7 h-7 text-primary animate-spin" />
+        <div className="flex items-center justify-center p-12 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+          <span className="text-xs font-medium">Loading facilities…</span>
         </div>
       ) : filteredFacilities.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 card-base">
-          <div className="w-14 h-14 rounded-2xl bg-[#F0F2F5] border-2 border-dashed border-[#D9E5F2] flex items-center justify-center">
-            <MapPin className="w-7 h-7 text-neutral-300" />
-          </div>
-          <p className="text-sm text-neutral-600 font-bold">No facility sites found</p>
-          <p className="text-xs text-neutral-400">
-            {facilitySearch ? 'Try adjusting your search query.' : 'Click "Add Facility Site" to create the first site.'}
+        <div className="flex flex-col items-center justify-center p-8 bg-card border border-border rounded-xl text-center">
+          <Building2 className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
+          <p className="text-sm font-semibold text-card-foreground">No Facilities Found</p>
+          <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+            {facilitySearch ? 'No facilities matched your search.' : `No facilities configured for ${orgName}.`}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredFacilities.map((fac) => (
             <div
               key={fac.id}
-              className="card-base p-5 hover:border-primary/30 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              className="p-4 bg-card border border-border rounded-xl shadow-xs space-y-3 flex flex-col justify-between"
             >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-sky-50 text-sky-600 shrink-0">
-                      <Building2 className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="section-title leading-snug">{fac.name}</h4>
-                      <p className="text-[10px] text-neutral-400 font-mono mt-0.5">ID #{fac.id}</p>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200 shrink-0">
-                    {fac.unLocode || fac.countryCode || 'UK'}
+              <div className="space-y-1">
+                <div className="flex items-start justify-between">
+                  <h3 className="text-sm font-bold text-card-foreground">{fac.name}</h3>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 bg-primary/10 text-primary rounded">
+                    {fac.countryCode || 'FACILITY'}
                   </span>
                 </div>
-
-                {fac.address && (
-                  <p className="text-xs text-neutral-600 flex items-start gap-1.5 pt-1 leading-relaxed">
-                    <MapPin className="w-3.5 h-3.5 text-neutral-400 shrink-0 mt-0.5" />
-                    <span>{fac.address}</span>
+                <p className="text-xs text-muted-foreground font-medium">{fac.address || 'No address specified'}</p>
+                {fac.unLocode && (
+                  <p className="text-[11px] text-muted-foreground">
+                    UN/LOCODE: <span className="font-semibold text-card-foreground">{fac.unLocode}</span>
                   </p>
-                )}
-
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border text-xs">
-                  <div>
-                    <span className="text-[10px] text-neutral-400 font-bold uppercase">Postcode</span>
-                    <p className="font-mono font-semibold text-neutral-700 mt-0.5">{fac.postCode || '—'}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-neutral-400 font-bold uppercase">UN/LOCODE</span>
-                    <p className="font-mono font-semibold text-neutral-700 mt-0.5">{fac.unLocode || '—'}</p>
-                  </div>
-                </div>
-
-                {(fac.latitude || fac.longitude) && (
-                  <div className="text-[11px] text-neutral-400 font-mono pt-1">
-                    Coordinates: {fac.latitude || '0'}, {fac.longitude || '0'}
-                  </div>
                 )}
               </div>
 
               {canEdit && (
-                <div className="pt-3 border-t border-border flex items-center justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <button
                     onClick={() => onOpenEditFacility(fac)}
-                    className="h-8 text-xs font-semibold gap-1 border-border hover:bg-background-inner"
+                    className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors cursor-pointer"
+                    title="Edit Facility"
                   >
-                    <Edit2 className="w-3.5 h-3.5 text-neutral-500" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
                     onClick={() => onDeleteFacilityConfirmOpen(fac)}
-                    className="h-8 text-xs font-semibold gap-1 border-negative-50 text-negative-500 hover:bg-negative-50"
+                    className="p-1.5 text-muted-foreground hover:text-destructive rounded-md hover:bg-destructive/10 transition-colors cursor-pointer"
+                    title="Delete Facility"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    Delete
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>

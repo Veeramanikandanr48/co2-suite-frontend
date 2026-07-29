@@ -1,17 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ActivityNotRelevantModalProps } from '@/types/components/reusables.types';
 
 const LOCAL_STORAGE_KEY = 'co2_activity_not_relevant_skip_modal';
-
-interface ActivityNotRelevantModalProps {
-  /** Whether the modal is visible */
-  open: boolean;
-  /** Called when the user clicks "Ok" to confirm */
-  onConfirm: () => void;
-  /** Called when the user closes / cancels the modal */
-  onCancel: () => void;
-}
 
 /**
  * Branded modal that appears when the user ticks "Activity is not relevant".

@@ -13,20 +13,9 @@ import { ReusableTable } from '@/components/reusables/reusable-table';
 import {
   Building2,
   Plus,
-  Edit2,
-  Trash2,
-  ShieldCheck,
-  Mail,
-  Globe,
-  Loader2,
-  CheckCircle2,
-  XCircle,
   AlertTriangle,
-  UserCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -42,7 +31,6 @@ import {
 } from '@/components/reusables/toast-variant';
 import {
   OnboardOrganizationSchema,
-  EditOrganizationSchema,
 } from '@/lib/schemas';
 import {
   Organization,
@@ -54,6 +42,7 @@ import {
   INITIAL_ONBOARD_FORM,
   INITIAL_EDIT_FORM,
 } from '@/components/constants/organization';
+import { OrgOnboardDialog } from '@/components/organizations/org-onboard-dialog';
 
 export default function OrganizationsPage() {
   const { user } = useAuth();
@@ -88,14 +77,12 @@ export default function OrganizationsPage() {
 
   // Modals state
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
   const [onboardForm, setOnboardForm] = useState<OnboardOrganizationPayload>(INITIAL_ONBOARD_FORM);
-  const [editForm, setEditForm] = useState<EditOrganizationPayload>(INITIAL_EDIT_FORM);
 
   // Handle Onboard Submission
   const handleOnboardSubmit = async (e: React.FormEvent) => {
@@ -120,59 +107,6 @@ export default function OrganizationsPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Open Edit Modal
-  const openEditModal = (org: Organization | TableOrganization) => {
-    const rawId = 'rawId' in org ? org.rawId : Number(org.id);
-    setSelectedOrg({
-      ...org,
-      id: rawId,
-    });
-    setEditForm({
-      name: org.name,
-      code: org.code,
-      contactEmail: org.contactEmail,
-      emailDomain: org.emailDomain || '',
-      isActive: org.isActive,
-    });
-    setIsEditOpen(true);
-  };
-
-  // Handle Edit Submission
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedOrg) return;
-
-    const validation = EditOrganizationSchema.safeParse(editForm);
-    if (!validation.success) {
-      const firstError = validation.error.issues[0]?.message || 'Validation error';
-      showErrorToast(firstError);
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      await apiService.put(API_LIST.ORGANIZATIONS, selectedOrg.id, editForm);
-      showSuccessToast('Organization updated successfully!');
-      setIsEditOpen(false);
-      refetch();
-    } catch (err: unknown) {
-      const errorMsg = (err as { message?: string })?.message || 'Update failed';
-      showErrorToast(errorMsg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Open Delete Confirmation Modal
-  const openDeleteModal = (org: Organization | TableOrganization) => {
-    const rawId = 'rawId' in org ? org.rawId : Number(org.id);
-    setSelectedOrg({
-      ...org,
-      id: rawId,
-    });
-    setIsDeleteOpen(true);
   };
 
   // Handle Delete/Deactivate Submission
@@ -303,175 +237,20 @@ export default function OrganizationsPage() {
           isLoadingMore={isLoadingMore}
           hasMore={hasMore}
           handleLoadMore={loadMore}
-          onRowClick={(id) => router.push(`/organizations/${id}`)}
+          onRowClick={(id: string | number) => router.push(`/organizations/${id}`)}
           tableHeight="calc(100vh - 350px)"
         />
       </div>
 
       {/* Onboard Organization Modal Dialog */}
-      <Dialog open={isOnboardOpen} onOpenChange={setIsOnboardOpen}>
-        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center gap-2 text-primary">
-              <ShieldCheck className="w-5 h-5" />
-              <DialogTitle className="text-lg font-bold">Onboard New Organization</DialogTitle>
-            </div>
-            <DialogDescription className="text-xs text-gray-500">
-              Create organization records and provision initial Organization Administrator credentials.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleOnboardSubmit} className="space-y-4 py-2 text-xs">
-            {/* Organization Profile Section */}
-            <div className="p-3.5 bg-gray-50/70 rounded-xl border border-gray-100 space-y-3">
-              <div className="font-semibold text-gray-800 flex items-center gap-1.5 border-b border-gray-200/60 pb-1.5">
-                <Building2 className="w-3.5 h-3.5 text-emerald-600" />
-                Organization Profile
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Organization Name *</Label>
-                  <Input
-                    placeholder="Acme Corporation"
-                    value={onboardForm.name}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, name: e.target.value })}
-                    required
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Organization Code *</Label>
-                  <Input
-                    placeholder="ACME"
-                    value={onboardForm.code}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, code: e.target.value.toUpperCase() })}
-                    required
-                    className="h-8 text-xs uppercase bg-white font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Contact Email *</Label>
-                  <Input
-                    type="email"
-                    placeholder="contact@acme.com"
-                    value={onboardForm.contactEmail}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, contactEmail: e.target.value })}
-                    required
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Email Domain (Optional)</Label>
-                  <Input
-                    placeholder="acme.com"
-                    value={onboardForm.emailDomain}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, emailDomain: e.target.value })}
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Admin Credentials Section */}
-            <div className="p-3.5 bg-emerald-50/40 rounded-xl border border-emerald-100 space-y-3">
-              <div className="font-semibold text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200/60 pb-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Initial Organization Administrator
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Admin Username *</Label>
-                  <Input
-                    placeholder="acme_admin"
-                    value={onboardForm.adminUserName}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, adminUserName: e.target.value })}
-                    required
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Admin Email *</Label>
-                  <Input
-                    type="email"
-                    placeholder="admin@acme.com"
-                    value={onboardForm.adminEmail}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, adminEmail: e.target.value })}
-                    required
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <Label className="text-[11px]">Admin Password *</Label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={onboardForm.adminPassword}
-                  onChange={(e) => setOnboardForm({ ...onboardForm, adminPassword: e.target.value })}
-                  required
-                  className="h-8 text-xs bg-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px]">First Name</Label>
-                  <Input
-                    placeholder="Acme"
-                    value={onboardForm.adminFirstName}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, adminFirstName: e.target.value })}
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Last Name</Label>
-                  <Input
-                    placeholder="Admin"
-                    value={onboardForm.adminLastName}
-                    onChange={(e) => setOnboardForm({ ...onboardForm, adminLastName: e.target.value })}
-                    className="h-8 text-xs bg-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <DialogFooter className="pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsOnboardOpen(false)}
-                className="h-8 text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                    Onboarding...
-                  </>
-                ) : (
-                  'Complete Onboarding'
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <OrgOnboardDialog
+        isOnboardOpen={isOnboardOpen}
+        setIsOnboardOpen={setIsOnboardOpen}
+        onboardForm={onboardForm}
+        setOnboardForm={setOnboardForm}
+        isSubmitting={isSubmitting}
+        onOnboardSubmit={handleOnboardSubmit}
+      />
 
       {/* Delete / Deactivate Confirmation Dialog */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { ExternalLink, CheckCircle2, Plus, Trash2 } from 'lucide-react';
 import { Service } from '@/types/services';
+import { ServiceCardProps } from '@/types/components/services.types';
 
 /** Colour palette for tag badges — cycles deterministically by tag text */
 const TAG_PALETTES: readonly { bg: string; text: string; border: string }[] = [
@@ -21,17 +22,6 @@ function getTagPalette(tag: string) {
   return TAG_PALETTES[Math.abs(hash) % TAG_PALETTES.length];
 }
 
-interface ServiceCardProps {
-  service: Service;
-  /** Whether this service is currently subscribed by the viewed org */
-  isSubscribed?: boolean;
-  /** Show assign / remove controls (Super Admin only) */
-  showControls?: boolean;
-  isAssigning?: boolean;
-  isRemoving?: boolean;
-  onAssign?: (service: Service) => void;
-  onRemove?: (service: Service) => void;
-}
 
 export function ServiceCard({
   service,

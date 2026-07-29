@@ -4,19 +4,7 @@ import React from 'react';
 import { Service, OrganizationService } from '@/types/services';
 import { ServiceCard } from '@/components/services/service-card';
 import { LayoutGrid, Loader2 } from 'lucide-react';
-
-interface OrgServicesTabProps {
-  allServices: Service[];
-  orgServices: OrganizationService[];
-  subscribedServiceIds: Set<number>;
-  servicesLoading: boolean;
-  isSuperAdmin: boolean;
-  assigningServiceId: number | null;
-  removingServiceId: number | null;
-  onRefresh: () => void;
-  onAssignService: (service: Service) => void;
-  onRemoveService: (service: Service) => void;
-}
+import { OrgServicesTabProps } from '@/types/components/organizations.types';
 
 export function OrgServicesTab({
   allServices,

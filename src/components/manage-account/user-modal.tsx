@@ -5,14 +5,9 @@ import { X, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 
-export interface UserFormData {
-  id?: number;
-  firstName: string;
-  lastName?: string;
-  email: string;
-  phone?: string;
-  roleId?: number; // 2: ADMIN, 3: USER
-}
+import { UserFormData } from '@/types/manage-account';
+
+export type { UserFormData };
 
 interface UserModalProps {
   isOpen: boolean;

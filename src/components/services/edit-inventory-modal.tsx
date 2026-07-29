@@ -1,81 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, UploadCloud, FileText, CheckCircle2 } from 'lucide-react';
+import { X, Loader2, CheckCircle2 } from 'lucide-react';
 import { apiService } from '@/lib/api-service';
 import { API_LIST } from '@/lib/api-list';
 import { showSuccessToast, showErrorToast } from '@/components/reusables/toast-variant';
+import { InventoryItem, EditModalItem } from '@/types/inventory';
+import { EditInventoryFormFields } from './edit-inventory-form-fields';
 
-export interface InventoryItem {
-  id: string | number;
-  category?: string;
-  name?: string;
-  amount?: number | string;
-  unit?: string;
-  ef?: number | string;
-  efSource?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  facility?: string;
-  approvalStatus?: string;
-  comment?: string;
-  documentPath?: string;
-  emission?: number | string;
-  [key: string]: any;
-}
+export type { InventoryItem, EditModalItem };
+import { EditInventoryModalProps } from '@/types/components/services.types';
 
-interface EditInventoryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  item: InventoryItem | null;
-  onSaved: () => void;
-  facilities?: { id: number | string; name: string }[];
-}
 
 export function EditInventoryModal({
+  open,
   isOpen,
   onClose,
   item,
   onSaved,
-  facilities = [],
+  dbFacilities = [],
 }: EditInventoryModalProps) {
+  const isVisible = open !== undefined ? open : (isOpen ?? false);
+
+  const [saving, setSaving] = useState(false);
   const [name, setName] = useState('');
+  const [facility, setFacility] = useState('');
   const [amount, setAmount] = useState<string | number>('');
-  const [distance, setDistance] = useState<string | number>('');
   const [unit, setUnit] = useState('');
   const [ef, setEf] = useState<string | number>('');
   const [efSource, setEfSource] = useState('');
-  const [facility, setFacility] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [approvalStatus, setApprovalStatus] = useState('Approved');
   const [comment, setComment] = useState('');
   const [proofFile, setProofFile] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (item) {
       setName(item.name || '');
-      setAmount(item.amount !== undefined && item.amount !== null ? item.amount : '');
-      setDistance(item.distance !== undefined && item.distance !== null ? item.distance : '');
-      setUnit(item.unit || '');
-      setEf(item.ef !== undefined && item.ef !== null ? item.ef : '');
-      setEfSource(item.efSource || '');
       setFacility(item.facility || '');
-      setDateFrom(item.dateFrom || item.from || '');
-      setDateTo(item.dateTo || item.to || '');
-      setApprovalStatus(item.approvalStatus || item.status || 'Approved');
+      setAmount(item.amount ?? '');
+      setUnit(item.unit || '');
+      setEf(item.ef ?? '');
+      setEfSource(item.efSource || '');
+      setDateFrom(item.dateFrom || '');
+      setDateTo(item.dateTo || '');
+      setApprovalStatus(item.approvalStatus || 'Approved');
       setComment(item.comment || '');
       setProofFile(null);
     }
   }, [item]);
 
-  if (!isOpen || !item) return null;
+  if (!isVisible || !item) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       setSaving(true);
-
       let uploadedDocPath = item.documentPath;
       if (proofFile) {
         try {
@@ -86,20 +65,18 @@ export function EditInventoryModal({
           });
           const uploadData = (uploadRes as any)?.data ?? uploadRes;
           uploadedDocPath = uploadData?.documentPath || uploadedDocPath;
-        } catch (uploadErr) {
-          console.error('Failed to upload proof document:', uploadErr);
-          showErrorToast('Failed to upload new proof document file.');
+        } catch {
+          showErrorToast('Failed to upload proof document file.');
         }
       }
 
       const payload = {
         name,
-        amount: parseFloat(String(amount)) || 0,
-        distance: distance !== '' ? parseFloat(String(distance)) : undefined,
-        unit,
-        ef: parseFloat(String(ef)) || 0,
-        efSource,
         facility,
+        amount: Number(amount) || 0,
+        unit,
+        ef: Number(ef) || 0,
+        efSource,
         dateFrom,
         dateTo,
         approvalStatus,
@@ -108,252 +85,84 @@ export function EditInventoryModal({
       };
 
       await apiService.put(API_LIST.INVENTORY_ENTRIES, item.id, payload);
-      showSuccessToast('Inventory entry updated successfully!');
+      showSuccessToast('Inventory item updated successfully!');
       onSaved();
       onClose();
-    } catch (error) {
-      console.error('Failed to update inventory item:', error);
-      showErrorToast('Failed to update inventory record in database.');
+    } catch {
+      showErrorToast('Failed to update inventory item.');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-neutral-200 p-6 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4 mb-5">
-          <div>
-            <h2 className="text-lg font-bold text-neutral-800">Edit Inventory Entry</h2>
-            <p className="text-xs text-neutral-500 font-medium mt-0.5">
-              Category: <span className="text-emerald-700 font-semibold">{item.category || 'Emission Entry'}</span>
-            </p>
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-[#E6E8EB] shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#F0F2F5]">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-[#ECFDF5] text-[#059669] rounded-lg border border-[#A7F3D0]">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-neutral-800 tracking-tight">
+                Edit Inventory Entry #{item.id}
+              </h3>
+              <p className="text-[11px] text-neutral-400 font-medium">
+                Category: {item.category || 'Scope Data'}
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="p-1.5 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Entry Name */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                Entry / Activity Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Natural Gas"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
+        <form onSubmit={handleSave} className="p-5 space-y-4">
+          <EditInventoryFormFields
+            item={item}
+            name={name}
+            setName={setName}
+            facility={facility}
+            setFacility={setFacility}
+            facilities={dbFacilities}
+            amount={amount}
+            setAmount={setAmount}
+            unit={unit}
+            setUnit={setUnit}
+            ef={ef}
+            setEf={setEf}
+            efSource={efSource}
+            setEfSource={setEfSource}
+            dateFrom={dateFrom}
+            setDateFrom={setDateFrom}
+            dateTo={dateTo}
+            setDateTo={setDateTo}
+            approvalStatus={approvalStatus}
+            setApprovalStatus={setApprovalStatus}
+            comment={comment}
+            setComment={setComment}
+            proofFile={proofFile}
+            setProofFile={setProofFile}
+          />
 
-            {/* Facility */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Facility</label>
-              {facilities.length > 0 ? (
-                <select
-                  value={facility}
-                  onChange={(e) => setFacility(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-                >
-                  <option value="">Select Facility</option>
-                  {facilities.map((fac) => (
-                    <option key={fac.id} value={fac.name}>
-                      {fac.name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={facility}
-                  onChange={(e) => setFacility(e.target.value)}
-                  placeholder="e.g. Central HQ"
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-                />
-              )}
-            </div>
-
-            {/* Amount */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                Amount <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                step="any"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
-
-            {/* Unit */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Unit</label>
-              <input
-                type="text"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                placeholder="e.g. sm3, kWh, kg, km"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
-
-            {/* Emission Factor */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Emission Factor (EF)</label>
-              <input
-                type="number"
-                step="any"
-                value={ef}
-                onChange={(e) => setEf(e.target.value)}
-                placeholder="e.g. 1.938"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-              <div className="mt-1 flex items-center justify-between px-1">
-                <span className="text-[10px] text-neutral-500 font-medium">Live Emission Calc:</span>
-                <span className="text-[11px] font-bold text-[#059669]">
-                  {(() => {
-                    const amtVal = parseFloat(String(amount)) || 0;
-                    const efVal = parseFloat(String(ef)) || 0;
-                    const uLower = (unit || '').toLowerCase();
-                    if (uLower === 'tonne' || uLower === 'ton') {
-                      return efVal > 1.0 ? ((amtVal * efVal) / 1000).toFixed(3) : (amtVal * efVal).toFixed(3);
-                    }
-                    return ((amtVal * efVal) / 1000).toFixed(3);
-                  })()} t CO₂-e
-                </span>
-              </div>
-            </div>
-
-            {/* EF Source */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">EF Source</label>
-              <input
-                type="text"
-                value={efSource}
-                onChange={(e) => setEfSource(e.target.value)}
-                placeholder="e.g. IPCC-AR6"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
-
-            {/* Date From */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Date From</label>
-              <input
-                type="text"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                placeholder="01.01.2026"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
-
-            {/* Date To */}
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Date To</label>
-              <input
-                type="text"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                placeholder="31.12.2026"
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              />
-            </div>
-
-            {/* Approval Status */}
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Approval Status</label>
-              <select
-                value={approvalStatus}
-                onChange={(e) => setApprovalStatus(e.target.value)}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
-              >
-                <option value="Approved">Approved</option>
-                <option value="Pending Review">Pending Review</option>
-                <option value="Draft">Draft</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
-
-            {/* Comment */}
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Comments / Notes</label>
-              <textarea
-                rows={2}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Add any notes or justification..."
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white resize-none"
-              />
-            </div>
-
-            {/* Document Proof */}
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">Proof Document</label>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold text-xs rounded-xl cursor-pointer transition-colors border border-neutral-200">
-                  <UploadCloud className="w-4 h-4 text-emerald-600" />
-                  <span>{proofFile ? proofFile.name : 'Upload New Proof Document'}</span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setProofFile(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </label>
-                {item.documentPath && !proofFile && (
-                  <div className="flex items-center gap-1 text-xs text-neutral-500">
-                    <FileText className="w-3.5 h-3.5 text-blue-500" />
-                    <span className="truncate max-w-[200px]">{item.documentPath}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 border-t border-neutral-100 pt-4 mt-6">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#F0F2F5]">
             <button
               type="button"
               onClick={onClose}
-              disabled={saving}
-              className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold text-xs rounded-xl transition-colors"
+              className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-5 py-2 bg-[#00C9A7] hover:bg-[#00B395] text-white font-bold text-xs rounded-xl shadow-sm transition-colors disabled:opacity-50"
+              className="px-5 py-2 bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Updating...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Save Changes</span>
-                </>
-              )}
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              Save Changes
             </button>
           </div>
         </form>
