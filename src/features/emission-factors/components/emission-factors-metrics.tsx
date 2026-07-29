@@ -10,18 +10,9 @@ import {
   Globe,
 } from 'lucide-react';
 import { MetricCard } from '@/components/shared';
+import { EmissionFactorsMetricsProps } from '@/types/components/emission-factors.types';
 
-interface MetricsProps {
-  metrics: {
-    total: number;
-    active: number;
-    categoriesCount: number;
-    sourcesCount: number;
-  };
-  onOpenCreateModal: () => void;
-}
-
-export function EmissionFactorsMetrics({ metrics, onOpenCreateModal }: MetricsProps) {
+export function EmissionFactorsMetrics({ metrics, onOpenCreateModal }: EmissionFactorsMetricsProps) {
   return (
     <>
       {/* Header Banner */}

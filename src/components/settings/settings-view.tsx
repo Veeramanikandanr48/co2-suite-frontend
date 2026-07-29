@@ -10,23 +10,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { PageHeader, NavTabButton } from '@/components/shared';
+import { AppSettings } from '@/types/settings';
 import { toast } from 'sonner';
-
-interface AppSettings {
-  theme: string;
-  language: string;
-  dateFormat: string;
-  timezone: string;
-  carbonUnit: string;
-  reportingStandard: string;
-  currency: string;
-  decimalPrecision: string;
-  notifyThresholdAlerts: boolean;
-  notifyWeeklyDigest: boolean;
-  notifySystemUpdates: boolean;
-  enable2FA: boolean;
-  sessionTimeout: string;
-}
 
 const DEFAULT_SETTINGS: AppSettings = {
   theme: 'system',

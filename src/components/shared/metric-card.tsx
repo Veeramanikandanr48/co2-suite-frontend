@@ -1,14 +1,7 @@
 'use client';
 
 import React from 'react';
-
-export interface MetricCardProps {
-  title: string;
-  value: string | number;
-  icon?: React.ComponentType<{ className?: string }>;
-  subtitle?: string;
-  className?: string;
-}
+import { MetricCardProps } from '@/types/components/reusables.types';
 
 export function MetricCard({
   title,

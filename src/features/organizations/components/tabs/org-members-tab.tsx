@@ -1,24 +1,13 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { UserPlus, Search } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ReusableTable } from '@/components/shared/table/reusable-table';
 import { OrgUser, TableOrgUser } from '@/types/organizations';
+import { OrgMembersTabProps } from '@/types/components/organizations.types';
 
 export type { OrgUser, TableOrgUser };
-
-interface OrgMembersTabProps {
-  userTableData: TableOrgUser[];
-  userColumns: ColumnDef<TableOrgUser>[];
-  userTotalCount: number;
-  userIsLoadingMore: boolean;
-  userHasMore: boolean;
-  setUserSearch: (search: string) => void;
-  userLoadMore: () => void;
-  canEdit: boolean;
-  onAddMemberOpen: () => void;
-}
 
 export function OrgMembersTab({
   userTableData,

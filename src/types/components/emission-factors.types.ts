@@ -15,23 +15,24 @@ export interface CreateEmissionFactorColumnsProps {
 }
 
 export interface EmissionFactorsToolbarProps {
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-  categoryFilter: string;
-  setCategoryFilter: (value: string) => void;
-  sourceFilter: string;
-  setSourceFilter: (value: string) => void;
-  availableCategories: string[];
-  availableSources: string[];
-  onClearFilters: () => void;
-  onOpenCreateModal: () => void;
-  totalCount: number;
+  searchInput: string;
+  setSearch: (v: string) => void;
+  filterCategory: string;
+  setFilterCategory: (v: string) => void;
+  filterSource: string;
+  setFilterSource: (v: string) => void;
+  setAdditionalFilter: (f: any) => void;
+  refetch: () => void;
 }
 
 export interface EmissionFactorsMetricsProps {
-  totalFactorsCount: number;
-  availableSourcesCount: number;
-  availableCategoriesCount: number;
+  metrics: {
+    total: number;
+    active: number;
+    categoriesCount: number;
+    sourcesCount: number;
+  };
+  onOpenCreateModal: () => void;
 }
 
 export interface FormulaBuilderFieldProps {

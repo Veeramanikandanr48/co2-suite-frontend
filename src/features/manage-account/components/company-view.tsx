@@ -17,21 +17,7 @@ import {
 import { apiService } from '@/lib/api/api-service';
 import { useAuth } from '@/context/auth-provider';
 import { CompanyModal } from './company-modal';
-
-interface CompanyData {
-  id?: number;
-  name?: string;
-  country?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  address?: string;
-  taxId?: string;
-  allowedDomains?: string;
-  userCount?: number;
-  adminCount?: number;
-  facilityCount?: number;
-  subscriptions?: any[];
-}
+import { CompanyData } from '@/types/manage-account';
 
 export function CompanyView() {
   const { user } = useAuth();

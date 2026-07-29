@@ -1,14 +1,7 @@
 'use client';
 
 import React from 'react';
-
-export interface PageHeaderProps {
-  title: string;
-  description?: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  action?: React.ReactNode;
-  className?: string;
-}
+import { PageHeaderProps } from '@/types/components/reusables.types';
 
 export function PageHeader({
   title,

@@ -1,14 +1,7 @@
 'use client';
 
 import React from 'react';
-
-export interface NavTabButtonProps {
-  isActive: boolean;
-  onClick: () => void;
-  icon?: React.ComponentType<{ className?: string }>;
-  label: string;
-  className?: string;
-}
+import { NavTabButtonProps } from '@/types/components/reusables.types';
 
 export function NavTabButton({
   isActive,

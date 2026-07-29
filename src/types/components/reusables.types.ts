@@ -1,3 +1,4 @@
+import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
 export interface ReusableTableProps<T extends { id: string | number }> {
@@ -25,4 +26,41 @@ export interface SearchBarProps {
   onSearch?: (value: string) => void;
   className?: string;
   resetTrigger?: number;
+}
+
+export interface NavTabButtonProps {
+  isActive: boolean;
+  onClick: () => void;
+  icon?: React.ComponentType<{ className?: string }>;
+  label: string;
+  className?: string;
+}
+
+export interface PageHeaderProps {
+  title: string;
+  description?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  action?: React.ReactNode;
+  className?: string;
+}
+
+export interface MetricCardProps {
+  title: string;
+  value: string | number;
+  icon?: React.ComponentType<{ className?: string }>;
+  subtitle?: string;
+  className?: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  type: 'info' | 'alert' | 'success';
+  read: boolean;
+}
+
+export interface HeaderProps {
+  onOpenMobileSidebar?: () => void;
 }

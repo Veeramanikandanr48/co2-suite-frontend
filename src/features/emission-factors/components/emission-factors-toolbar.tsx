@@ -3,17 +3,7 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
 import { CATEGORY_OPTIONS } from '../constants/emission-factor-constants';
-
-interface ToolbarProps {
-  searchInput: string;
-  setSearch: (v: string) => void;
-  filterCategory: string;
-  setFilterCategory: (v: string) => void;
-  filterSource: string;
-  setFilterSource: (v: string) => void;
-  setAdditionalFilter: (f: any) => void;
-  refetch: () => void;
-}
+import { EmissionFactorsToolbarProps } from '@/types/components/emission-factors.types';
 
 export function EmissionFactorsToolbar({
   searchInput,
@@ -24,7 +14,7 @@ export function EmissionFactorsToolbar({
   setFilterSource,
   setAdditionalFilter,
   refetch,
-}: ToolbarProps) {
+}: EmissionFactorsToolbarProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-neutral-50 p-2.5 rounded-lg border border-neutral-200">
       <div className="flex flex-wrap items-center gap-2 flex-1">

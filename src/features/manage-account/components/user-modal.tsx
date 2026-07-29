@@ -1,20 +1,13 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { X, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api/api-service';
 
-import { UserFormData } from '@/types/manage-account';
+import { UserFormData, UserModalProps } from '@/types/manage-account';
 
-export type { UserFormData };
-
-interface UserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-  userData?: UserFormData | null;
-}
+export type { UserFormData, UserModalProps };
 
 export function UserModal({ isOpen, onClose, onSuccess, userData }: UserModalProps) {
   const [firstName, setFirstName] = useState('');
@@ -80,7 +73,7 @@ export function UserModal({ isOpen, onClose, onSuccess, userData }: UserModalPro
         toast.success('User created successfully');
       }
 
-      onSuccess();
+      onSuccess?.();
       onClose();
     } catch (err: any) {
       toast.error(err.message || 'Error saving user details');

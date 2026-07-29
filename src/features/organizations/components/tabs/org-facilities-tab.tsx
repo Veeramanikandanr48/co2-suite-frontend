@@ -3,21 +3,9 @@
 import React from 'react';
 import { Building2, Plus, Edit2, Trash2, Search, Loader2 } from 'lucide-react';
 import { FacilityItem } from '@/types/organizations';
+import { OrgFacilitiesTabProps } from '@/types/components/organizations.types';
 
 export type { FacilityItem };
-
-interface OrgFacilitiesTabProps {
-  facilities: FacilityItem[];
-  filteredFacilities: FacilityItem[];
-  facilitiesLoading: boolean;
-  facilitySearch: string;
-  setFacilitySearch: (search: string) => void;
-  canEdit: boolean;
-  orgName: string;
-  onOpenAddFacility: () => void;
-  onOpenEditFacility: (fac: FacilityItem) => void;
-  onDeleteFacilityConfirmOpen: (fac: FacilityItem) => void;
-}
 
 export function OrgFacilitiesTab({
   facilities,
