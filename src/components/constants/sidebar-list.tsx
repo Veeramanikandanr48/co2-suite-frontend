@@ -1,4 +1,4 @@
-﻿import { SidebarItemType } from "@/types/sidebar";
+import { SidebarItemType } from "@/types/sidebar";
 import { MasterRole } from "@/types/enums";
 
 export const sidebarList: SidebarItemType[] = [
@@ -37,9 +37,25 @@ export const sidebarList: SidebarItemType[] = [
   {
     name: "Manage Account",
     href: "/manage-account",
-    icon: "Settings",
+    icon: "Building",
     isActive: true,
     roles: [MasterRole.ADMIN, MasterRole.USER],
+    child: [],
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: "User",
+    isActive: true,
+    roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
+    child: [],
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: "Settings",
+    isActive: true,
+    roles: [MasterRole.SUPER_ADMIN, MasterRole.ADMIN, MasterRole.USER],
     child: [],
   },
 ];

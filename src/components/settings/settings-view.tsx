@@ -1,13 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from 'react';
 import {
   Settings,
   Globe,
@@ -15,11 +8,9 @@ import {
   ShieldCheck,
   Leaf,
   Save,
-  Moon,
-  Sun,
-  Monitor,
-  CheckCircle,
-} from "lucide-react";
+  CheckCircle2,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AppSettings {
   theme: string;
@@ -38,33 +29,33 @@ interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  theme: "system",
-  language: "en",
-  dateFormat: "YYYY-MM-DD",
-  timezone: "UTC",
-  carbonUnit: "tCO2e",
-  reportingStandard: "ghg-protocol",
-  currency: "USD",
-  decimalPrecision: "2",
+  theme: 'system',
+  language: 'en',
+  dateFormat: 'YYYY-MM-DD',
+  timezone: 'UTC',
+  carbonUnit: 'tCO2e',
+  reportingStandard: 'ghg-protocol',
+  currency: 'USD',
+  decimalPrecision: '2',
   notifyThresholdAlerts: true,
   notifyWeeklyDigest: true,
   notifySystemUpdates: false,
   enable2FA: false,
-  sessionTimeout: "30",
+  sessionTimeout: '30',
 };
 
 export function SettingsView() {
-  const { toast } = useToast();
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+  const [activeTab, setActiveTab] = useState<'general' | 'emissions' | 'alerts' | 'security'>('general');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("app_settings");
+    const saved = localStorage.getItem('app_settings');
     if (saved) {
       try {
         setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) });
       } catch {
-        // Fallback to default
+        // Fallback
       }
     }
   }, []);
@@ -72,331 +63,280 @@ export function SettingsView() {
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
-      localStorage.setItem("app_settings", JSON.stringify(settings));
+      localStorage.setItem('app_settings', JSON.stringify(settings));
       setIsSaving(false);
-      toast({
-        title: "Settings saved",
-        description: "Your platform preferences have been updated successfully.",
-      });
-    }, 500);
+      toast.success('Settings saved successfully');
+    }, 400);
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+      {/* Title Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <Settings className="w-7 h-7 text-emerald-600" />
-            System & Account Settings
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure application preferences, reporting standards, and notification parameters.
-          </p>
+          <h1 className="text-xl font-bold text-neutral-900 tracking-tight">System & Account Settings</h1>
+          <p className="text-xs text-neutral-500 mt-1">Configure application preferences, reporting standards, and notification parameters</p>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shrink-0">
-          <Save className="w-4 h-4" />
-          {isSaving ? "Saving..." : "Save Preferences"}
-        </Button>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-4 py-2 bg-[#0B132B] hover:bg-[#152247] text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+        >
+          <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Preferences'}
+        </button>
       </div>
 
-      {/* Main Settings Tabs */}
-      <Tabs defaultValue="general" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] bg-background-inner p-1 border border-border rounded-xl">
-          <TabsTrigger value="general" className="flex items-center gap-2 text-xs sm:text-sm rounded-lg">
-            <Globe className="w-4 h-4" />
-            <span>General</span>
-          </TabsTrigger>
-          <TabsTrigger value="emissions" className="flex items-center gap-2 text-xs sm:text-sm rounded-lg">
-            <Leaf className="w-4 h-4" />
-            <span>Carbon Units</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2 text-xs sm:text-sm rounded-lg">
-            <Bell className="w-4 h-4" />
-            <span>Alerts</span>
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2 text-xs sm:text-sm rounded-lg">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Security</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Navigation Bar */}
+      <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
+        <button
+          onClick={() => setActiveTab('general')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+            activeTab === 'general'
+              ? 'bg-neutral-900 text-white shadow-xs'
+              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+          }`}
+          style={{ backgroundColor: activeTab === 'general' ? '#0B132B' : undefined }}
+        >
+          <Globe className="w-3.5 h-3.5" /> General
+        </button>
+        <button
+          onClick={() => setActiveTab('emissions')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+            activeTab === 'emissions'
+              ? 'bg-neutral-900 text-white shadow-xs'
+              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+          }`}
+          style={{ backgroundColor: activeTab === 'emissions' ? '#0B132B' : undefined }}
+        >
+          <Leaf className="w-3.5 h-3.5" /> Carbon Units
+        </button>
+        <button
+          onClick={() => setActiveTab('alerts')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+            activeTab === 'alerts'
+              ? 'bg-neutral-900 text-white shadow-xs'
+              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+          }`}
+          style={{ backgroundColor: activeTab === 'alerts' ? '#0B132B' : undefined }}
+        >
+          <Bell className="w-3.5 h-3.5" /> Alerts
+        </button>
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+            activeTab === 'security'
+              ? 'bg-neutral-900 text-white shadow-xs'
+              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+          }`}
+          style={{ backgroundColor: activeTab === 'security' ? '#0B132B' : undefined }}
+        >
+          <ShieldCheck className="w-3.5 h-3.5" /> Security
+        </button>
+      </div>
 
-        {/* Tab 1: General Settings */}
-        <TabsContent value="general">
-          <Card className="border border-border shadow-sm rounded-xl">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Globe className="w-5 h-5 text-emerald-600" />
-                General & Regional Preferences
-              </CardTitle>
-              <CardDescription>
-                Customize theme appearance, language, and locale formatting.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Appearance Mode Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold">Appearance Theme</Label>
-                <div className="grid grid-cols-3 gap-3 max-w-md">
-                  {[
-                    { id: "light", label: "Light", icon: Sun },
-                    { id: "dark", label: "Dark", icon: Moon },
-                    { id: "system", label: "System", icon: Monitor },
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    const isSelected = settings.theme === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setSettings({ ...settings, theme: item.id })}
-                        className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all cursor-pointer ${
-                          isSelected
-                            ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 font-semibold"
-                            : "border-border hover:bg-background-inner/60 text-muted-foreground"
-                        }`}
-                      >
-                        <Icon className="w-5 h-5 mb-1" />
-                        <span className="text-xs">{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+      {/* Main Settings Card */}
+      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-6">
+        {activeTab === 'general' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">General & Regional Settings</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Interface Language
+                </label>
+                <select
+                  value={settings.language}
+                  onChange={(e) => setSettings({ ...settings, language: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="en">English (US)</option>
+                  <option value="es">Español (Spanish)</option>
+                  <option value="fr">Français (French)</option>
+                  <option value="de">Deutsch (German)</option>
+                </select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl pt-2">
-                <div className="space-y-2">
-                  <Label htmlFor="language">Interface Language</Label>
-                  <Select value={settings.language} onValueChange={(val) => setSettings({ ...settings, language: val })}>
-                    <SelectTrigger id="language">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English (US)</SelectItem>
-                      <SelectItem value="es">Español (Spanish)</SelectItem>
-                      <SelectItem value="fr">Français (French)</SelectItem>
-                      <SelectItem value="de">Deutsch (German)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Select value={settings.timezone} onValueChange={(val) => setSettings({ ...settings, timezone: val })}>
-                    <SelectTrigger id="timezone">
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="UTC">UTC (Coordinated Universal Time)</SelectItem>
-                      <SelectItem value="EST">EST (Eastern Standard Time)</SelectItem>
-                      <SelectItem value="PST">PST (Pacific Standard Time)</SelectItem>
-                      <SelectItem value="GMT">GMT (Greenwich Mean Time)</SelectItem>
-                      <SelectItem value="IST">IST (India Standard Time)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dateFormat">Date Format</Label>
-                  <Select value={settings.dateFormat} onValueChange={(val) => setSettings({ ...settings, dateFormat: val })}>
-                    <SelectTrigger id="dateFormat">
-                      <SelectValue placeholder="Select format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="YYYY-MM-DD">YYYY-MM-DD (2026-07-29)</SelectItem>
-                      <SelectItem value="MM/DD/YYYY">MM/DD/YYYY (07/29/2026)</SelectItem>
-                      <SelectItem value="DD/MM/YYYY">DD/MM/YYYY (29/07/2026)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Timezone
+                </label>
+                <select
+                  value={settings.timezone}
+                  onChange={(e) => setSettings({ ...settings, timezone: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="UTC">UTC (Coordinated Universal Time)</option>
+                  <option value="EST">EST (Eastern Standard Time)</option>
+                  <option value="PST">PST (Pacific Standard Time)</option>
+                  <option value="GMT">GMT (Greenwich Mean Time)</option>
+                  <option value="IST">IST (India Standard Time)</option>
+                </select>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        {/* Tab 2: Carbon Units & Standard */}
-        <TabsContent value="emissions">
-          <Card className="border border-border shadow-sm rounded-xl">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Leaf className="w-5 h-5 text-emerald-600" />
-                Carbon Accounting & Standards
-              </CardTitle>
-              <CardDescription>
-                Define greenhouse gas emission measurement units, standards, and currency.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5 max-w-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <Label htmlFor="carbonUnit">Default Carbon Unit</Label>
-                  <Select value={settings.carbonUnit} onValueChange={(val) => setSettings({ ...settings, carbonUnit: val })}>
-                    <SelectTrigger id="carbonUnit">
-                      <SelectValue placeholder="Select carbon unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tCO2e">Metric Tonnes (tCO2e)</SelectItem>
-                      <SelectItem value="kgCO2e">Kilograms (kgCO2e)</SelectItem>
-                      <SelectItem value="lbCO2e">Pounds (lbCO2e)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="reportingStandard">Accounting Standard</Label>
-                  <Select value={settings.reportingStandard} onValueChange={(val) => setSettings({ ...settings, reportingStandard: val })}>
-                    <SelectTrigger id="reportingStandard">
-                      <SelectValue placeholder="Select standard" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ghg-protocol">GHG Protocol Corporate Standard</SelectItem>
-                      <SelectItem value="iso-14064">ISO 14064-1 Standard</SelectItem>
-                      <SelectItem value="pcaf">PCAF Financial Standard</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Financial Currency</Label>
-                  <Select value={settings.currency} onValueChange={(val) => setSettings({ ...settings, currency: val })}>
-                    <SelectTrigger id="currency">
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USD">USD ($)</SelectItem>
-                      <SelectItem value="EUR">EUR (€)</SelectItem>
-                      <SelectItem value="GBP">GBP (£)</SelectItem>
-                      <SelectItem value="INR">INR (₹)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="decimalPrecision">Decimal Precision</Label>
-                  <Select value={settings.decimalPrecision} onValueChange={(val) => setSettings({ ...settings, decimalPrecision: val })}>
-                    <SelectTrigger id="decimalPrecision">
-                      <SelectValue placeholder="Select precision" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2">2 Decimal Places (0.00)</SelectItem>
-                      <SelectItem value="3">3 Decimal Places (0.000)</SelectItem>
-                      <SelectItem value="4">4 Decimal Places (0.0000)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Date Format
+                </label>
+                <select
+                  value={settings.dateFormat}
+                  onChange={(e) => setSettings({ ...settings, dateFormat: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="YYYY-MM-DD">YYYY-MM-DD (2026-07-29)</option>
+                  <option value="MM/DD/YYYY">MM/DD/YYYY (07/29/2026)</option>
+                  <option value="DD/MM/YYYY">DD/MM/YYYY (29/07/2026)</option>
+                </select>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </div>
+          </div>
+        )}
 
-        {/* Tab 3: Notifications */}
-        <TabsContent value="notifications">
-          <Card className="border border-border shadow-sm rounded-xl">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Bell className="w-5 h-5 text-emerald-600" />
-                Notification Preferences
-              </CardTitle>
-              <CardDescription>
-                Choose when and how you receive alerts and reports.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 max-w-2xl">
-              {[
-                {
-                  id: "notifyThresholdAlerts",
-                  title: "CO2 Emission Threshold Breach Alerts",
-                  desc: "Receive real-time notifications when a facility exceeds configured carbon targets.",
-                },
-                {
-                  id: "notifyWeeklyDigest",
-                  title: "Weekly Carbon Footprint Summary",
-                  desc: "Automated weekly email report containing emission trends and facility statistics.",
-                },
-                {
-                  id: "notifySystemUpdates",
-                  title: "System Maintenance & Regulatory Updates",
-                  desc: "Notices about platform upgrades, API changes, and IPCC emission factor updates.",
-                },
-              ].map((item) => {
-                const key = item.id as keyof AppSettings;
-                return (
-                  <div key={item.id} className="flex items-start space-x-3 p-3.5 border border-border rounded-xl hover:bg-background-inner/40 transition-colors">
-                    <Checkbox
-                      id={item.id}
-                      checked={Boolean(settings[key])}
-                      onCheckedChange={(checked) => setSettings({ ...settings, [key]: Boolean(checked) })}
-                      className="mt-0.5"
-                    />
-                    <div className="space-y-0.5">
-                      <Label htmlFor={item.id} className="text-sm font-medium cursor-pointer">
-                        {item.title}
-                      </Label>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
-                    </div>
+        {activeTab === 'emissions' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Carbon Accounting Preferences</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Default Carbon Unit
+                </label>
+                <select
+                  value={settings.carbonUnit}
+                  onChange={(e) => setSettings({ ...settings, carbonUnit: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="tCO2e">Metric Tonnes (tCO2e)</option>
+                  <option value="kgCO2e">Kilograms (kgCO2e)</option>
+                  <option value="lbCO2e">Pounds (lbCO2e)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Accounting Standard
+                </label>
+                <select
+                  value={settings.reportingStandard}
+                  onChange={(e) => setSettings({ ...settings, reportingStandard: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="ghg-protocol">GHG Protocol Corporate Standard</option>
+                  <option value="iso-14064">ISO 14064-1 Standard</option>
+                  <option value="pcaf">PCAF Financial Standard</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Currency
+                </label>
+                <select
+                  value={settings.currency}
+                  onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="INR">INR (₹)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                  Decimal Precision
+                </label>
+                <select
+                  value={settings.decimalPrecision}
+                  onChange={(e) => setSettings({ ...settings, decimalPrecision: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="2">2 Decimal Places (0.00)</option>
+                  <option value="3">3 Decimal Places (0.000)</option>
+                  <option value="4">4 Decimal Places (0.0000)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'alerts' && (
+          <div className="space-y-4 max-w-2xl">
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Notification Preferences</h2>
+            {[
+              {
+                key: 'notifyThresholdAlerts',
+                title: 'Emission Threshold Alerts',
+                desc: 'Real-time alerts when monthly facility emissions exceed target quotas.',
+              },
+              {
+                key: 'notifyWeeklyDigest',
+                title: 'Weekly Carbon Digest',
+                desc: 'Weekly automated email summaries of total carbon footprint and facility statistics.',
+              },
+              {
+                key: 'notifySystemUpdates',
+                title: 'System Updates & Regulations',
+                desc: 'Notices regarding IPCC emission factor updates and platform maintenance.',
+              },
+            ].map((item) => {
+              const k = item.key as keyof AppSettings;
+              return (
+                <div key={item.key} className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-neutral-900">{item.title}</div>
+                    <div className="text-[11px] text-neutral-500 mt-0.5">{item.desc}</div>
                   </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 4: Security */}
-        <TabsContent value="security">
-          <Card className="border border-border shadow-sm rounded-xl">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                Security & Session Policies
-              </CardTitle>
-              <CardDescription>
-                Manage account safety rules and authentication enforcement.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 max-w-2xl">
-              <div className="flex items-start space-x-3 p-4 border border-border rounded-xl bg-background-inner/30">
-                <Checkbox
-                  id="enable2FA"
-                  checked={settings.enable2FA}
-                  onCheckedChange={(checked) => setSettings({ ...settings, enable2FA: Boolean(checked) })}
-                  className="mt-0.5"
-                />
-                <div className="space-y-0.5">
-                  <Label htmlFor="enable2FA" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                    Enforce Two-Factor Authentication (2FA)
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Require an authenticator app code during sign in for enhanced protection.
-                  </p>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(settings[k])}
+                    onChange={(e) => setSettings({ ...settings, [k]: e.target.checked })}
+                    className="w-4 h-4 text-[#0B132B] rounded border-neutral-300 focus:ring-0 cursor-pointer"
+                  />
                 </div>
-              </div>
+              );
+            })}
+          </div>
+        )}
 
-              <div className="space-y-2 max-w-xs">
-                <Label htmlFor="sessionTimeout">Session Inactivity Timeout</Label>
-                <Select value={settings.sessionTimeout} onValueChange={(val) => setSettings({ ...settings, sessionTimeout: val })}>
-                  <SelectTrigger id="sessionTimeout">
-                    <SelectValue placeholder="Select timeout" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="15">15 Minutes</SelectItem>
-                    <SelectItem value="30">30 Minutes</SelectItem>
-                    <SelectItem value="60">1 Hour</SelectItem>
-                    <SelectItem value="240">4 Hours</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground pt-1">
-                  Automatically log out after this duration of inactivity.
-                </p>
+        {activeTab === 'security' && (
+          <div className="space-y-4 max-w-2xl">
+            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Security Policies</h2>
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center justify-between">
+              <div>
+                <div className="text-xs font-bold text-neutral-900">Enforce Two-Factor Authentication (2FA)</div>
+                <div className="text-[11px] text-neutral-500 mt-0.5">Require multi-factor authentication codes during login</div>
               </div>
+              <input
+                type="checkbox"
+                checked={settings.enable2FA}
+                onChange={(e) => setSettings({ ...settings, enable2FA: e.target.checked })}
+                className="w-4 h-4 text-[#0B132B] rounded border-neutral-300 focus:ring-0 cursor-pointer"
+              />
+            </div>
 
-              <div className="p-4 border border-emerald-600/20 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5">
-                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Your connection is encrypted with 256-bit TLS security protocol.</span>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            <div className="max-w-xs">
+              <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                Session Inactivity Timeout
+              </label>
+              <select
+                value={settings.sessionTimeout}
+                onChange={(e) => setSettings({ ...settings, sessionTimeout: e.target.value })}
+                className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+              >
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="60">1 Hour</option>
+                <option value="240">4 Hours</option>
+              </select>
+            </div>
+
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-800 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>TLS 256-bit connection encryption enabled.</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

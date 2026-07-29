@@ -1,4 +1,4 @@
-﻿import { MasterRole } from "@/types/enums";
+import { MasterRole } from "@/types/enums";
 
 export interface WorkspaceLogo {
   id: string;
