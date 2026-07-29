@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Info,
   UploadCloud,
@@ -20,6 +20,8 @@ import {
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 import { API_LIST } from '@/lib/api-list';
+import { useAuth } from '@/context/auth-provider';
+import { MasterRole } from '@/enums/base-enum';
 import {
   ActivityNotRelevantModal,
   shouldSkipActivityNotRelevantModal,
@@ -52,10 +54,12 @@ interface DBEmissionFactor {
 interface InventoryItem {
   id: number;
   name: string;
+  category?: string;
   amount?: number | string;
   unit?: string;
   ef?: number | string;
   efSource?: string;
+  formula?: string;
   dateFrom?: string;
   dateTo?: string;
   from?: string;
@@ -70,6 +74,8 @@ interface InventoryItem {
 
 export function Scope2CalculationView({ category }: Scope2CalculationViewProps) {
   const isElectricity = category === 'Purchased Electricity';
+  const { user } = useAuth();
+  const canEdit = !user || user.roleId === MasterRole.SUPER_ADMIN || user.roleId === MasterRole.ADMIN;
 
   // Selected filters
   const [selectedYear, setSelectedYear] = useState('2026');
@@ -141,7 +147,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   });
 
   // Fetch Emission Factors & Facilities from DB
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
@@ -161,13 +167,36 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [isElectricity]);
+
+  const handleFilterUpdate = useCallback((updates: {
+    year?: string;
+    facility?: string;
+    status?: string;
+  }) => {
+    const yr = updates.year !== undefined ? updates.year : selectedYear;
+    const fac = updates.facility !== undefined ? updates.facility : (filterFacility || (selectedFacilityHeader !== 'All Facilities' ? selectedFacilityHeader : ''));
+    const stat = updates.status !== undefined ? updates.status : filterStatus;
+
+    if (updates.year !== undefined) setSelectedYear(updates.year);
+    if (updates.facility !== undefined) {
+      setFilterFacility(updates.facility);
+      setSelectedFacilityHeader(updates.facility || 'All Facilities');
+    }
+    if (updates.status !== undefined) setFilterStatus(updates.status);
+
+    const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
+    setAdditionalFilter({
+      category: efCategory,
+      facility: fac && fac !== 'All Facilities' ? fac : undefined,
+      status: stat && stat !== 'All Statuses' ? stat : undefined,
+      year: yr && yr !== 'All Years' ? yr : undefined,
+    });
+  }, [isElectricity, filterFacility, filterStatus, selectedFacilityHeader, selectedYear, setAdditionalFilter]);
 
   useEffect(() => {
     fetchData();
-    const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
-    setAdditionalFilter({ category: efCategory });
-  }, [category, isElectricity, setAdditionalFilter]);
+  }, [fetchData]);
 
   // Derived options for dropdowns strictly from DB
   const availableSources = useMemo(() => {
@@ -271,10 +300,53 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
     }
   };
 
+  // Duplicate/Copy inventory entry in Backend DB
+  const handleCopyItem = async (item: InventoryItem) => {
+    if (!canEdit) {
+      toast.error('Only Admin and Super Admin can duplicate inventory entries.');
+      return;
+    }
+
+    try {
+      const payload = {
+        serviceCode: 'CARBON',
+        category: item.category || efCategory,
+        name: item.name ? `${item.name} (Copy)` : 'Copy Entry',
+        amount: Number(item.amount) || 0,
+        unit: item.unit || 'kWh',
+        ef: Number(item.ef) || 0,
+        efSource: item.efSource || 'IEA Grid Factors 2023',
+        formula: item.formula,
+        dateFrom: item.dateFrom || item.from || '01.01.2026',
+        dateTo: item.dateTo || item.to || '31.12.2026',
+        facility: item.facility || 'Central HQ',
+        approvalStatus: item.approvalStatus || item.status || 'Approved',
+        comment: item.comment ? `${item.comment} (Duplicated)` : 'Duplicated entry',
+        documentPath: item.documentPath,
+      };
+
+      await apiService.post(API_LIST.INVENTORY_ENTRIES, payload);
+      toast.success('Inventory entry duplicated successfully!');
+      refetch();
+    } catch (error) {
+      console.error('Failed to duplicate inventory entry:', error);
+      toast.error('Failed to duplicate inventory record.');
+    }
+  };
+
   // Delete Entry from DB
   const handleDeleteItem = async (id: number) => {
+    if (!canEdit) {
+      toast.error('Only Admin and Super Admin can delete inventory entries.');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to delete this inventory record?')) {
+      return;
+    }
+
     try {
-      await apiService.delete(`${API_LIST.INVENTORY_ENTRIES}/${id}`);
+      await apiService.delete(API_LIST.INVENTORY_ENTRIES, id);
       toast.success('Inventory entry deleted successfully!');
       refetch();
     } catch (error) {
@@ -315,9 +387,10 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
             <div className="flex items-center gap-1">
               <select
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                onChange={(e) => handleFilterUpdate({ year: e.target.value })}
                 className="text-[11px] bg-neutral-50 border border-neutral-200 rounded px-1.5 py-0.5 text-neutral-700"
               >
+                <option value="All Years">All Years</option>
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
@@ -333,7 +406,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
             </div>
             <select
               value={selectedFacilityHeader}
-              onChange={(e) => setSelectedFacilityHeader(e.target.value)}
+              onChange={(e) => handleFilterUpdate({ facility: e.target.value === 'All Facilities' ? '' : e.target.value })}
               className="text-[11px] bg-neutral-50 border border-neutral-200 rounded px-2 py-1 text-neutral-700"
             >
               <option value="All Facilities">All Facilities</option>
@@ -738,11 +811,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
             {/* Facility Filter */}
             <select
               value={filterFacility}
-              onChange={(e) => {
-                const fac = e.target.value;
-                setFilterFacility(fac);
-                setAdditionalFilter({ category: efCategory, facility: fac, status: filterStatus });
-              }}
+              onChange={(e) => handleFilterUpdate({ facility: e.target.value })}
               className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
             >
               <option value="">All Facilities</option>
@@ -756,11 +825,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
             {/* Status Filter */}
             <select
               value={filterStatus}
-              onChange={(e) => {
-                const stat = e.target.value;
-                setFilterStatus(stat);
-                setAdditionalFilter({ category: efCategory, facility: filterFacility, status: stat });
-              }}
+              onChange={(e) => handleFilterUpdate({ status: e.target.value })}
               className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
             >
               <option value="">All Statuses</option>
@@ -774,9 +839,12 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
           <button
             type="button"
             onClick={() => {
+              const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
               setSearch('');
               setFilterFacility('');
+              setSelectedFacilityHeader('All Facilities');
               setFilterStatus('');
+              setSelectedYear('2026');
               setAdditionalFilter({ category: efCategory });
               refetch();
             }}
@@ -795,23 +863,42 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
               id: 'actions',
               header: 'Actions',
               cell: ({ row }) => (
-                <div className="flex items-center gap-2 text-neutral-400">
-                  <Edit2
-                    className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingItem(row.original as any);
-                    }}
-                  />
-                  <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
-                  <Trash2
-                    className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteItem(Number(row.original.id));
-                    }}
-                  />
-                </div>
+                canEdit ? (
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(row.original as any);
+                      }}
+                      className="hover:text-emerald-600 transition-colors"
+                      title="Edit Inventory Entry"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyItem(row.original as any);
+                      }}
+                      className="hover:text-blue-600 transition-colors"
+                      title="Duplicate Inventory Entry"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(Number(row.original.id));
+                      }}
+                      className="hover:text-red-600 transition-colors"
+                      title="Delete Inventory Entry"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-red-400 hover:text-red-600" />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-neutral-400 italic">Read-only</span>
+                )
               ),
             },
             {

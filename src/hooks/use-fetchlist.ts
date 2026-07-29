@@ -46,14 +46,20 @@ export function useFetchList<T>(
       
       const response = await apiService.post(endpoint, normalizedFilter) as { data: ListResponse<T> };
       if (response?.data) {
-        const newItems = response.data.listData;
+        const newItems = response.data.listData || [];
+        const count = response.data.dataCount || 0;
+        setTotalCount(count);
+
         if (append) {
-          setList(prev => [...prev, ...newItems]);
+          setList(prev => {
+            const combined = [...prev, ...newItems];
+            setHasMore(combined.length < count);
+            return combined;
+          });
         } else {
           setList(newItems);
+          setHasMore(newItems.length < count);
         }
-        setTotalCount(response.data.dataCount);
-        setHasMore(newItems.length === filter.limit);
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An error occurred'));
@@ -127,13 +133,17 @@ export function useFetchList<T>(
   }, [currentSorting]);
 
   const setAdditionalFilter = useCallback((additionalFilter: Record<string, unknown>) => {
-    setFilter(prev => ({
-      ...prev,
-      additionalFilter,
-      offSet: 0
-    }));
-    setList([]);
-    setHasMore(true);
+    setFilter(prev => {
+      const isSame = JSON.stringify(prev.additionalFilter || {}) === JSON.stringify(additionalFilter || {});
+      if (isSame) return prev;
+      setList([]);
+      setHasMore(true);
+      return {
+        ...prev,
+        additionalFilter,
+        offSet: 0,
+      };
+    });
   }, []);
 
   const loadMore = useCallback(() => {

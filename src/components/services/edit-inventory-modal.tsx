@@ -39,6 +39,7 @@ export function EditInventoryModal({
 }: EditInventoryModalProps) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState<string | number>('');
+  const [distance, setDistance] = useState<string | number>('');
   const [unit, setUnit] = useState('');
   const [ef, setEf] = useState<string | number>('');
   const [efSource, setEfSource] = useState('');
@@ -54,6 +55,7 @@ export function EditInventoryModal({
     if (item) {
       setName(item.name || '');
       setAmount(item.amount !== undefined && item.amount !== null ? item.amount : '');
+      setDistance(item.distance !== undefined && item.distance !== null ? item.distance : '');
       setUnit(item.unit || '');
       setEf(item.ef !== undefined && item.ef !== null ? item.ef : '');
       setEfSource(item.efSource || '');
@@ -93,6 +95,7 @@ export function EditInventoryModal({
       const payload = {
         name,
         amount: parseFloat(String(amount)) || 0,
+        distance: distance !== '' ? parseFloat(String(distance)) : undefined,
         unit,
         ef: parseFloat(String(ef)) || 0,
         efSource,

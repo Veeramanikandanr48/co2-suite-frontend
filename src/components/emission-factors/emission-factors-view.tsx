@@ -14,6 +14,9 @@ import {
   Layers,
   FileSpreadsheet,
   Globe,
+  Calculator,
+  Sparkles,
+  GripVertical,
 } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useFetchList } from '@/hooks/use-fetchlist';
@@ -57,6 +60,99 @@ const CATEGORY_OPTIONS = [
   'Investments',
 ];
 
+const CATEGORY_VARIABLE_MAP: Record<string, { name: string; color: string }[]> = {
+  'Stationary Combustion': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Mobile Combustion': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+  ],
+  'Fugitive Emissions': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'leakage', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100' },
+  ],
+  'Process Emissions': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Purchased Electricity': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Purchased Heating & Steam': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Purchased Goods and Services': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Capital Goods': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Energy and Fuel Related Activities': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Upstream Transportation': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+  ],
+  'Downstream Transportation': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+  ],
+  'Waste Generated in Operations': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+  ],
+  'Business Travel': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+    { name: 'people', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' },
+    { name: 'rooms', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100' },
+    { name: 'nights', color: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100' },
+  ],
+  'Employee Commuting': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'distance', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' },
+    { name: 'people', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' },
+  ],
+  'Processing of Sold Products': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Use of Sold Products': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'EOL Treatment of Sold Products': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Franchise': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  ],
+  'Investments': [
+    { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+    { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+    { name: 'scope1', color: 'bg-teal-50 text-teal-700 border-teal-200 hover:bg-teal-100' },
+    { name: 'scope2', color: 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' },
+    { name: 'equityShare', color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100' },
+  ],
+};
+
 export function EmissionFactorsView() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,6 +180,48 @@ export function EmissionFactorsView() {
     formula: '(amount * factor) / 1000',
     isActive: true,
   });
+
+  // Insert field token or operator into formula
+  const handleInsertToken = (token: string) => {
+    setFormData((prev) => {
+      const current = prev.formula || '';
+      const needsSpace = current.length > 0 && !current.endsWith(' ') && !current.endsWith('(');
+      const updated = needsSpace ? `${current} ${token}` : `${current}${token}`;
+      return { ...prev, formula: updated };
+    });
+  };
+
+  // Live Formula Evaluation Preview for Formula Builder
+  const formulaPreview = useMemo(() => {
+    const formula = formData.formula;
+    if (!formula || !formula.trim()) return null;
+    try {
+      const factorNum = Number(formData.factor) || 1.942;
+      let expr = formula.toLowerCase().trim();
+      expr = expr.replace(/\bamount\b/g, '100');
+      expr = expr.replace(/\bfactor\b/g, String(factorNum));
+      expr = expr.replace(/\bef\b/g, String(factorNum));
+      expr = expr.replace(/\bdistance\b/g, '500');
+      expr = expr.replace(/\bpeople\b/g, '2');
+      expr = expr.replace(/\brooms\b/g, '1');
+      expr = expr.replace(/\bnights\b/g, '3');
+      expr = expr.replace(/\bleakage\b/g, '5');
+      expr = expr.replace(/\bscope1\b/g, '50');
+      expr = expr.replace(/\bscope2\b/g, '30');
+      expr = expr.replace(/\bequityshare\b/g, '25');
+
+      if (!/^[0-9\s\+\-\*\/\(\)\.]+$/.test(expr)) {
+        return { valid: false, message: 'Contains unrecognized variable or symbol' };
+      }
+      const result = new Function(`"use strict"; return (${expr})`)();
+      if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+        return { valid: true, value: Number(result.toFixed(4)) };
+      }
+    } catch (e) {
+      return { valid: false, message: 'Syntax error in formula expression' };
+    }
+    return null;
+  }, [formData.formula, formData.factor]);
 
   // Filters for useFetchList
   const [filterCategory, setFilterCategory] = useState('');
@@ -537,7 +675,7 @@ export function EmissionFactorsView() {
       {/* Add / Edit Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-neutral-200 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl border border-neutral-200 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
               <div className="flex items-center gap-2">
@@ -652,16 +790,103 @@ export function EmissionFactorsView() {
                   </label>
                 </div>
 
-                {/* Calculation Formula */}
-                <div className="space-y-1 md:col-span-2">
-                  <label className="font-bold text-neutral-700">Calculation Formula</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. (amount * factor) / 1000"
-                    value={formData.formula}
-                    onChange={(e) => setFormData({ ...formData, formula: e.target.value })}
-                    className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs font-mono focus:ring-2 focus:ring-emerald-500"
-                  />
+                {/* Calculation Formula Section */}
+                <div className="space-y-2 md:col-span-2 pt-1">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-neutral-700 text-xs">Calculation Formula</label>
+                    {formData.formula && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, formula: '' })}
+                        className="text-[11px] font-medium text-neutral-400 hover:text-neutral-600 transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Input with Drop Zone & Live Result Indicator */}
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const token = e.dataTransfer.getData('text/plain');
+                      if (token) handleInsertToken(token);
+                    }}
+                    className="relative"
+                  >
+                    <input
+                      type="text"
+                      placeholder="e.g. (amount * factor) / 1000"
+                      value={formData.formula}
+                      onChange={(e) => setFormData({ ...formData, formula: e.target.value })}
+                      className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 pr-28 text-xs font-mono text-neutral-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    />
+                    {formulaPreview?.valid && (
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 pointer-events-none">
+                        = {formulaPreview.value} tCO₂e
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Clean Drag/Click Pills & Math Toolbar Row */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    {/* Variable Pills */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {(CATEGORY_VARIABLE_MAP[formData.category] || [
+                        { name: 'amount', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+                        { name: 'factor', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+                      ]).map((col) => (
+                        <span
+                          key={col.name}
+                          draggable={true}
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', col.name);
+                          }}
+                          onClick={() => handleInsertToken(col.name)}
+                          className={`px-2 py-0.5 rounded border text-[11px] font-mono font-medium transition-all shadow-2xs hover:scale-105 active:scale-95 flex items-center gap-1 cursor-grab active:cursor-grabbing select-none ${col.color}`}
+                          title="Drag into formula field or click to insert"
+                        >
+                          <GripVertical className="w-2.5 h-2.5 opacity-40 shrink-0" />
+                          <span>{col.name}</span>
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Operators & Template Dropdown */}
+                    <div className="flex items-center gap-1">
+                      {['+', '-', '*', '/', '(', ')', '/ 1000'].map((op) => (
+                        <button
+                          key={op}
+                          type="button"
+                          onClick={() => handleInsertToken(op)}
+                          className="px-1.5 py-0.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-mono font-semibold border border-neutral-200 rounded text-xs transition-colors cursor-pointer"
+                        >
+                          {op}
+                        </button>
+                      ))}
+
+                      {/* Preset Template Select */}
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            setFormData({ ...formData, formula: e.target.value });
+                            e.target.value = '';
+                          }
+                        }}
+                        className="bg-neutral-50 border border-neutral-200 text-[11px] font-medium text-neutral-600 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer ml-1"
+                      >
+                        <option value="">Templates</option>
+                        <option value="(amount * factor) / 1000">(amount * factor) / 1000</option>
+                        <option value="amount * factor">amount * factor</option>
+                        <option value="(distance * amount * factor) / 1000">(distance * amount * factor) / 1000</option>
+                        <option value="(people * distance * factor) / 1000">(people * distance * factor) / 1000</option>
+                        <option value="(rooms * nights * factor) / 1000">(rooms * nights * factor) / 1000</option>
+                        <option value="(amount * (leakage / 100) * factor) / 1000">(amount * (leakage / 100) * factor) / 1000</option>
+                        <option value="(scope1 + scope2) * (equityShare / 100)">(scope1 + scope2) * (equityShare / 100)</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
 

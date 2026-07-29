@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Info,
   UploadCloud,
@@ -29,6 +29,8 @@ import {
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api-service';
 import { API_LIST } from '@/lib/api-list';
+import { useAuth } from '@/context/auth-provider';
+import { MasterRole } from '@/enums/base-enum';
 import {
   ActivityNotRelevantModal,
   shouldSkipActivityNotRelevantModal,
@@ -71,10 +73,12 @@ interface DBEmissionFactor {
 interface InventoryItem {
   id: number;
   name: string;
+  category?: string;
   amount?: number | string;
   unit?: string;
   ef?: number | string;
   efSource?: string;
+  formula?: string;
   dateFrom?: string;
   dateTo?: string;
   from?: string;
@@ -89,6 +93,8 @@ interface InventoryItem {
 }
 
 export function Scope3CalculationView({ category }: Scope3CalculationViewProps) {
+  const { user } = useAuth();
+  const canEdit = !user || user.roleId === MasterRole.SUPER_ADMIN || user.roleId === MasterRole.ADMIN;
   // Category logic flags
   const isPurchasedGoods = category === 'Purchased Goods and Services';
   const isCapitalGoods = category === 'Capital Goods';
@@ -190,7 +196,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
   });
 
   // Fetch Emission Factors & Facilities from DB
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [efRes, facRes] = await Promise.all([
@@ -208,12 +214,35 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [category]);
+
+  const handleFilterUpdate = useCallback((updates: {
+    year?: string;
+    facility?: string;
+    status?: string;
+  }) => {
+    const yr = updates.year !== undefined ? updates.year : selectedYear;
+    const fac = updates.facility !== undefined ? updates.facility : (filterFacility || (selectedFacilityHeader !== 'All Facilities' ? selectedFacilityHeader : ''));
+    const stat = updates.status !== undefined ? updates.status : filterStatus;
+
+    if (updates.year !== undefined) setSelectedYear(updates.year);
+    if (updates.facility !== undefined) {
+      setFilterFacility(updates.facility);
+      setSelectedFacilityHeader(updates.facility || 'All Facilities');
+    }
+    if (updates.status !== undefined) setFilterStatus(updates.status);
+
+    setAdditionalFilter({
+      category,
+      facility: fac && fac !== 'All Facilities' ? fac : undefined,
+      status: stat && stat !== 'All Statuses' ? stat : undefined,
+      year: yr && yr !== 'All Years' ? yr : undefined,
+    });
+  }, [category, filterFacility, filterStatus, selectedFacilityHeader, selectedYear, setAdditionalFilter]);
 
   useEffect(() => {
     fetchData();
-    setAdditionalFilter({ category });
-  }, [category, setAdditionalFilter]);
+  }, [fetchData]);
 
   // Total Emissions Sum
   const totalEmissions = useMemo(() => {
@@ -282,15 +311,28 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
         ) ||
         dbFactors.find((f) => f.category === category);
 
-      const defaultUnit = isUpstreamTransport || isDownstreamTransport || isWaste || isEolSold ? 'tonne' : isEmployeeCommuting || isBusinessTravel ? 'km' : 'kg';
+      const amountVal = isBusinessTravel && activeSubTab !== 'Hotel' ? (Number(distance) || 0) : (Number(amount) || 1);
+      const defaultUnit =
+        activeSubTab === 'Spend Based'
+          ? 'USD'
+          : isWaste && activeSubTab === 'Wastewater'
+          ? 'm3'
+          : isUpstreamTransport || isDownstreamTransport || (isWaste && activeSubTab === 'Waste') || isEolSold
+          ? 'tonne'
+          : isEmployeeCommuting || isBusinessTravel
+          ? activeSubTab === 'Hotel'
+            ? 'room-night'
+            : 'km'
+          : 'kg';
       const efValue = customEf ? parseFloat(customEf) : matchingEF?.factor ?? 1.0;
-      const unitVal = matchingEF?.unit || defaultUnit;
+      const unitVal = activeSubTab === 'Spend Based' ? 'USD' : matchingEF?.unit || defaultUnit;
 
       const payload = {
         serviceCode: 'CARBON',
         category: category,
         name: itemName,
-        amount: Number(amount) || 1,
+        amount: amountVal,
+        distance: isBusinessTravel && activeSubTab !== 'Hotel' ? Number(distance) || 0 : (isWaste && activeSubTab === 'Waste') || isUpstreamTransport || isDownstreamTransport ? Number(distance) || 0 : undefined,
         unit: unitVal,
         ef: efValue,
         efSource: efSource || matchingEF?.source || 'DEFRA 2024',
@@ -309,6 +351,8 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
       toast.success(`${category} inventory entry saved to Database successfully!`);
       refetch();
       setAmount('');
+      setDistance('');
+      setPeopleCount('');
       setComment('');
       setProofFile(null);
       fetchData();
@@ -319,8 +363,51 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
     }
   };
 
+  // Duplicate/Copy inventory entry in Backend DB
+  const handleCopyItem = async (item: InventoryItem) => {
+    if (!canEdit) {
+      toast.error('Only Admin and Super Admin can duplicate inventory entries.');
+      return;
+    }
+
+    try {
+      const payload = {
+        serviceCode: 'CARBON',
+        category: item.category || category,
+        name: item.name ? `${item.name} (Copy)` : 'Copy Entry',
+        amount: Number(item.amount) || 0,
+        unit: item.unit || 'kg',
+        ef: Number(item.ef) || 0,
+        efSource: item.efSource || 'IPCC-AR6',
+        formula: item.formula,
+        dateFrom: item.dateFrom || item.from || '01.01.2026',
+        dateTo: item.dateTo || item.to || '31.12.2026',
+        facility: item.facility || 'Central HQ',
+        approvalStatus: item.approvalStatus || item.status || 'Approved',
+        comment: item.comment ? `${item.comment} (Duplicated)` : 'Duplicated entry',
+        documentPath: item.documentPath,
+      };
+
+      await apiService.post(API_LIST.INVENTORY_ENTRIES, payload);
+      toast.success('Inventory entry duplicated successfully!');
+      refetch();
+    } catch (error) {
+      console.error('Failed to duplicate inventory entry:', error);
+      toast.error('Failed to duplicate inventory record.');
+    }
+  };
+
   // Delete Entry from DB
   const handleDeleteItem = async (id: number) => {
+    if (!canEdit) {
+      toast.error('Only Admin and Super Admin can delete inventory entries.');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to delete this inventory record?')) {
+      return;
+    }
+
     try {
       await apiService.delete(API_LIST.INVENTORY_ENTRIES, id);
       toast.success('Inventory entry deleted successfully!');
@@ -348,7 +435,13 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               Activity is not relevant
             </label>
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{category}</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">
+            {isDownstreamTransport
+              ? 'Downstream Transportation & Distribution'
+              : isUpstreamTransport
+              ? 'Upstream Transportation & Distribution'
+              : category}
+          </h1>
           <p className="text-xs text-neutral-600 leading-relaxed">
             {isPurchasedGoods &&
               'This category includes all upstream (i.e. cradle-to-gate) emissions from the production of products purchased or acquired by the reporting organisation during the reporting year. Products include both goods (tangible products) and services (intangible products).'}
@@ -359,7 +452,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
             {isDownstreamTransport &&
               'This category includes emissions generated during the reporting year by the transport and distribution of products sold in vehicles and facilities not owned or controlled by the reporting organisation.'}
             {isWaste &&
-              'Emissions from disposal and treatment of waste by third parties generated by operations owned or controlled by the reporting organisation during the reporting year.'}
+              'Emissions from disposal and treatment of waste by third parties generated by operations owned or controlled by the reporting organisation during the reporting year. This category includes emissions from the disposal of solid waste and waste water.'}
             {isBusinessTravel &&
               'This category includes emissions from the transport of employees for business activities in vehicles owned or operated by third parties, such as aircraft, trains, buses and cars.'}
             {isEmployeeCommuting &&
@@ -405,9 +498,10 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               <span className="text-xs font-bold text-emerald-600">Total Emission</span>
               <select
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                onChange={(e) => handleFilterUpdate({ year: e.target.value })}
                 className="text-[11px] bg-neutral-50 border border-neutral-200 rounded px-1.5 py-0.5 text-neutral-700"
               >
+                <option value="All Years">All Years</option>
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
@@ -422,7 +516,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               </div>
               <select
                 value={selectedFacilityHeader}
-                onChange={(e) => setSelectedFacilityHeader(e.target.value)}
+                onChange={(e) => handleFilterUpdate({ facility: e.target.value === 'All Facilities' ? '' : e.target.value })}
                 className="text-[11px] bg-neutral-50 border border-neutral-200 rounded px-2 py-1 text-neutral-700"
               >
                 <option value="All Facilities">All Facilities</option>
@@ -480,6 +574,33 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
         </div>
       )}
 
+      {isWaste && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3.5 flex items-start gap-2.5">
+          <span className="text-amber-600 font-bold text-sm">⚠️</span>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-semibold">Note:</span> Chemically or biologically contaminated materials should be treated as industrial waste, even if they are recyclable.
+          </p>
+        </div>
+      )}
+
+      {isDownstreamTransport && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3.5 flex items-start gap-2.5">
+          <span className="text-amber-600 font-bold text-sm">⚠️</span>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-semibold">Note:</span> Transports where the financial responsibility for the transport of manufactured products does not lie with the reporting company should be taken into account.
+          </p>
+        </div>
+      )}
+
+      {isUpstreamTransport && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3.5 flex items-start gap-2.5">
+          <span className="text-amber-600 font-bold text-sm">⚠️</span>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-semibold">Note:</span> Transports where the financial responsibility for the transport of purchased products lies with the reporting company should be taken into account.
+          </p>
+        </div>
+      )}
+
       {/* Sub-Tab Selector Navigation */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-2">
         {(isPurchasedGoods || isCapitalGoods || isUpstreamTransport || isDownstreamTransport) && (
@@ -530,7 +651,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               className={`px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors ${activeSubTab === 'Wastewater' ? 'bg-purple-100 text-purple-700' : 'text-neutral-600 hover:bg-neutral-100'
                 }`}
             >
-              🚰 Wastewater
+              <DollarSign className="w-3.5 h-3.5 text-purple-600" /> Wastewater
             </button>
           </>
         )}
@@ -549,7 +670,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               className={`px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors ${activeSubTab === 'Sea' ? 'bg-purple-100 text-purple-700' : 'text-neutral-600 hover:bg-neutral-100'
                 }`}
             >
-              <Ship className="w-3.5 h-3.5 text-purple-600" /> Sea
+              <DollarSign className="w-3.5 h-3.5 text-purple-600" /> Sea
             </button>
             <button
               onClick={() => setActiveSubTab('Land')}
@@ -644,8 +765,317 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               </>
             )}
 
+            {(isPurchasedGoods || isCapitalGoods) && (
+              <div>
+                <label className="block text-xs font-semibold text-neutral-600 mb-1">
+                  {activeSubTab === 'Spend Based' ? 'Service' : 'Material/Product'}
+                </label>
+                <select
+                  value={materialProduct}
+                  onChange={(e) => setMaterialProduct(e.target.value)}
+                  className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Select your option</option>
+                  {dbFactors
+                    .map((f) => f.fuelOrGasType)
+                    .filter(Boolean)
+                    .filter((value, index, self) => self.indexOf(value) === index)
+                    .map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
             {/* Custom fields per category */}
-            {isEmployeeCommuting && (
+            {(isUpstreamTransport || isDownstreamTransport) && (
+              <>
+                {activeSubTab === 'Activity Based' && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Activity</label>
+                      <select
+                        value={activityOption}
+                        onChange={(e) => setActivityOption(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Select your option</option>
+                        <option value="Freighting Goods">Freighting Goods</option>
+                        <option value="Cargo Ship">Cargo Ship</option>
+                        <option value="HGV Transport">HGV Transport</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Type</label>
+                      <select
+                        value={typeOption}
+                        onChange={(e) => setTypeOption(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Select your option</option>
+                        <option value="HGV (all diesel)">HGV (all diesel)</option>
+                        <option value="Lethal Fuel">Lethal Fuel</option>
+                        <option value="Cargo Aircraft">Cargo Aircraft</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Size / Option</label>
+                      <select
+                        value={sizeOption}
+                        onChange={(e) => setSizeOption(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Select your option</option>
+                        <option value="All HGVs">All HGVs</option>
+                        <option value="Rigid (>3.5t - 7.5t)">Rigid (&gt;3.5t - 7.5t)</option>
+                        <option value="Articulated (>33t)">Articulated (&gt;33t)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Distance</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter distance"
+                          value={distance}
+                          onChange={(e) => setDistance(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-12 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          km
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Amount</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter amount"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-14 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          tonne
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {activeSubTab === 'Spend Based' && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Select Option</label>
+                      <select
+                        value={materialProduct}
+                        onChange={(e) => setMaterialProduct(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Select your option</option>
+                        <option value="Freight Transport Services">Freight Transport Services</option>
+                        <option value="Warehousing and Support Services">Warehousing and Support Services</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Amount</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter amount"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-14 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          $$$
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-neutral-500 mt-2 leading-relaxed font-semibold">
+                      Note:
+                      <span className="font-normal text-neutral-500 ml-1">
+                        If you are using a unit other than those specified here, we recommend that you note the conversion factors and source you selected in the comments section.
+                      </span>
+                    </p>
+                  </>
+                )}
+
+                {activeSubTab === 'Custom Transports' && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Transport Type</label>
+                      <select
+                        value={typeOption}
+                        onChange={(e) => setTypeOption(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Select your option</option>
+                        <option value="Heavy Goods Vehicle">Heavy Goods Vehicle</option>
+                        <option value="Light Commercial Vehicle">Light Commercial Vehicle</option>
+                        <option value="Rail Freight">Rail Freight</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Distance</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter distance"
+                          value={distance}
+                          onChange={(e) => setDistance(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-12 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          km
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Amount</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter amount"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-14 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          tonne
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {isBusinessTravel && (
+              <>
+                <div>
+                  <label className="block text-xs font-semibold text-neutral-600 mb-1">Travel Option</label>
+                  <select
+                    value={travelOption}
+                    onChange={(e) => setTravelOption(e.target.value)}
+                    className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Select your option</option>
+                    {dbFactors.length > 0 ? (
+                      dbFactors
+                        .map((f) => f.fuelOrGasType)
+                        .filter(Boolean)
+                        .filter((val, idx, self) => self.indexOf(val) === idx)
+                        .map((item) => (
+                          <option key={item} value={item}>
+                            {item}
+                          </option>
+                        ))
+                    ) : (
+                      <>
+                        {activeSubTab === 'Air' && (
+                          <>
+                            <option value="Short Haul - Economy">Short Haul - Economy</option>
+                            <option value="Long Haul - Economy">Long Haul - Economy</option>
+                            <option value="Short Haul - Business">Short Haul - Business</option>
+                          </>
+                        )}
+                        {activeSubTab === 'Sea' && (
+                          <>
+                            <option value="Ferry - Passenger">Ferry - Passenger</option>
+                            <option value="Cruise Ship">Cruise Ship</option>
+                          </>
+                        )}
+                        {activeSubTab === 'Land' && (
+                          <>
+                            <option value="Taxi - Regular">Taxi - Regular</option>
+                            <option value="Train - National Rail">Train - National Rail</option>
+                            <option value="Bus - Local">Bus - Local</option>
+                          </>
+                        )}
+                        {activeSubTab === 'Hotel' && (
+                          <>
+                            <option value="Hotel Stay - Standard">Hotel Stay - Standard</option>
+                            <option value="Hotel Stay - Luxury">Hotel Stay - Luxury</option>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                {activeSubTab !== 'Hotel' ? (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">
+                        Number of People Travelled
+                      </label>
+                      <input
+                        type="number"
+                        placeholder=""
+                        value={peopleCount}
+                        onChange={(e) => setPeopleCount(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Distance</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Please enter distance"
+                          value={distance}
+                          onChange={(e) => setDistance(e.target.value)}
+                          className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-12 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                          km
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">
+                        Number of Rooms Stayed
+                      </label>
+                      <input
+                        type="number"
+                        placeholder=""
+                        value={peopleCount}
+                        onChange={(e) => setPeopleCount(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-600 mb-1">
+                        Total Night(s) Stayed
+                      </label>
+                      <input
+                        type="number"
+                        placeholder=""
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <p className="text-[11px] text-neutral-500 mt-2 leading-relaxed font-semibold">
+                  Note:
+                  <span className="font-normal text-neutral-500 ml-1">
+                    If you are using a unit other than those specified here, we recommend that you note the conversion factors and source you selected in the comments section.
+                  </span>
+                </p>
+              </>
+            )}
+
+            {(isEmployeeCommuting || (isFranchise && activeSubTab === 'Stationary Combustion')) && (
               <div>
                 <label className="block text-xs font-semibold text-neutral-600 mb-1">Fuel Type</label>
                 <select
@@ -654,8 +1084,11 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
                   className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">Select your option</option>
+                  <option value="Natural Gas">Natural Gas</option>
+                  <option value="Diesel">Diesel</option>
                   <option value="On Road - Diesel">On Road - Diesel</option>
                   <option value="On Road - Petrol">On Road - Petrol</option>
+                  <option value="LPG">LPG</option>
                 </select>
               </div>
             )}
@@ -675,7 +1108,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               </div>
             )}
 
-            {isEolSold && (
+            {(isEolSold || isWaste) && (
               <>
                 <div>
                   <label className="block text-xs font-semibold text-neutral-600 mb-1">Waste</label>
@@ -685,26 +1118,53 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
                     className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">Select your option</option>
-                    <option value="Metal (Mixed Can)">Metal (Mixed Can)</option>
-                    <option value="Paper Board">Paper Board</option>
+                    {isWaste && activeSubTab === 'Wastewater' ? (
+                      <>
+                        <option value="Discharged Wastewater">Discharged Wastewater</option>
+                        <option value="Industrial Wastewater">Industrial Wastewater</option>
+                      </>
+                    ) : (
+                      dbFactors.length > 0 ? (
+                        dbFactors
+                          .map((f) => f.fuelOrGasType)
+                          .filter(Boolean)
+                          .filter((val, idx, self) => self.indexOf(val) === idx)
+                          .map((item) => (
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
+                          ))
+                      ) : (
+                        <>
+                          <option value="Average Construction - Closed Loop">Average Construction - Closed Loop</option>
+                          <option value="Glass - Closed Loop">Glass - Closed Loop</option>
+                          <option value="Commercial Mixed Waste - Landfill">Commercial Mixed Waste - Landfill</option>
+                          <option value="Paper Board">Paper Board</option>
+                        </>
+                      )
+                    )}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-600 mb-1">Treatment</label>
-                  <select
-                    value={treatmentOption}
-                    onChange={(e) => setTreatmentOption(e.target.value)}
-                    className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="">Select your option</option>
-                    <option value="Closed Loop">Closed Loop</option>
-                    <option value="Landfill">Landfill</option>
-                  </select>
-                </div>
+                {(!isWaste || activeSubTab === 'Waste') && (
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-600 mb-1">Treatment</label>
+                    <select
+                      value={treatmentOption}
+                      onChange={(e) => setTreatmentOption(e.target.value)}
+                      className="w-full text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <option value="">Select your option</option>
+                      <option value="Closed Loop">Closed Loop</option>
+                      <option value="Open Loop">Open Loop</option>
+                      <option value="Landfill">Landfill</option>
+                      <option value="Incineration">Incineration</option>
+                    </select>
+                  </div>
+                )}
               </>
             )}
 
-            {isFranchise && (
+            {isFranchise && activeSubTab === 'Electricity Consumption' && (
               <div>
                 <label className="block text-xs font-semibold text-neutral-600 mb-1">Country</label>
                 <select
@@ -782,8 +1242,27 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               </>
             )}
 
+            {/* Distance Input */}
+            {(isWaste && activeSubTab === 'Waste') && (
+              <div>
+                <label className="block text-xs font-semibold text-neutral-600 mb-1">Distance</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    placeholder="Please enter distance"
+                    value={distance}
+                    onChange={(e) => setDistance(e.target.value)}
+                    className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-12 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
+                    km
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Standard Amount Input */}
-            {!isInvestments && (
+            {!isInvestments && !isBusinessTravel && !isUpstreamTransport && !isDownstreamTransport && (
               <div>
                 <label className="block text-xs font-semibold text-neutral-600 mb-1">Amount</label>
                 <div className="relative">
@@ -795,9 +1274,39 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
                     className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-3 pr-14 py-2 text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-neutral-400">
-                    {isFranchise ? 'kWh' : isUpstreamTransport || isDownstreamTransport || isWaste || isEolSold ? 'tonne' : isEmployeeCommuting || isBusinessTravel ? 'km' : 'kg'}
+                    {activeSubTab === 'Spend Based'
+                      ? '$$$'
+                      : isFranchise
+                      ? activeSubTab === 'Electricity Consumption'
+                        ? 'kWh'
+                        : activeSubTab === 'Water Consumption'
+                        ? 'm3'
+                        : ''
+                      : isWaste && activeSubTab === 'Wastewater'
+                      ? 'm3'
+                      : isUpstreamTransport || isDownstreamTransport || isWaste || isEolSold
+                      ? 'tonne'
+                      : isEmployeeCommuting || isBusinessTravel
+                      ? 'km'
+                      : 'kg'}
                   </span>
                 </div>
+                {isWaste && activeSubTab === 'Wastewater' && (
+                  <p className="text-[11px] text-neutral-500 mt-2 leading-relaxed font-semibold">
+                    Note:
+                    <span className="font-normal text-neutral-500 ml-1">
+                      If you are using a unit other than those specified here, we recommend that you note the conversion factors and source you selected in the comments section.
+                    </span>
+                  </p>
+                )}
+                {isFranchise && activeSubTab === 'Electricity Consumption' && (
+                  <p className="text-[11px] text-neutral-500 mt-2 leading-relaxed font-semibold">
+                    Hint:
+                    <span className="font-normal text-neutral-500 ml-1">
+                      If you are using a unit other than those specified here, we recommend that you note the conversion factors and source you selected in the comments section.
+                    </span>
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -987,11 +1496,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
             {/* Facility Filter */}
             <select
               value={filterFacility}
-              onChange={(e) => {
-                const fac = e.target.value;
-                setFilterFacility(fac);
-                setAdditionalFilter({ category, facility: fac, status: filterStatus });
-              }}
+              onChange={(e) => handleFilterUpdate({ facility: e.target.value })}
               className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
             >
               <option value="">All Facilities</option>
@@ -1005,11 +1510,7 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
             {/* Status Filter */}
             <select
               value={filterStatus}
-              onChange={(e) => {
-                const stat = e.target.value;
-                setFilterStatus(stat);
-                setAdditionalFilter({ category, facility: filterFacility, status: stat });
-              }}
+              onChange={(e) => handleFilterUpdate({ status: e.target.value })}
               className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
             >
               <option value="">All Statuses</option>
@@ -1025,7 +1526,9 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
             onClick={() => {
               setSearch('');
               setFilterFacility('');
+              setSelectedFacilityHeader('All Facilities');
               setFilterStatus('');
+              setSelectedYear('2026');
               setAdditionalFilter({ category });
               refetch();
             }}
@@ -1044,23 +1547,42 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               id: 'actions',
               header: 'Actions',
               cell: ({ row }) => (
-                <div className="flex items-center gap-2 text-neutral-400">
-                  <Edit2
-                    className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingItem(row.original as any);
-                    }}
-                  />
-                  <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
-                  <Trash2
-                    className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteItem(Number(row.original.id));
-                    }}
-                  />
-                </div>
+                canEdit ? (
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(row.original as any);
+                      }}
+                      className="hover:text-emerald-600 transition-colors"
+                      title="Edit Inventory Entry"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyItem(row.original as any);
+                      }}
+                      className="hover:text-blue-600 transition-colors"
+                      title="Duplicate Inventory Entry"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(Number(row.original.id));
+                      }}
+                      className="hover:text-red-600 transition-colors"
+                      title="Delete Inventory Entry"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-red-400 hover:text-red-600" />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-neutral-400 italic">Read-only</span>
+                )
               ),
             },
             {
@@ -1073,7 +1595,19 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               ),
               cell: ({ row }: any) => <span className="font-medium text-neutral-800">{row.original.name}</span>,
             },
-            ...((isUpstreamTransport || isDownstreamTransport || isWaste) ? [
+            ...(isFranchise ? [
+              {
+                accessorKey: 'amount',
+                header: () => (
+                  <button onClick={() => setSorting('amount')} className="flex items-center gap-1 font-bold">
+                    <span>Amount</span>
+                    <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                  </button>
+                ),
+                cell: ({ row }: any) => row.original.amount ?? '-',
+              },
+            ] : []),
+            ...((((isUpstreamTransport || isDownstreamTransport) && activeSubTab !== 'Spend Based') || (isWaste && activeSubTab === 'Waste')) ? [
               {
                 id: 'distance',
                 header: 'Distance',
@@ -1125,6 +1659,18 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               ),
               cell: ({ row }: any) => row.original.facility || '-',
             },
+            ...((isFranchise && activeSubTab === 'Stationary Combustion') ? [
+              {
+                accessorKey: 'country',
+                header: () => (
+                  <button onClick={() => setSorting('country')} className="flex items-center gap-1 font-bold">
+                    <span>Country</span>
+                    <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+                  </button>
+                ),
+                cell: ({ row }: any) => row.original.country || '-',
+              },
+            ] : []),
             {
               id: 'documentPath',
               header: 'Doc',
