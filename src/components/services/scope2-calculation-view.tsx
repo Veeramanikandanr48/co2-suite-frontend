@@ -25,6 +25,7 @@ import {
   shouldSkipActivityNotRelevantModal,
 } from '@/components/reusables/activity-not-relevant-modal';
 import { ReusableTable } from '@/components/reusables/reusable-table';
+import { EditInventoryModal, InventoryItem as EditModalItem } from '@/components/services/edit-inventory-modal';
 import { useFetchList } from '@/hooks/use-fetchlist';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -90,6 +91,7 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
   };
 
   // Form State
+  const [editingItem, setEditingItem] = useState<EditModalItem | null>(null);
   const [efSource, setEfSource] = useState('');
   const [factorVersion, setFactorVersion] = useState('');
   const [country, setCountry] = useState('Republic of Türkiye');
@@ -217,19 +219,36 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
         }
       }
 
+      const matchingEF =
+        dbFactors.find(
+          (f) =>
+            (!efSource || f.source === efSource) &&
+            (!factorVersion || f.version === factorVersion) &&
+            (f.fuelOrGasType === itemName || f.fuelOrGasType === country)
+        ) ||
+        dbFactors.find(
+          (f) =>
+            (!efSource || f.source === efSource) &&
+            (!factorVersion || f.version === factorVersion)
+        ) ||
+        dbFactors.find((f) => f.fuelOrGasType === itemName || f.fuelOrGasType === country);
+      const efValue = customEf ? parseFloat(customEf) : matchingEF?.factor ?? (isElectricity ? 0.442 : 0.171);
+
       const payload = {
         serviceCode: 'CARBON',
         category: efCategory,
         name: itemName,
         amount: Number(amount),
-        unit: 'kWh',
-        efSource: efSource || 'IEA - 2023 Edition-2021',
+        unit: matchingEF?.unit || 'kWh',
+        ef: efValue,
+        efSource: efSource || matchingEF?.source || 'IEA Grid Factors 2023',
+        formula: matchingEF?.formula,
         dateFrom: dateFrom || '01.01.2026',
         dateTo: dateTo || '31.12.2026',
         facility: facility || 'Central HQ',
         status: 'completed',
         comment,
-        approvalStatus,
+        approvalStatus: approvalStatus || 'Approved',
         documentPath: uploadedDocPath,
       };
 
@@ -777,7 +796,13 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
               header: 'Actions',
               cell: ({ row }) => (
                 <div className="flex items-center gap-2 text-neutral-400">
-                  <Edit2 className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer" />
+                  <Edit2
+                    className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingItem(row.original as any);
+                    }}
+                  />
                   <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
                   <Trash2
                     className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
@@ -874,17 +899,31 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
             {
               accessorKey: 'status',
               header: 'Status',
-              cell: ({ row }: any) => (
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full ${
-                    row.original.status === 'completed'
-                      ? 'bg-slate-500'
-                      : row.original.status === 'Approved'
-                      ? 'bg-emerald-500'
-                      : 'bg-amber-500'
-                  }`}
-                />
-              ),
+              cell: ({ row }: any) => {
+                const statusText =
+                  row.original.approvalStatus ||
+                  row.original.status ||
+                  'Approved';
+                const s = String(statusText).toLowerCase();
+
+                let dotColor = 'bg-emerald-500';
+                if (s.includes('pending')) {
+                  dotColor = 'bg-amber-500';
+                } else if (s.includes('draft')) {
+                  dotColor = 'bg-slate-400';
+                } else if (s.includes('reject')) {
+                  dotColor = 'bg-red-500';
+                }
+
+                return (
+                  <div className="flex items-center gap-1.5" title={`Status: ${statusText}`}>
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotColor}`} />
+                    <span className="text-[11px] text-neutral-600 font-medium capitalize">
+                      {statusText}
+                    </span>
+                  </div>
+                );
+              },
             },
           ] as ColumnDef<any>[]}
           isLoadingMore={isLoadingMore}
@@ -893,6 +932,14 @@ export function Scope2CalculationView({ category }: Scope2CalculationViewProps) 
           tableHeight="auto"
         />
       </div>
+
+      <EditInventoryModal
+        isOpen={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        item={editingItem}
+        onSaved={refetch}
+        facilities={dbFacilities}
+      />
     </div>
   );
 }

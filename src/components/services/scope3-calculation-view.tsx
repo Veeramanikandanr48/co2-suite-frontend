@@ -34,6 +34,7 @@ import {
   shouldSkipActivityNotRelevantModal,
 } from '@/components/reusables/activity-not-relevant-modal';
 import { ReusableTable } from '@/components/reusables/reusable-table';
+import { EditInventoryModal, InventoryItem as EditModalItem } from '@/components/services/edit-inventory-modal';
 import { useFetchList } from '@/hooks/use-fetchlist';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -107,7 +108,8 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
     isFranchise ? 'Electricity Consumption' : isWaste ? 'Waste' : isBusinessTravel ? 'Air' : 'Activity Based'
   );
 
-  // Selected header filters
+  // Form Field States
+  const [editingItem, setEditingItem] = useState<EditModalItem | null>(null);
   const [selectedYear, setSelectedYear] = useState('2026');
   const [selectedFacilityHeader, setSelectedFacilityHeader] = useState('All Facilities');
   const [isNotRelevant, setIsNotRelevant] = useState(false);
@@ -266,19 +268,39 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
         }
       }
 
+      const matchingEF =
+        dbFactors.find(
+          (f) =>
+            (!efSource || f.source === efSource) &&
+            (!factorVersion || f.version === factorVersion) &&
+            f.fuelOrGasType === itemName
+        ) ||
+        dbFactors.find(
+          (f) =>
+            (!efSource || f.source === efSource) &&
+            (!factorVersion || f.version === factorVersion)
+        ) ||
+        dbFactors.find((f) => f.category === category);
+
+      const defaultUnit = isUpstreamTransport || isDownstreamTransport || isWaste || isEolSold ? 'tonne' : isEmployeeCommuting || isBusinessTravel ? 'km' : 'kg';
+      const efValue = customEf ? parseFloat(customEf) : matchingEF?.factor ?? 1.0;
+      const unitVal = matchingEF?.unit || defaultUnit;
+
       const payload = {
         serviceCode: 'CARBON',
         category: category,
         name: itemName,
         amount: Number(amount) || 1,
-        unit: isUpstreamTransport || isDownstreamTransport || isWaste || isEolSold ? 'tonne' : isEmployeeCommuting || isBusinessTravel ? 'km' : 'kg',
-        efSource: efSource || 'Custom-Custom',
+        unit: unitVal,
+        ef: efValue,
+        efSource: efSource || matchingEF?.source || 'DEFRA 2024',
+        formula: matchingEF?.formula,
         dateFrom: dateFrom || '01.01.2026',
         dateTo: dateTo || '31.12.2026',
         facility: facility || 'Central HQ',
         status: 'completed',
         comment,
-        approvalStatus,
+        approvalStatus: approvalStatus || 'Approved',
         documentPath: uploadedDocPath,
       };
 
@@ -1023,7 +1045,13 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
               header: 'Actions',
               cell: ({ row }) => (
                 <div className="flex items-center gap-2 text-neutral-400">
-                  <Edit2 className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer" />
+                  <Edit2
+                    className="w-3.5 h-3.5 hover:text-emerald-600 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingItem(row.original as any);
+                    }}
+                  />
                   <Copy className="w-3.5 h-3.5 hover:text-blue-600 cursor-pointer" />
                   <Trash2
                     className="w-3.5 h-3.5 hover:text-red-600 cursor-pointer"
@@ -1142,17 +1170,31 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
             {
               accessorKey: 'status',
               header: 'Status',
-              cell: ({ row }: any) => (
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full ${
-                    row.original.status === 'completed'
-                      ? 'bg-slate-500'
-                      : row.original.status === 'Approved'
-                      ? 'bg-emerald-500'
-                      : 'bg-amber-500'
-                  }`}
-                />
-              ),
+              cell: ({ row }: any) => {
+                const statusText =
+                  row.original.approvalStatus ||
+                  row.original.status ||
+                  'Approved';
+                const s = String(statusText).toLowerCase();
+
+                let dotColor = 'bg-emerald-500';
+                if (s.includes('pending')) {
+                  dotColor = 'bg-amber-500';
+                } else if (s.includes('draft')) {
+                  dotColor = 'bg-slate-400';
+                } else if (s.includes('reject')) {
+                  dotColor = 'bg-red-500';
+                }
+
+                return (
+                  <div className="flex items-center gap-1.5" title={`Status: ${statusText}`}>
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotColor}`} />
+                    <span className="text-[11px] text-neutral-600 font-medium capitalize">
+                      {statusText}
+                    </span>
+                  </div>
+                );
+              },
             },
           ] as ColumnDef<any>[]}
           isLoadingMore={isLoadingMore}
@@ -1161,6 +1203,14 @@ export function Scope3CalculationView({ category }: Scope3CalculationViewProps) 
           tableHeight="auto"
         />
       </div>
+
+      <EditInventoryModal
+        isOpen={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        item={editingItem}
+        onSaved={refetch}
+        facilities={dbFacilities}
+      />
     </div>
   );
 }

@@ -38,17 +38,23 @@ export interface EmissionFactorItem {
 const CATEGORY_OPTIONS = [
   'Stationary Combustion',
   'Mobile Combustion',
-  'Process Emissions',
   'Fugitive Emissions',
+  'Process Emissions',
   'Purchased Electricity',
   'Purchased Heating & Steam',
-  'Purchased Goods & Services',
+  'Purchased Goods and Services',
   'Capital Goods',
-  'Fuel & Energy Related Activities',
-  'Upstream Transportation & Distribution',
+  'Energy and Fuel Related Activities',
+  'Upstream Transportation',
   'Waste Generated in Operations',
   'Business Travel',
   'Employee Commuting',
+  'Downstream Transportation',
+  'Processing of Sold Products',
+  'Use of Sold Products',
+  'EOL Treatment of Sold Products',
+  'Franchise',
+  'Investments',
 ];
 
 export function EmissionFactorsView() {
@@ -493,10 +499,12 @@ export function EmissionFactorsView() {
             >
               <option value="">All Database Sources</option>
               <option value="DEFRA">DEFRA</option>
-              <option value="IPCC AR6">IPCC AR6</option>
-              <option value="EPA">EPA</option>
+              <option value="IPCC">IPCC</option>
               <option value="IEA">IEA</option>
               <option value="Ecoinvent">Ecoinvent</option>
+              <option value="EXIOBASE">EXIOBASE</option>
+              <option value="PCAF">PCAF</option>
+              <option value="EPA">EPA</option>
             </select>
           </div>
 

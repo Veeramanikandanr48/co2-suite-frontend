@@ -28,6 +28,7 @@ import {
   shouldSkipActivityNotRelevantModal,
 } from '@/components/reusables/activity-not-relevant-modal';
 import { ReusableTable } from '@/components/reusables/reusable-table';
+import { EditInventoryModal, InventoryItem as EditModalItem } from '@/components/services/edit-inventory-modal';
 import { useFetchList } from '@/hooks/use-fetchlist';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -107,6 +108,7 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
   const canEdit = !user || user.roleId === MasterRole.SUPER_ADMIN || user.roleId === MasterRole.ADMIN;
 
   // Form states
+  const [editingItem, setEditingItem] = useState<EditModalItem | null>(null);
   const [activityNotRelevant, setActivityNotRelevant] = useState(false);
   const [showNotRelevantModal, setShowNotRelevantModal] = useState(false);
   const [selectedYear, setSelectedYear] = useState('2026');
@@ -246,9 +248,10 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
     return dbEmissionFactors.find(
       (item) =>
         (!efSource || item.source === efSource) &&
+        (!factorVersion || item.version === factorVersion) &&
         (!fuelOrGasType || item.fuelOrGasType === fuelOrGasType),
     );
-  }, [dbEmissionFactors, efSource, fuelOrGasType]);
+  }, [dbEmissionFactors, efSource, factorVersion, fuelOrGasType]);
 
   // Compute total emissions sum from DB inventory records
   const totalEmissionVal = list
@@ -302,6 +305,7 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
         unit: unitVal,
         ef: efValue,
         efSource: efSource || currentMatchingEF?.source || 'IPCC-AR6',
+        formula: currentMatchingEF?.formula,
         dateFrom: dateFrom || '01.01.2026',
         dateTo: dateTo || '31.12.2026',
         facility: facility || defaultFacilityName,
@@ -939,7 +943,14 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
               cell: ({ row }) => (
                 canEdit ? (
                   <div className="flex items-center gap-2 text-neutral-400 pl-2">
-                    <button className="hover:text-[#059669] transition-colors">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(row.original as any);
+                      }}
+                      className="hover:text-[#059669] transition-colors"
+                      title="Edit Inventory Entry"
+                    >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button className="hover:text-[#059669] transition-colors">
@@ -1058,17 +1069,31 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
             {
               accessorKey: 'status',
               header: 'Status',
-              cell: ({ row }: any) => (
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full ${
-                    row.original.status === 'completed'
-                      ? 'bg-[#64748B]'
-                      : row.original.status === 'pending'
-                      ? 'bg-[#F97316]'
-                      : 'bg-neutral-300'
-                  }`}
-                />
-              ),
+              cell: ({ row }: any) => {
+                const statusText =
+                  row.original.approvalStatus ||
+                  row.original.status ||
+                  'Approved';
+                const s = String(statusText).toLowerCase();
+
+                let dotColor = 'bg-emerald-500';
+                if (s.includes('pending')) {
+                  dotColor = 'bg-amber-500';
+                } else if (s.includes('draft')) {
+                  dotColor = 'bg-slate-400';
+                } else if (s.includes('reject')) {
+                  dotColor = 'bg-red-500';
+                }
+
+                return (
+                  <div className="flex items-center gap-1.5" title={`Status: ${statusText}`}>
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotColor}`} />
+                    <span className="text-[11px] text-neutral-600 font-medium capitalize">
+                      {statusText}
+                    </span>
+                  </div>
+                );
+              },
             },
           ] as ColumnDef<any>[]}
           isLoadingMore={isLoadingMore}
@@ -1077,6 +1102,14 @@ export function Scope1CalculationView({ category }: Scope1CalculationViewProps) 
           tableHeight="auto"
         />
       </div>
+
+      <EditInventoryModal
+        isOpen={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        item={editingItem}
+        onSaved={refetch}
+        facilities={dbFacilities}
+      />
     </div>
   );
 }
