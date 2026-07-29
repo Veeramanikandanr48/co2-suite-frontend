@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -196,11 +196,17 @@ const Sidebar = () => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="my-1 bg-border" />
-              <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => router.push('/profile')}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer"
+              >
                 <UserIcon className="w-4 h-4 text-gray-500" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => router.push('/settings')}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer"
+              >
                 <Settings className="w-4 h-4 text-gray-500" />
                 <span>Settings</span>
               </DropdownMenuItem>

@@ -23,7 +23,7 @@ describe('Tooltip', () => {
       <TooltipProvider>
         <Tooltip defaultOpen>
           <TooltipTrigger>Hover me</TooltipTrigger>
-          <TooltipContent className="custom-class" data-[#testid="tooltip-content-2"] data-testid="tooltip-content-2">
+          <TooltipContent className="custom-class" data-testid="tooltip-content-2">
             Tooltip content 2
           </TooltipContent>
         </Tooltip>

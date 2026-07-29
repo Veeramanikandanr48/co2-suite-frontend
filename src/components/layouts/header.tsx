@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-provider";
 import {
   DropdownMenu,
@@ -83,6 +83,7 @@ interface HeaderProps {
 export default function Header({ onOpenMobileSidebar }: HeaderProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
 
   const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
@@ -245,11 +246,17 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1 bg-border" />
-            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => router.push('/profile')}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer"
+            >
               <UserIcon className="w-4 h-4 text-neutral-950" />
               <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => router.push('/settings')}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer"
+            >
               <Settings className="w-4 h-4 text-neutral-950" />
               <span>Settings</span>
             </DropdownMenuItem>
