@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
@@ -66,17 +66,17 @@ export default function ServiceDetailPage() {
     string,
     { name: string; tag: string; daysLeft: number }
   > = {
-    carbon: { name: 'CageSuite Carbon', tag: 'Carbon', daysLeft: 2863 },
-    cbam: { name: 'CageSuite CBAM', tag: 'CBAM', daysLeft: 1420 },
-    pef_textiles: { name: 'CageSuite PEF', tag: 'Textiles & Apparels', daysLeft: 980 },
-    lca_plastics: { name: 'CageSuite LCA', tag: 'Plastics', daysLeft: 1840 },
-    lca_metals: { name: 'CageSuite LCA', tag: 'Metals', daysLeft: 2100 },
-    esg: { name: 'CageSuite ESG', tag: 'ESG', daysLeft: 3120 },
-    epd_cables: { name: 'CageSuite EPD', tag: 'Cables', daysLeft: 1650 },
+    carbon: { name: 'CO2 Suite Carbon', tag: 'Carbon', daysLeft: 2863 },
+    cbam: { name: 'CO2 Suite CBAM', tag: 'CBAM', daysLeft: 1420 },
+    pef_textiles: { name: 'CO2 Suite PEF', tag: 'Textiles & Apparels', daysLeft: 980 },
+    lca_plastics: { name: 'CO2 Suite LCA', tag: 'Plastics', daysLeft: 1840 },
+    lca_metals: { name: 'CO2 Suite LCA', tag: 'Metals', daysLeft: 2100 },
+    esg: { name: 'CO2 Suite ESG', tag: 'ESG', daysLeft: 3120 },
+    epd_cables: { name: 'CO2 Suite EPD', tag: 'Cables', daysLeft: 1650 },
   };
 
   const currentConfig = serviceConfig[code] || {
-    name: `CageSuite ${code.toUpperCase()}`,
+    name: `CO2 Suite ${code.toUpperCase()}`,
     tag: code.toUpperCase(),
     daysLeft: 2863,
   };

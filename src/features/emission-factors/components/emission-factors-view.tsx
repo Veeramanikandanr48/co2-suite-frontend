@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useFetchList } from '@/hooks/use-fetch-list';
@@ -197,7 +197,7 @@ export function EmissionFactorsView() {
   );
 
   return (
-    <div className="p-4 space-y-3.5 max-w-[1600px] mx-auto">
+    <div className="p-4 md:p-6 space-y-4 w-full">
       <EmissionFactorsMetrics metrics={metrics} onOpenCreateModal={handleOpenCreateModal} />
 
       <div className="bg-white border border-neutral-200 rounded-xl p-3.5 shadow-xs space-y-3">

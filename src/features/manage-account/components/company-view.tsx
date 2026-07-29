@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -250,7 +250,7 @@ export function CompanyView() {
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-neutral-800">{svc.name || 'CageSuite Carbon'}</div>
+                    <div className="text-xs font-bold text-neutral-800">{svc.name || 'CO2 Suite Carbon'}</div>
                     <div className="text-[11px] text-neutral-400">{svc.description || 'Carbon Management Module'}</div>
                   </div>
                 </div>
@@ -258,9 +258,9 @@ export function CompanyView() {
             ) : (
               <>
                 <div className="p-3 bg-neutral-100 rounded-2xl">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                  <CheckCircle2 className="w-8 h-8 text-neutral-900" />
                 </div>
-                <span className="text-xs font-bold text-neutral-800">CageSuite Carbon</span>
+                <span className="text-xs font-bold text-neutral-800">CO2 Suite Carbon</span>
                 <span className="text-[11px] text-neutral-400">Corporate Carbon Management Module</span>
               </>
             )}

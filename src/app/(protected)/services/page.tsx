@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { LayoutGrid, Loader2, RefreshCw } from 'lucide-react';
@@ -81,17 +81,17 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6 bg-background-inner min-h-full">
+    <div className="w-full p-4 sm:p-6 space-y-6 bg-white min-h-full">
       {/* Page header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/15">
-              <LayoutGrid className="w-5 h-5 text-primary" />
+            <div className="p-2.5 rounded-xl bg-[#0B132B] text-white shadow-xs">
+              <LayoutGrid className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="page-title">
-                CageSuite Services
+              <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
+                CO2 Suite Services
               </h1>
               <p className="text-muted-xs mt-0.5">
                 {isSuperAdmin

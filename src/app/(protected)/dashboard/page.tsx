@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
@@ -79,32 +79,20 @@ export default function DashboardPage() {
 
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div
-              className={`p-3.5 rounded-2xl text-primary-foreground shadow-md ${
-                isSuperAdmin
-                  ? 'bg-gradient-to-br from-primary via-primary-300 to-primary-300'
-                  : 'bg-gradient-to-br from-positive-500 via-positive-600 to-positive-700'
-              }`}
-            >
+            <div className="p-3.5 rounded-2xl bg-[#0B132B] text-white shadow-md">
               {isSuperAdmin ? <Shield className="w-7 h-7" /> : <LayoutDashboard className="w-7 h-7" />}
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl font-black text-header-primary tracking-tight">
+                <h1 className="text-2xl font-black text-neutral-900 tracking-tight">
                   {isSuperAdmin ? 'Super Admin Platform Governance' : 'Executive Sustainability Dashboard'}
                 </h1>
-                <span
-                  className={`text-[11px] font-extrabold px-3 py-0.5 rounded-full flex items-center gap-1.5 border shadow-2xs ${
-                    isSuperAdmin
-                      ? 'bg-primary/5 text-primary border-primary/20'
-                      : 'bg-positive-50 text-positive-700 border-positive-200'
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full animate-pulse ${isSuperAdmin ? 'bg-primary' : 'bg-positive-500'}`} />
+                <span className="text-[11px] font-extrabold px-3 py-0.5 rounded-full flex items-center gap-1.5 border border-neutral-300 bg-neutral-100 text-neutral-900 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full animate-pulse bg-neutral-900" />
                   {isSuperAdmin ? 'Multi-tenant Governance • Live DB' : 'Live DB Analytics'}
                 </span>
               </div>
-              <p className="text-xs text-header-secondary font-semibold mt-1">
+              <p className="text-xs text-neutral-500 font-semibold mt-1">
                 {isSuperAdmin
                   ? 'Platform-wide corporate portfolio monitoring, organization facility sites & master module analytics.'
                   : `Welcome back${user?.firstName ? `, ${user.firstName}` : ''}! Enterprise carbon footprint, operational facilities & ESG accounting overview.`}
@@ -155,13 +143,13 @@ export default function DashboardPage() {
               title="Refresh DB Data"
               className="p-2 bg-background-inner hover:bg-background-outer border border-border rounded-xl text-header-secondary transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-positive-500' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-neutral-900' : ''}`} />
             </button>
 
             {isSuperAdmin ? (
               <Link
                 href="/organizations"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-xs transition-all hover:scale-[1.02]"
+                className="bg-[#0B132B] hover:bg-black text-white text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-xs transition-all hover:scale-[1.02]"
               >
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Manage Organizations</span>

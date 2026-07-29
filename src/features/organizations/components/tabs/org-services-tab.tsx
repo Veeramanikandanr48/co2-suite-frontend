@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { Service, OrganizationService } from '@/types/services';
@@ -23,7 +23,7 @@ export function OrgServicesTab({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="section-title">CageSuite Services</h3>
+          <h3 className="section-title">CO2 Suite Services</h3>
           <p className="text-muted-xs mt-0.5">
             {isSuperAdmin
               ? 'Assign or remove modules for this organization'

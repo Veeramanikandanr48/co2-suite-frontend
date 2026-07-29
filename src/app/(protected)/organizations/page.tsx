@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -190,12 +190,12 @@ export default function OrganizationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="stat-icon-primary">
+            <div className="p-2.5 rounded-xl bg-[#0B132B] text-white shadow-xs">
               <Building2 className="w-5 h-5" />
             </div>
-            <h1 className="text-2xl font-bold text-header-primary tracking-tight">Organizations</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Organizations</h1>
           </div>
-          <p className="text-xs text-header-secondary mt-1">
+          <p className="text-xs text-neutral-500 mt-1">
             Manage onboarded tenant organizations and provision organization administrator accounts.
           </p>
         </div>
@@ -204,7 +204,7 @@ export default function OrganizationsPage() {
           {isSuperAdmin && (
             <Button
               onClick={() => setIsOnboardOpen(true)}
-              className="bg-primary hover:bg-primary-300 text-primary-foreground font-medium shadow-xs gap-2 rounded-lg"
+              className="bg-[#0B132B] hover:bg-black text-white font-bold shadow-xs gap-2 rounded-xl text-xs px-4 py-2"
             >
               <Plus className="w-4 h-4" />
               Onboard Organization

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { Search, X } from 'lucide-react';
@@ -35,7 +35,7 @@ export function EmissionFactorsToolbar({
             placeholder="Search category, fuel, source..."
             value={searchInput}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-neutral-200 text-xs text-neutral-700 pl-8 pr-7 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+            className="w-full bg-white border border-neutral-200 text-xs text-neutral-900 font-semibold pl-8 pr-7 py-1.5 rounded-lg focus:outline-none focus:border-neutral-900"
           />
           {searchInput && (
             <button
@@ -54,7 +54,7 @@ export function EmissionFactorsToolbar({
             setFilterCategory(cat);
             setAdditionalFilter({ category: cat, source: filterSource });
           }}
-          className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+          className="bg-white border border-neutral-200 text-xs text-neutral-900 font-semibold px-3 py-1.5 rounded-lg focus:outline-none focus:border-neutral-900"
         >
           <option value="">All Categories / Scopes</option>
           {CATEGORY_OPTIONS.map((cat) => (
@@ -71,7 +71,7 @@ export function EmissionFactorsToolbar({
             setFilterSource(src);
             setAdditionalFilter({ category: filterCategory, source: src });
           }}
-          className="bg-white border border-neutral-200 text-xs text-neutral-700 px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+          className="bg-white border border-neutral-200 text-xs text-neutral-900 font-semibold px-3 py-1.5 rounded-lg focus:outline-none focus:border-neutral-900"
         >
           <option value="">All Database Sources</option>
           <option value="DEFRA">DEFRA</option>
@@ -93,7 +93,7 @@ export function EmissionFactorsToolbar({
           setAdditionalFilter({});
           refetch();
         }}
-        className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-900 text-white font-semibold text-xs rounded-lg shadow-xs transition-colors shrink-0"
+        className="px-3.5 py-1.5 bg-[#0B132B] hover:bg-black text-white font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
       >
         Clear All Filters
       </button>

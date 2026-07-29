@@ -70,7 +70,7 @@ export function SettingsView() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+    <div className="space-y-6 w-full p-4 md:p-6 bg-white text-neutral-900">
       {/* Title Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -80,7 +80,7 @@ export function SettingsView() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-4 py-2 bg-[#0B132B] hover:bg-[#152247] text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-2 bg-[#0B132B] hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
         >
           <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Preferences'}
         </button>
@@ -90,7 +90,7 @@ export function SettingsView() {
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
         <button
           onClick={() => setActiveTab('general')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
             activeTab === 'general'
               ? 'bg-neutral-900 text-white shadow-xs'
               : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
@@ -101,7 +101,7 @@ export function SettingsView() {
         </button>
         <button
           onClick={() => setActiveTab('emissions')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
             activeTab === 'emissions'
               ? 'bg-neutral-900 text-white shadow-xs'
               : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
@@ -112,7 +112,7 @@ export function SettingsView() {
         </button>
         <button
           onClick={() => setActiveTab('alerts')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
             activeTab === 'alerts'
               ? 'bg-neutral-900 text-white shadow-xs'
               : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
@@ -123,7 +123,7 @@ export function SettingsView() {
         </button>
         <button
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
             activeTab === 'security'
               ? 'bg-neutral-900 text-white shadow-xs'
               : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
@@ -135,13 +135,13 @@ export function SettingsView() {
       </div>
 
       {/* Main Settings Card */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-6">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-xs space-y-6 w-full">
         {activeTab === 'general' && (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">General & Regional Settings</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Interface Language
                 </label>
                 <select
@@ -157,7 +157,7 @@ export function SettingsView() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Timezone
                 </label>
                 <select
@@ -174,7 +174,7 @@ export function SettingsView() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Date Format
                 </label>
                 <select
@@ -192,11 +192,11 @@ export function SettingsView() {
         )}
 
         {activeTab === 'emissions' && (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Carbon Accounting Preferences</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Default Carbon Unit
                 </label>
                 <select
@@ -211,7 +211,7 @@ export function SettingsView() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Accounting Standard
                 </label>
                 <select
@@ -226,7 +226,7 @@ export function SettingsView() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Currency
                 </label>
                 <select
@@ -242,7 +242,7 @@ export function SettingsView() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
                   Decimal Precision
                 </label>
                 <select
@@ -260,79 +260,83 @@ export function SettingsView() {
         )}
 
         {activeTab === 'alerts' && (
-          <div className="space-y-4 max-w-2xl">
+          <div className="space-y-4 w-full">
             <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Notification Preferences</h2>
-            {[
-              {
-                key: 'notifyThresholdAlerts',
-                title: 'Emission Threshold Alerts',
-                desc: 'Real-time alerts when monthly facility emissions exceed target quotas.',
-              },
-              {
-                key: 'notifyWeeklyDigest',
-                title: 'Weekly Carbon Digest',
-                desc: 'Weekly automated email summaries of total carbon footprint and facility statistics.',
-              },
-              {
-                key: 'notifySystemUpdates',
-                title: 'System Updates & Regulations',
-                desc: 'Notices regarding IPCC emission factor updates and platform maintenance.',
-              },
-            ].map((item) => {
-              const k = item.key as keyof AppSettings;
-              return (
-                <div key={item.key} className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-bold text-neutral-900">{item.title}</div>
-                    <div className="text-[11px] text-neutral-500 mt-0.5">{item.desc}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+              {[
+                {
+                  key: 'notifyThresholdAlerts',
+                  title: 'Emission Threshold Alerts',
+                  desc: 'Real-time alerts when monthly facility emissions exceed target quotas.',
+                },
+                {
+                  key: 'notifyWeeklyDigest',
+                  title: 'Weekly Carbon Digest',
+                  desc: 'Weekly automated email summaries of total carbon footprint and facility statistics.',
+                },
+                {
+                  key: 'notifySystemUpdates',
+                  title: 'System Updates & Regulations',
+                  desc: 'Notices regarding IPCC emission factor updates and platform maintenance.',
+                },
+              ].map((item) => {
+                const k = item.key as keyof AppSettings;
+                return (
+                  <div key={item.key} className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-neutral-900">{item.title}</div>
+                      <div className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">{item.desc}</div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(settings[k])}
+                      onChange={(e) => setSettings({ ...settings, [k]: e.target.checked })}
+                      className="w-4 h-4 text-neutral-900 rounded border-neutral-300 focus:ring-0 cursor-pointer ml-3 shrink-0"
+                    />
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(settings[k])}
-                    onChange={(e) => setSettings({ ...settings, [k]: e.target.checked })}
-                    className="w-4 h-4 text-[#0B132B] rounded border-neutral-300 focus:ring-0 cursor-pointer"
-                  />
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
 
         {activeTab === 'security' && (
-          <div className="space-y-4 max-w-2xl">
+          <div className="space-y-4 w-full">
             <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">Security Policies</h2>
-            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold text-neutral-900">Enforce Two-Factor Authentication (2FA)</div>
-                <div className="text-[11px] text-neutral-500 mt-0.5">Require multi-factor authentication codes during login</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-neutral-900">Enforce Two-Factor Authentication (2FA)</div>
+                  <div className="text-[11px] text-neutral-500 mt-0.5">Require multi-factor authentication codes during login</div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.enable2FA}
+                  onChange={(e) => setSettings({ ...settings, enable2FA: e.target.checked })}
+                  className="w-4 h-4 text-neutral-900 rounded border-neutral-300 focus:ring-0 cursor-pointer shrink-0 ml-3"
+                />
               </div>
-              <input
-                type="checkbox"
-                checked={settings.enable2FA}
-                onChange={(e) => setSettings({ ...settings, enable2FA: e.target.checked })}
-                className="w-4 h-4 text-[#0B132B] rounded border-neutral-300 focus:ring-0 cursor-pointer"
-              />
+
+              <div>
+                <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
+                  Session Inactivity Timeout
+                </label>
+                <select
+                  value={settings.sessionTimeout}
+                  onChange={(e) => setSettings({ ...settings, sessionTimeout: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
+                >
+                  <option value="15">15 Minutes</option>
+                  <option value="30">30 Minutes</option>
+                  <option value="60">1 Hour</option>
+                  <option value="240">4 Hours</option>
+                </select>
+              </div>
             </div>
 
-            <div className="max-w-xs">
-              <label className="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1">
-                Session Inactivity Timeout
-              </label>
-              <select
-                value={settings.sessionTimeout}
-                onChange={(e) => setSettings({ ...settings, sessionTimeout: e.target.value })}
-                className="w-full px-3 py-2 text-xs border border-neutral-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-neutral-900 text-neutral-900 font-semibold bg-white"
-              >
-                <option value="15">15 Minutes</option>
-                <option value="30">30 Minutes</option>
-                <option value="60">1 Hour</option>
-                <option value="240">4 Hours</option>
-              </select>
-            </div>
-
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-800 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>TLS 256-bit connection encryption enabled.</span>
+            <div className="p-3.5 bg-neutral-100 border border-neutral-300 rounded-xl text-xs font-bold text-neutral-900 flex items-center gap-2 w-full">
+              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+              <span>TLS 256-bit connection encryption enabled for all active user sessions.</span>
             </div>
           </div>
         )}

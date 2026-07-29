@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Lock, Mail, Phone, Building, Loader2, Edit2 } from 'lucide-react';
@@ -99,11 +99,11 @@ export function UsersView() {
       <div className="bg-white border border-neutral-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between gap-4">
         <div className="text-xs font-bold text-neutral-700 flex items-center gap-3">
           <span>
-            Total Users: <span className="text-emerald-600 font-extrabold">{usersList.length}</span>
+            Total Users: <span className="text-neutral-900 font-extrabold">{usersList.length}</span>
           </span>
           <span className="text-neutral-300">•</span>
           <span>
-            Admins: <span className="text-emerald-600 font-extrabold">{usersList.filter(u => u.role.toLowerCase().includes('admin')).length}</span>
+            Admins: <span className="text-neutral-900 font-extrabold">{usersList.filter(u => u.role.toLowerCase().includes('admin')).length}</span>
           </span>
         </div>
 

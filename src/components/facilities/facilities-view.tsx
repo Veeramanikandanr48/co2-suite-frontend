@@ -69,7 +69,7 @@ export function FacilitiesView() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+    <div className="space-y-6 w-full p-4 md:p-6">
       {/* Manage Account Navigation Bar */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
         <button
@@ -122,7 +122,7 @@ export function FacilitiesView() {
       {/* Action Bar */}
       <div className="bg-white border border-neutral-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between gap-4">
         <div className="text-xs font-bold text-neutral-700">
-          Total Facilities: <span className="text-emerald-600">{facilities.length}</span>
+          Total Facilities: <span className="text-neutral-900 font-extrabold">{facilities.length}</span>
         </div>
 
         <div className="flex items-center gap-3">
