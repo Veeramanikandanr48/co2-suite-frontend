@@ -93,167 +93,83 @@ export function ReusableTable<T extends { id: string | number }>({
         }
     };
 
-    if (tableHeight === "auto") {
-        return (
-            <div 
-                ref={setContainer}
-                className="w-full overflow-x-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
-            >
-                <Table className="w-full text-left border-collapse text-xs min-w-full">
-                    <TableHeader>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <TableRow 
-                                key={headerGroup.id} 
-                                className="h-9 bg-neutral-100 border-b border-neutral-200"
-                            >
-                                {headerGroup.headers.map(header => (
-                                    <TableHead 
-                                        key={header.id} 
-                                        className="px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
-                                        style={{ 
-                                            width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
-                                        }}
-                                    >
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                    </TableHead>
-                                ))}
-                            </TableRow>     
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows.map((row, index) => (
-                            <TableRow 
-                                key={row.id} 
-                                className={`${rowHeight} border-b border-neutral-100 ${
-                                    index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
-                                } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
-                                onClick={() => onRowClick && handleRowClick(row.original.id)}
-                            >
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell  
-                                        key={cell.id} 
-                                        className={`${
-                                            cell.column.id === 'actions' 
-                                                ? 'py-1 px-2 h-full' 
-                                                : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
-                                        }`}
-                                        style={{ 
-                                            width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
-                                        }}
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))}
-                        {isLoadingMore && (
-                            <TableRow>
-                                <TableCell 
-                                    colSpan={columns.length} 
-                                    className="h-16 text-center text-neutral-500 text-xs"
-                                >
-                                    Loading more...
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {data.length === 0 && (
-                            <TableRow>
-                                <TableCell 
-                                    colSpan={columns.length} 
-                                    className="h-16 text-center text-neutral-500 text-xs"
-                                >
-                                    No data found
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-        );
-    }
+    const containerStyle = tableHeight === "auto" ? {} : { height: tableHeight, maxHeight: tableHeight };
 
     return (
-        <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600">
-            <div className="flex flex-col rounded-none min-w-full" style={{ height: tableHeight }}>
-                <div className="w-full">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <TableRow 
-                                    key={headerGroup.id} 
-                                    className="h-9 bg-neutral-100 border-b border-neutral-200"
+        <div 
+            ref={setContainer}
+            className="w-full overflow-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
+            style={containerStyle}
+        >
+            <Table className="w-full text-left border-collapse text-xs min-w-full">
+                <TableHeader className="sticky top-0 z-10 bg-neutral-100 shadow-xs">
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <TableRow 
+                            key={headerGroup.id} 
+                            className="h-9 bg-neutral-100 border-b border-neutral-200"
+                        >
+                            {headerGroup.headers.map(header => (
+                                <TableHead 
+                                    key={header.id} 
+                                    className="sticky top-0 z-10 bg-neutral-100 px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
+                                    style={{ 
+                                        width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
+                                    }}
                                 >
-                                    {headerGroup.headers.map(header => (
-                                        <TableHead 
-                                            key={header.id} 
-                                            className="px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
-                                            style={{ 
-                                                width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
-                                            }}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    ))}
-                                </TableRow>     
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                </TableHead>
                             ))}
-                        </TableHeader>
-                    </Table>
-                </div>
-                <div 
-                    ref={setContainer}
-                    className="flex-1 overflow-auto [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
-                >
-                    <Table>
-                        <TableBody>
-                            {table.getRowModel().rows.map((row, index) => (
-                                <TableRow 
-                                    key={row.id} 
-                                    className={`${rowHeight} border-b border-neutral-100 ${
-                                        index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
-                                    } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
-                                    onClick={() => onRowClick && handleRowClick(row.original.id)}
+                        </TableRow>     
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows.map((row, index) => (
+                        <TableRow 
+                            key={row.id} 
+                            className={`${rowHeight} border-b border-neutral-100 ${
+                                index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
+                            } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
+                            onClick={() => onRowClick && handleRowClick(row.original.id)}
+                        >
+                            {row.getVisibleCells().map(cell => (
+                                <TableCell  
+                                    key={cell.id} 
+                                    className={`${
+                                        cell.column.id === 'actions' 
+                                            ? 'py-1 px-2 h-full' 
+                                            : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
+                                    }`}
+                                    style={{ 
+                                        width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
+                                    }}
                                 >
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell  
-                                            key={cell.id} 
-                                            className={`${
-                                                cell.column.id === 'actions' 
-                                                    ? 'py-1 px-2 h-full' 
-                                                    : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
-                                            }`}
-                                            style={{ 
-                                                width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
-                                            }}
-                                        >
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
                             ))}
-                            {isLoadingMore && (
-                                <TableRow>
-                                    <TableCell 
-                                        colSpan={columns.length} 
-                                        className="h-16 text-center text-neutral-500 text-xs"
-                                    >
-                                        Loading more...
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                            {data.length === 0 && (
-                                <TableRow>
-                                    <TableCell 
-                                        colSpan={columns.length} 
-                                        className="h-16 text-center text-neutral-500 text-xs"
-                                    >
-                                        No data found
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
+                        </TableRow>
+                    ))}
+                    {isLoadingMore && (
+                        <TableRow>
+                            <TableCell 
+                                colSpan={columns.length} 
+                                className="h-16 text-center text-neutral-500 text-xs"
+                            >
+                                Loading more...
+                            </TableCell>
+                        </TableRow>
+                    )}
+                    {data.length === 0 && (
+                        <TableRow>
+                            <TableCell 
+                                colSpan={columns.length} 
+                                className="h-16 text-center text-neutral-500 text-xs"
+                            >
+                                No data found
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
         </div>
     );
 } 

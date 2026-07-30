@@ -19,7 +19,7 @@ export function createEmissionFactorColumns({
   return [
     {
       id: 'actions',
-      header: 'Actions',
+      header: () => <div className="text-center">Actions</div>,
       size: 70,
       cell: ({ row }) => {
         const item = row.original;
