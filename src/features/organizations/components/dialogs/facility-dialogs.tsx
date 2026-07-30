@@ -48,17 +48,17 @@ export function FacilityDialogs({
       {/* Add / Edit Facility Dialog */}
       <Dialog open={isAddFacilityOpen} onOpenChange={setIsAddFacilityOpen}>
         <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
-          <div className="px-6 pt-6 pb-4 border-b border-border bg-background-inner">
+          <div className="px-6 pt-6 pb-4 border-b border-border bg-muted/50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
                 <MapPin className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-base font-bold text-neutral-800">
+                <DialogTitle className="text-base font-bold text-foreground">
                   {editingFacility ? 'Edit Facility Site' : 'Add Facility Site'}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-neutral-400 mt-0.5">
-                  Configure plant site details for <span className="font-semibold text-neutral-600">{orgName}</span>.
+                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                  Configure plant site details for <span className="font-semibold text-foreground">{orgName}</span>.
                 </DialogDescription>
               </div>
             </div>
@@ -66,7 +66,7 @@ export function FacilityDialogs({
 
           <form onSubmit={onSaveFacility} className="px-6 py-5 space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 Facility Site Name *
               </Label>
               <Input
@@ -79,7 +79,7 @@ export function FacilityDialogs({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 Street Address
               </Label>
               <Input
@@ -92,7 +92,7 @@ export function FacilityDialogs({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   Postcode
                 </Label>
                 <Input
@@ -103,7 +103,7 @@ export function FacilityDialogs({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   UN/LOCODE
                 </Label>
                 <Input
@@ -117,7 +117,7 @@ export function FacilityDialogs({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   Latitude
                 </Label>
                 <Input
@@ -130,7 +130,7 @@ export function FacilityDialogs({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   Longitude
                 </Label>
                 <Input
@@ -178,14 +178,14 @@ export function FacilityDialogs({
       <Dialog open={Boolean(deletingFacility)} onOpenChange={(open) => { if (!open) setDeletingFacility(null); }}>
         <DialogContent className="sm:max-w-md p-6">
           <DialogHeader className="space-y-3 text-left">
-            <div className="w-12 h-12 rounded-2xl bg-negative-50 border border-negative-50 flex items-center justify-center text-[#CC4529]">
+            <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/10 flex items-center justify-center text-destructive">
               <Trash2 className="w-6 h-6" />
             </div>
-            <DialogTitle className="text-lg font-bold text-neutral-800">
+            <DialogTitle className="text-lg font-bold text-foreground">
               Delete Facility Site
             </DialogTitle>
-            <DialogDescription className="text-sm text-neutral-500 leading-relaxed">
-              Are you sure you want to delete facility site <strong className="text-neutral-700">{deletingFacility?.name}</strong>? This action cannot be undone.
+            <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+              Are you sure you want to delete facility site <strong className="text-foreground">{deletingFacility?.name}</strong>? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
 

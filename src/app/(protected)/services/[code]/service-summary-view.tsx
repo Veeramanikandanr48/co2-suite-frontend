@@ -43,22 +43,22 @@ export function ServiceSummaryView({
   return (
     <>
       {/* Top Title & Filter Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#E6E8EB] shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-4 rounded-2xl border border-border shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#00C9A7]/10 rounded-xl text-[#00C9A7]">
+          <div className="p-2 bg-primary/10 rounded-xl text-primary">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-extrabold text-neutral-800 tracking-tight">
+              <h1 className="text-lg font-extrabold text-foreground tracking-tight">
                 Overall Carbon Summary
               </h1>
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live DB Data
               </span>
             </div>
-            <p className="text-xs text-neutral-500 font-medium">
+            <p className="text-xs text-muted-foreground font-medium">
               Calculated directly from database inventory entries & activity logs
             </p>
           </div>
@@ -71,7 +71,7 @@ export function ServiceSummaryView({
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="appearance-none bg-[#F8FAFC] border border-[#E6E8EB] text-xs font-bold text-neutral-700 pl-8 pr-8 py-1.5 rounded-xl cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#00C9A7]/20"
+              className="appearance-none bg-muted border border-border text-xs font-bold text-foreground pl-8 pr-8 py-1.5 rounded-xl cursor-pointer hover:border-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="all">All Years</option>
               {summaryData?.availableYears?.map((yr) => (
@@ -80,8 +80,8 @@ export function ServiceSummaryView({
                 </option>
               ))}
             </select>
-            <Calendar className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5 pointer-events-none" />
-            <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-2.5 top-2.5 pointer-events-none" />
+            <Calendar className="w-3.5 h-3.5 text-muted-foreground absolute left-2.5 top-2.5 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-2.5 pointer-events-none" />
           </div>
 
           {/* Facility selector */}
@@ -89,7 +89,7 @@ export function ServiceSummaryView({
             <select
               value={selectedFacility}
               onChange={(e) => setSelectedFacility(e.target.value)}
-              className="appearance-none bg-[#F8FAFC] border border-[#E6E8EB] text-xs font-bold text-neutral-700 pl-8 pr-8 py-1.5 rounded-xl cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#00C9A7]/20"
+              className="appearance-none bg-muted border border-border text-xs font-bold text-foreground pl-8 pr-8 py-1.5 rounded-xl cursor-pointer hover:border-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               {summaryData?.availableFacilities?.map((fac) => (
                 <option key={fac} value={fac === 'All Facilities' ? 'all' : fac}>
@@ -97,21 +97,21 @@ export function ServiceSummaryView({
                 </option>
               )) || <option value="all">All Facilities</option>}
             </select>
-            <Building2 className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5 pointer-events-none" />
-            <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-2.5 top-2.5 pointer-events-none" />
+            <Building2 className="w-3.5 h-3.5 text-muted-foreground absolute left-2.5 top-2.5 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-2.5 pointer-events-none" />
           </div>
 
           {/* Refresh Button */}
           <button
             onClick={fetchCarbonSummary}
             title="Refresh Data from DB"
-            className="p-1.5 bg-[#F8FAFC] hover:bg-neutral-100 border border-[#E6E8EB] rounded-xl text-neutral-600 transition-colors"
+            className="p-1.5 bg-muted hover:bg-accent border border-border rounded-xl text-muted-foreground transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loadingSummary ? 'animate-spin text-[#00C9A7]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loadingSummary ? 'animate-spin text-primary' : ''}`} />
           </button>
 
           {/* Days Left badge */}
-          <span className="bg-[#00C9A7] text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">
+          <span className="bg-primary text-primary-foreground text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">
             {currentConfig.daysLeft} Days Left
           </span>
         </div>
@@ -119,23 +119,23 @@ export function ServiceSummaryView({
 
       {/* Loader State overlay when fetching DB summary */}
       {loadingSummary && !summaryData ? (
-        <div className="w-full h-64 flex flex-col items-center justify-center bg-white rounded-2xl border border-[#E6E8EB] shadow-xs p-6 space-y-3">
-          <Loader2 className="w-8 h-8 text-[#00C9A7] animate-spin" />
-          <p className="text-xs font-bold text-neutral-600">Calculating Carbon Summary from DB...</p>
+        <div className="w-full h-64 flex flex-col items-center justify-center bg-card rounded-2xl border border-border shadow-xs p-6 space-y-3">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-xs font-bold text-muted-foreground">Calculating Carbon Summary from DB...</p>
         </div>
       ) : (
         <>
           {/* Top 4 KPI Cards Grid strictly from DB Data */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Total Carbon Footprint (Gradient Teal Card) */}
-            <div className="bg-gradient-to-br from-[#00C9A7] to-[#059669] rounded-2xl p-5 text-white shadow-md flex flex-col justify-between min-h-[165px] relative overflow-hidden">
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none" />
+            <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-5 text-primary-foreground shadow-md flex flex-col justify-between min-h-[165px] relative overflow-hidden">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-background/10 rounded-full blur-xl pointer-events-none" />
               <div>
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-extrabold opacity-90 tracking-wider uppercase">
                     TOTAL EMISSIONS
                   </p>
-                  <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                  <span className="text-[10px] font-bold bg-background/20 px-2 py-0.5 rounded-full backdrop-blur-xs">
                     {summaryData?.totalEntries || 0} DB Entries
                   </span>
                 </div>
@@ -150,20 +150,20 @@ export function ServiceSummaryView({
               </div>
 
               {/* Scope Counts from Database */}
-              <div className="grid grid-cols-3 gap-1.5 text-[10px] font-bold text-center pt-2 border-t border-white/20">
-                <div className="bg-white/20 py-1 px-1 rounded-lg backdrop-blur-xs">
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] font-bold text-center pt-2 border-t border-background/20">
+                <div className="bg-background/20 py-1 px-1 rounded-lg backdrop-blur-xs">
                   <p className="opacity-80">Scope 1</p>
                   <p className="text-xs font-black">
                     {summaryData?.kpis?.scope1CategoryCount?.recorded || 0}/{summaryData?.kpis?.scope1CategoryCount?.total || 4}
                   </p>
                 </div>
-                <div className="bg-white/20 py-1 px-1 rounded-lg backdrop-blur-xs">
+                <div className="bg-background/20 py-1 px-1 rounded-lg backdrop-blur-xs">
                   <p className="opacity-80">Scope 2</p>
                   <p className="text-xs font-black">
                     {summaryData?.kpis?.scope2CategoryCount?.recorded || 0}/{summaryData?.kpis?.scope2CategoryCount?.total || 2}
                   </p>
                 </div>
-                <div className="bg-white/20 py-1 px-1 rounded-lg backdrop-blur-xs">
+                <div className="bg-background/20 py-1 px-1 rounded-lg backdrop-blur-xs">
                   <p className="opacity-80">Scope 3</p>
                   <p className="text-xs font-black">
                     {summaryData?.kpis?.scope3CategoryCount?.recorded || 0}/{summaryData?.kpis?.scope3CategoryCount?.total || 13}
@@ -175,30 +175,30 @@ export function ServiceSummaryView({
             {/* Card 2: Scope 1 (Direct Emissions) */}
             <div
               onClick={() => setActiveTab('Stationary Combustion')}
-              className="bg-white hover:border-[#00C9A7] cursor-pointer transition-all rounded-2xl p-5 border border-[#E6E8EB] shadow-xs flex flex-col justify-between min-h-[165px] group"
+              className="bg-card hover:border-primary cursor-pointer transition-all rounded-2xl p-5 border border-border shadow-xs flex flex-col justify-between min-h-[165px] group"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-extrabold text-amber-600 uppercase tracking-wider">
+                  <p className="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
                     SCOPE 1 DIRECT
                   </p>
-                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-[#00C9A7] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
                 </div>
                 <div className="text-center my-2">
-                  <p className="text-3xl font-extrabold text-neutral-800">
+                  <p className="text-3xl font-extrabold text-foreground">
                     {summaryData?.kpis?.scope1Emissions?.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) || '0.0'}
                   </p>
-                  <p className="text-[11px] text-neutral-400 font-medium">
+                  <p className="text-[11px] text-muted-foreground font-medium">
                     tonne CO₂-e ({summaryData?.kpis?.scope1CategoryCount?.recorded || 0} active categories)
                   </p>
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-[10px] font-bold text-amber-600 mb-1">
+                <div className="flex justify-between text-[10px] font-bold text-amber-600 dark:text-amber-400 mb-1">
                   <span>Share of Total</span>
                   <span>{summaryData?.kpis?.scope1Percentage || 0}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-[#F0F2F5] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-500 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, summaryData?.kpis?.scope1Percentage || 0)}%` }}
@@ -210,30 +210,30 @@ export function ServiceSummaryView({
             {/* Card 3: Scope 2 (Indirect Energy) */}
             <div
               onClick={() => setActiveTab('Purchased Electricity')}
-              className="bg-white hover:border-sky-500 cursor-pointer transition-all rounded-2xl p-5 border border-[#E6E8EB] shadow-xs flex flex-col justify-between min-h-[165px] group"
+              className="bg-card hover:border-sky-500 cursor-pointer transition-all rounded-2xl p-5 border border-border shadow-xs flex flex-col justify-between min-h-[165px] group"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-extrabold text-sky-600 uppercase tracking-wider">
+                  <p className="text-[11px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
                     SCOPE 2 INDIRECT
                   </p>
-                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-sky-500 transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
                 </div>
                 <div className="text-center my-2">
-                  <p className="text-3xl font-extrabold text-neutral-800">
+                  <p className="text-3xl font-extrabold text-foreground">
                     {summaryData?.kpis?.scope2Emissions?.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) || '0.0'}
                   </p>
-                  <p className="text-[11px] text-neutral-400 font-medium">
+                  <p className="text-[11px] text-muted-foreground font-medium">
                     tonne CO₂-e ({summaryData?.kpis?.scope2CategoryCount?.recorded || 0} active categories)
                   </p>
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-[10px] font-bold text-sky-600 mb-1">
+                <div className="flex justify-between text-[10px] font-bold text-sky-600 dark:text-sky-400 mb-1">
                   <span>Share of Total</span>
                   <span>{summaryData?.kpis?.scope2Percentage || 0}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-[#F0F2F5] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-sky-500 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, summaryData?.kpis?.scope2Percentage || 0)}%` }}
@@ -245,30 +245,30 @@ export function ServiceSummaryView({
             {/* Card 4: Scope 3 (Supply Chain & Value Chain) */}
             <div
               onClick={() => setActiveTab('Purchased Goods and Services')}
-              className="bg-white hover:border-emerald-600 cursor-pointer transition-all rounded-2xl p-5 border border-[#E6E8EB] shadow-xs flex flex-col justify-between min-h-[165px] group"
+              className="bg-card hover:border-emerald-600 cursor-pointer transition-all rounded-2xl p-5 border border-border shadow-xs flex flex-col justify-between min-h-[165px] group"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-extrabold text-emerald-600 uppercase tracking-wider">
+                  <p className="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
                     SCOPE 3 VALUE CHAIN
                   </p>
-                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-emerald-600 transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
                 </div>
                 <div className="text-center my-2">
-                  <p className="text-3xl font-extrabold text-neutral-800">
+                  <p className="text-3xl font-extrabold text-foreground">
                     {summaryData?.kpis?.scope3Emissions?.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) || '0.0'}
                   </p>
-                  <p className="text-[11px] text-neutral-400 font-medium">
+                  <p className="text-[11px] text-muted-foreground font-medium">
                     tonne CO₂-e ({summaryData?.kpis?.scope3CategoryCount?.recorded || 0} active categories)
                   </p>
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-[10px] font-bold text-emerald-600 mb-1">
+                <div className="flex justify-between text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mb-1">
                   <span>Share of Total</span>
                   <span>{summaryData?.kpis?.scope3Percentage || 0}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-[#F0F2F5] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-600 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, summaryData?.kpis?.scope3Percentage || 0)}%` }}

@@ -30,10 +30,10 @@ function SectionField({
       <span
         className={`text-sm ${
           isEmpty
-            ? 'text-neutral-950 font-normal'
+            ? 'text-muted-foreground font-normal'
             : isHighlight
             ? 'text-primary font-bold'
-            : 'text-header-primary font-bold'
+            : 'text-foreground font-bold'
         }`}
       >
         {display}

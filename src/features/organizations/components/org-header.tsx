@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Organization } from '@/types/organizations';
 import { Button } from '@/components/ui/button';
 import {
@@ -51,19 +52,19 @@ export function OrgHeader({
   const monogram = getOrgMonogram(orgDetails.name);
 
   return (
-    <div className="bg-background border-b border-border px-8 pt-6 pb-0">
+    <div className="bg-card border-b border-border px-6 md:px-8 pt-5 pb-0">
       {/* Breadcrumb */}
       {isSuperAdmin && (
-        <div className="flex items-center gap-1.5 text-xs text-header-secondary mb-4">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
           <button
             onClick={onBack}
-            className="hover:text-primary transition-colors font-medium flex items-center gap-1 cursor-pointer"
+            className="hover:text-foreground transition-colors font-medium flex items-center gap-1 cursor-pointer"
           >
             <Building2 className="w-3.5 h-3.5" />
             Organizations
           </button>
-          <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
-          <span className="text-header-primary font-semibold truncate max-w-[240px]">
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+          <span className="text-foreground font-semibold truncate max-w-[240px]">
             {orgDetails.name}
           </span>
         </div>
@@ -77,7 +78,7 @@ export function OrgHeader({
               onClick={onBack}
               variant="outline"
               size="sm"
-              className="h-10 w-10 p-0 text-header-secondary hover:text-header-primary rounded-xl shrink-0 hidden sm:flex border-border hover:bg-background-inner"
+              className="h-10 w-10 p-0 text-muted-foreground hover:text-foreground rounded-xl shrink-0 hidden sm:flex border-border hover:bg-accent"
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -90,7 +91,7 @@ export function OrgHeader({
 
           <div className="min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-extrabold text-header-primary tracking-tight leading-none">
+              <h1 className="text-2xl font-extrabold text-foreground tracking-tight leading-none">
                 {orgDetails.name}
               </h1>
               {orgDetails.isActive ? (
@@ -101,15 +102,15 @@ export function OrgHeader({
             </div>
 
             {/* Metadata line */}
-            <div className="flex items-center gap-2 mt-2 flex-wrap text-xs text-header-secondary font-medium">
+            <div className="flex items-center gap-2 mt-2 flex-wrap text-xs text-muted-foreground font-medium">
               <span># {orgDetails.code}</span>
-              <span className="text-neutral-300">|</span>
+              <span className="text-muted-foreground/30">|</span>
               <span>ID #{orgDetails.id}</span>
               {orgDetails.timezone && (
                 <>
-                  <span className="text-neutral-300">|</span>
+                  <span className="text-muted-foreground/30">|</span>
                   <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-neutral-950" />
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                     {orgDetails.timezone}
                   </span>
                 </>
@@ -126,7 +127,7 @@ export function OrgHeader({
                 type="button"
                 variant="outline"
                 onClick={onCancelEdit}
-                className="h-9 text-xs font-semibold gap-1.5 px-4 border-border text-header-secondary"
+                className="h-9 text-xs font-semibold gap-1.5 px-4 border-border text-muted-foreground"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -134,7 +135,7 @@ export function OrgHeader({
               <Button
                 onClick={onSave}
                 disabled={isSubmitting}
-                className="h-9 text-xs bg-primary hover:bg-primary-300 text-primary-foreground font-bold gap-1.5 px-4 shadow-sm"
+                className="h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-1.5 px-4 shadow-sm"
               >
                 {isSubmitting ? (
                   <>
@@ -155,16 +156,16 @@ export function OrgHeader({
                 <Button
                   onClick={onDeactivateOpen}
                   variant="outline"
-                  className="h-9 text-xs font-semibold border-border text-header-secondary hover:bg-background-inner hover:text-header-primary gap-1.5 px-4 rounded-lg"
+                  className="h-9 text-xs font-semibold border-border text-muted-foreground hover:bg-accent hover:text-foreground gap-1.5 px-4 rounded-lg"
                 >
-                  <XCircle className="w-4 h-4 text-neutral-950" />
+                  <XCircle className="w-4 h-4 text-muted-foreground" />
                   Deactivate
                 </Button>
               )}
               {canEdit && (
                 <Button
                   onClick={onEditToggle}
-                  className="h-9 text-xs bg-primary hover:bg-primary-300 text-primary-foreground font-bold gap-1.5 px-5 rounded-lg shadow-xs"
+                  className="h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-1.5 px-5 rounded-lg shadow-xs"
                 >
                   <Edit2 className="w-3.5 h-3.5 fill-current" />
                   Edit
@@ -176,7 +177,12 @@ export function OrgHeader({
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-7 pb-6">
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-7 pb-6"
+      >
         {/* Total Members */}
         <div className="flex items-center gap-3.5">
           <div className="stat-icon-primary">
@@ -186,7 +192,7 @@ export function OrgHeader({
             <p className="kpi-label">TOTAL MEMBERS</p>
             <div className="flex items-baseline gap-2 mt-0.5">
               <span className="kpi-value">{userTotalCount}</span>
-              <span className="text-xs text-header-secondary font-normal">Active users</span>
+              <span className="text-xs text-muted-foreground font-normal">Active users</span>
             </div>
           </div>
         </div>
@@ -198,7 +204,7 @@ export function OrgHeader({
           </div>
           <div className="min-w-0">
             <p className="kpi-label">CONTACT EMAIL</p>
-            <p className="text-sm font-bold text-header-primary truncate mt-0.5">
+            <p className="text-sm font-bold text-foreground truncate mt-0.5">
               {orgDetails.contactEmail || '—'}
             </p>
           </div>
@@ -211,7 +217,7 @@ export function OrgHeader({
           </div>
           <div className="min-w-0">
             <p className="kpi-label">EMAIL DOMAIN</p>
-            <p className="text-base font-bold text-header-primary truncate mt-0.5">
+            <p className="text-base font-bold text-foreground truncate mt-0.5">
               {orgDetails.emailDomain || '—'}
             </p>
           </div>
@@ -224,12 +230,12 @@ export function OrgHeader({
           </div>
           <div className="min-w-0">
             <p className="kpi-label">ONBOARDED</p>
-            <p className="text-sm font-bold text-header-primary truncate mt-0.5">
+            <p className="text-sm font-bold text-foreground truncate mt-0.5">
               {formatDate(orgDetails.createdOn)}
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

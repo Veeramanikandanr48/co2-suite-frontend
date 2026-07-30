@@ -60,8 +60,7 @@ export function SettingsView() {
   };
 
   return (
-    <div className="space-y-6 w-full p-4 md:p-6 bg-white text-neutral-900">
-      {/* Page Header */}
+    <div className="page-container space-y-6">
       <PageHeader
         title="System & Account Settings"
         description="Configure application preferences, reporting standards, and notification parameters"
@@ -69,15 +68,14 @@ export function SettingsView() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-2 bg-[#0B132B] hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Preferences'}
           </button>
         }
       />
 
-      {/* Navigation Bar */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
+      <div className="flex items-center gap-2 border-b border-border pb-3">
         <NavTabButton
           isActive={activeTab === 'general'}
           onClick={() => setActiveTab('general')}
@@ -104,11 +102,10 @@ export function SettingsView() {
         />
       </div>
 
-      {/* Settings Card Content */}
       <SectionCard>
         {activeTab === 'general' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+            <h2 className="text-sm font-bold text-foreground border-b border-border pb-3">
               General & Regional Settings
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
@@ -153,7 +150,7 @@ export function SettingsView() {
 
         {activeTab === 'emissions' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+            <h2 className="text-sm font-bold text-foreground border-b border-border pb-3">
               Carbon Accounting Preferences
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
@@ -207,7 +204,7 @@ export function SettingsView() {
 
         {activeTab === 'alerts' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+            <h2 className="text-sm font-bold text-foreground border-b border-border pb-3">
               Notification Preferences
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
@@ -232,11 +229,11 @@ export function SettingsView() {
                 return (
                   <div
                     key={item.key}
-                    className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between"
+                    className="bg-muted border border-border rounded-xl p-4 flex items-center justify-between"
                   >
                     <div>
-                      <div className="text-xs font-bold text-neutral-900">{item.title}</div>
-                      <div className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">
+                      <div className="text-xs font-bold text-foreground">{item.title}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                         {item.desc}
                       </div>
                     </div>
@@ -244,7 +241,7 @@ export function SettingsView() {
                       type="checkbox"
                       checked={Boolean(settings[k])}
                       onChange={(e) => setSettings({ ...settings, [k]: e.target.checked })}
-                      className="w-4 h-4 text-neutral-900 rounded border-neutral-300 focus:ring-0 cursor-pointer ml-3 shrink-0"
+                      className="w-4 h-4 text-foreground rounded border-border focus:ring-0 cursor-pointer ml-3 shrink-0"
                     />
                   </div>
                 );
@@ -255,16 +252,16 @@ export function SettingsView() {
 
         {activeTab === 'security' && (
           <div className="space-y-4 w-full">
-            <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+            <h2 className="text-sm font-bold text-foreground border-b border-border pb-3">
               Security Policies
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 flex items-center justify-between">
+              <div className="bg-muted border border-border rounded-xl p-4 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-bold text-neutral-900">
+                  <div className="text-xs font-bold text-foreground">
                     Enforce Two-Factor Authentication (2FA)
                   </div>
-                  <div className="text-[11px] text-neutral-500 mt-0.5">
+                  <div className="text-[11px] text-muted-foreground mt-0.5">
                     Require multi-factor authentication codes during login
                   </div>
                 </div>
@@ -272,7 +269,7 @@ export function SettingsView() {
                   type="checkbox"
                   checked={settings.enable2FA}
                   onChange={(e) => setSettings({ ...settings, enable2FA: e.target.checked })}
-                  className="w-4 h-4 text-neutral-900 rounded border-neutral-300 focus:ring-0 cursor-pointer shrink-0 ml-3"
+                  className="w-4 h-4 text-foreground rounded border-border focus:ring-0 cursor-pointer shrink-0 ml-3"
                 />
               </div>
 
@@ -289,8 +286,8 @@ export function SettingsView() {
               />
             </div>
 
-            <div className="p-3.5 bg-neutral-100 border border-neutral-300 rounded-xl text-xs font-bold text-neutral-900 flex items-center gap-2 w-full">
-              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+            <div className="p-3.5 bg-muted border border-border rounded-xl text-xs font-bold text-foreground flex items-center gap-2 w-full">
+              <CheckCircle2 className="w-4 h-4 text-foreground shrink-0" />
               <span>TLS 256-bit connection encryption enabled for all active user sessions.</span>
             </div>
           </div>

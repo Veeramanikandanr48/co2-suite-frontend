@@ -22,13 +22,13 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
   toggleScope,
 }) => {
   return (
-    <aside className="w-64 bg-background-sidebar border-r border-border-logo flex flex-col shrink-0 h-full overflow-hidden shadow-[inset_0px_3px_10px_0px_#0000001A]">
-      {/* Module Title Header (Clean text without branch logo) */}
-      <div className="px-4 pt-4 pb-2 border-b border-border-logo/40">
-        <h2 className="text-sm font-semibold text-text-sidebar truncate">
+    <aside className="w-64 bg-sidebar border-r border-border flex flex-col shrink-0 h-full overflow-hidden shadow-sm">
+      {/* Module Title Header */}
+      <div className="px-4 pt-4 pb-2 border-b border-border/40">
+        <h2 className="text-sm font-semibold text-sidebar-foreground truncate">
           {currentConfig.name}
         </h2>
-        <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+        <p className="text-[10px] text-sidebar-foreground/50 uppercase tracking-wider">
           Service Module
         </p>
       </div>
@@ -38,7 +38,7 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
         <div className="py-2 space-y-5">
           {/* START Section */}
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50 px-4">
               START
             </p>
             <div className="px-3">
@@ -47,13 +47,13 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
                 onClick={() => setActiveTab('Summary')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-all duration-200 cursor-pointer ${
                   activeTab === 'Summary'
-                    ? 'bg-background-sidebarActive text-light-100 font-medium shadow-xs'
-                    : 'text-text-sidebar/80 hover:bg-white/5 hover:text-light-100'
+                    ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-xs'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                 }`}
               >
                 <TrendingUp
                   className={`w-4 h-4 shrink-0 ${
-                    activeTab === 'Summary' ? 'text-emerald-400' : 'text-gray-400'
+                    activeTab === 'Summary' ? 'text-emerald-400' : 'text-sidebar-foreground/50'
                   }`}
                 />
                 <span>Summary</span>
@@ -63,18 +63,18 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
 
           {/* CALCULATE Section */}
           <div className="space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50 px-4">
               CALCULATE
             </p>
 
             <div className="px-3 space-y-1.5">
               {loadingScopes ? (
-                <div className="flex items-center gap-2 text-gray-400 py-3 px-3 text-xs">
+                <div className="flex items-center gap-2 text-sidebar-foreground/50 py-3 px-3 text-xs">
                   <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
                   <span>Loading scopes...</span>
                 </div>
               ) : Object.keys(groupedScopes).length === 0 ? (
-                <p className="text-[11px] text-gray-400 italic px-3 py-1">
+                <p className="text-[11px] text-sidebar-foreground/50 italic px-3 py-1">
                   No scope items found.
                 </p>
               ) : (
@@ -85,21 +85,21 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
                       <button
                         type="button"
                         onClick={() => toggleScope(scopeName)}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-text-sidebar/90 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors cursor-pointer"
                       >
                         <span className="flex items-center gap-2">
-                          <Layers className="w-3.5 h-3.5 text-gray-400" />
+                          <Layers className="w-3.5 h-3.5 text-sidebar-foreground/50" />
                           <span>{scopeName}</span>
                         </span>
                         {isOpen ? (
-                          <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+                          <ChevronDown className="w-3.5 h-3.5 text-sidebar-foreground/50" />
                         ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                          <ChevronRight className="w-3.5 h-3.5 text-sidebar-foreground/50" />
                         )}
                       </button>
 
                       {isOpen && (
-                        <div className="ml-5 pl-2.5 border-l border-white/10 space-y-0.5 my-1">
+                        <div className="ml-5 pl-2.5 border-l border-border space-y-0.5 my-1">
                           {items.map((item) => {
                             const isActive = activeTab === item.name;
                             return (
@@ -110,8 +110,8 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
                                 onClick={() => setActiveTab(item.name)}
                                 className={`w-full text-left cursor-pointer px-2.5 py-1.5 rounded-md text-xs transition-all duration-200 truncate block ${
                                   isActive
-                                    ? 'bg-background-sidebarActive text-emerald-400 font-medium'
-                                    : 'text-gray-400 hover:text-light-100 hover:bg-white/5'
+                                    ? 'bg-sidebar-accent text-emerald-400 font-medium'
+                                    : 'text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
                                 }`}
                               >
                                 {item.name}

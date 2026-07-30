@@ -160,7 +160,7 @@ export default function ServiceDetailPage() {
   }, [summaryData]);
 
   return (
-    <div className="w-full h-full min-h-[calc(100vh-120px)] flex bg-[#F4F6F8] font-sans text-neutral-800 overflow-hidden rounded-xl border border-[#E6E8EB]">
+    <div className="w-full h-full min-h-[calc(100vh-120px)] flex bg-muted/50 font-sans text-foreground overflow-hidden rounded-xl border-border">
       {/* ─── Inner Module Left Sidebar ───────────────────────────────────── */}
       <ServiceSidebar
         currentConfig={currentConfig}

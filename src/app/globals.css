@@ -4,221 +4,162 @@
 @custom-variant dark (&:is(.dark *));
 @config "../../tailwind.config.ts";
 
-.scrollBar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.scrollBar::-webkit-scrollbar-track {
-  background: none;
-}
-.scrollBar::-webkit-scrollbar-thumb {
-  background-color: #D9E5F2;
-  border-radius: 0.75rem;
-}
-
 @layer base {
-  @layer utilities {
-    input:-webkit-autofill {
-      box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
+  * {
+    @apply border-border;
   }
 
-  h1 {
-    font-size: var(--font-heading-1);
-    font-weight: var(--font-weight-bold);
-  }
-
-  h2 {
-    font-size: var(--font-heading-2);
-    font-weight: var(--font-weight-bold);
-  }
-
-  h3 {
-    font-size: var(--font-heading-3);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  h4 {
-    font-size: var(--font-heading-4);
-    font-weight: var(--font-weight-medium);
-  }
-
-  h5 {
-    font-size: var(--font-heading-5);
-    font-weight: var(--font-weight-medium);
-  }
-
-  h6 {
-    font-size: var(--font-small);
-    font-weight: var(--font-weight-regular);
-  }
-
-  .tabs-trigger {
-    @apply relative px-4 py-2 text-gray-500 font-medium transition-all hover:text-gray-700 data-[state=active]:font-semibold outline-none;
-  }
-
-  /* Use the new variable */
-  .tabs-trigger::after {
-    content: "";
-    @apply absolute bottom-[-2px] left-0 w-full h-[3px] scale-x-0 transition-transform data-[state=active]:scale-x-100;
-    background-color: var(--color-tab-border);
-  }
-
-  /* Base Styles */
   body {
-    font-family: 'Inter-Regular', Helvetica, sans-serif;
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* For Firefox */
+  ::selection {
+    @apply bg-primary/20 text-primary-900;
+  }
+
+  input:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px var(--background) inset !important;
+    -webkit-text-fill-color: var(--foreground) !important;
+  }
+
+  h1 { @apply text-3xl font-bold tracking-tight; }
+  h2 { @apply text-2xl font-bold tracking-tight; }
+  h3 { @apply text-xl font-semibold tracking-tight; }
+  h4 { @apply text-lg font-medium; }
+  h5 { @apply text-base font-medium; }
+  h6 { @apply text-sm font-medium; }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: var(--neutral-300) transparent;
+  }
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: var(--neutral-300);
+    border-radius: 999px;
+  }
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background-color: var(--neutral-400);
+  }
+
   .scrollbar-hidden {
     scrollbar-width: none;
   }
-
-  /* For Chrome, Safari, and Opera */
   .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
 
-  /* Typography Classes */
-  .h1 {
-    @apply text-[var(--font-heading-1)] font-bold leading-tight;
-  }
-
-  .h2 {
-    @apply text-[var(--font-heading-2)] font-bold leading-tight;
-  }
-
-  .h3 {
-    @apply text-[var(--font-heading-3)] font-bold leading-tight;
-  }
-
-  .h4 {
-    @apply text-[var(--font-heading-4)] font-medium leading-snug;
-  }
-
-  .h5 {
-    @apply text-[var(--font-heading-5)] font-medium leading-snug;
-  }
-
-  .body {
-    @apply text-[var(--font-paragraph)] leading-normal;
-  }
-
-  .small {
-    @apply text-[var(--font-small)] leading-normal;
-  }
-
-  .xs {
-    @apply text-[var(--font-xs)] leading-normal;
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
-:root {
-  --sidebar: #201E61;
-  --sidebar-foreground: #E8E8E8;
-  --sidebar-primary: #3C389D;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #3C389D;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #00C9A7;
+@utility page-container {
+  @apply p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full;
 }
 
-.dark {
-  --sidebar: #201E61;
-  --sidebar-foreground: #E8E8E8;
-  --sidebar-primary: #3C389D;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #3C389D;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #00C9A7;
+@utility page-header {
+  @apply flex items-center justify-between gap-4 mb-6 flex-wrap;
 }
 
-@theme inline {
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+@utility page-title {
+  @apply text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100;
 }
 
-/* ─── Design System Utility Classes ────────────────────────────────────────── */
-/* Use these shared classes on every page to guarantee visual consistency.      */
+@utility page-description {
+  @apply text-sm text-neutral-500 mt-1;
+}
 
-@layer components {
-  /* Base card — white surface, border, subtle shadow */
-  .card-base {
-    @apply bg-background border border-border rounded-2xl shadow-xs;
-  }
+@utility card-base {
+  @apply bg-surface-card border border-border rounded-xl shadow-xs;
+}
 
-  /* Page content wrapper — consistent inner bg + padding */
-  .page-content {
-    @apply bg-background-inner min-h-full;
-  }
+@utility card-hover {
+  @apply bg-surface-card border border-border rounded-xl shadow-xs transition-shadow hover:shadow-md;
+}
 
-  /* Page title text */
-  .page-title {
-    @apply text-2xl font-bold text-header-primary tracking-tight;
-  }
+@utility section-title {
+  @apply text-sm font-semibold text-neutral-700 dark:text-neutral-300;
+}
 
-  /* Section / card title */
-  .section-title {
-    @apply text-sm font-bold text-header-primary;
-  }
+@utility kpi-label {
+  @apply text-xs font-medium text-neutral-500 uppercase tracking-wider;
+}
 
-  /* KPI metric label (all-caps, small) */
-  .kpi-label {
-    @apply text-[11px] font-bold text-header-secondary uppercase tracking-wider;
-  }
+@utility kpi-value {
+  @apply text-2xl font-bold text-neutral-900 dark:text-neutral-100;
+}
 
-  /* KPI metric value */
-  .kpi-value {
-    @apply text-xl font-bold text-header-primary;
-  }
+@utility stat-icon {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0;
+}
 
-  /* Icon container for stat/kpi icons — inline shared properties on each variant */
-  .stat-icon-primary {
-    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary;
-  }
-  .stat-icon-positive {
-    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-positive-50 text-positive-600;
-  }
-  .stat-icon-negative {
-    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-negative-50 text-negative-500;
-  }
-  .stat-icon-warning {
-    @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-warning-50 text-warning-700;
-  }
+@utility stat-icon-primary {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary-50 text-primary-600 dark:bg-primary-100/20 dark:text-primary-400;
+}
 
-  /* Status badge variants */
-  .status-badge-positive {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-positive-100 text-positive-700;
-  }
-  .status-badge-negative {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-negative-50 text-negative-500;
-  }
-  .status-badge-warning {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-warning-100 text-warning-700;
-  }
+@utility stat-icon-positive {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-positive-50 text-positive-600 dark:bg-positive-100/20 dark:text-positive-400;
+}
 
-  /* Standard page/section header controls row */
-  .page-header-bar {
-    @apply flex items-center justify-between gap-4 flex-wrap;
-  }
+@utility stat-icon-negative {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-negative-50 text-negative-600 dark:bg-negative-100/20 dark:text-negative-400;
+}
 
-  /* Muted body text */
-  .text-muted-body {
-    @apply text-sm text-header-secondary;
-  }
-  .text-muted-xs {
-    @apply text-xs text-header-secondary;
-  }
+@utility stat-icon-warning {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-warning-50 text-warning-600 dark:bg-warning-100/20 dark:text-warning-400;
+}
+
+@utility status-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider;
+}
+
+@utility status-badge-positive {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-positive-50 text-positive-700 dark:bg-positive-100/20 dark:text-positive-400;
+}
+
+@utility status-badge-negative {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-negative-50 text-negative-700 dark:bg-negative-100/20 dark:text-negative-400;
+}
+
+@utility status-badge-warning {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-warning-50 text-warning-700 dark:bg-warning-100/20 dark:text-warning-400;
+}
+
+@utility status-badge-neutral {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400;
+}
+
+@utility text-muted {
+  @apply text-sm text-neutral-500;
+}
+
+@utility text-muted-xs {
+  @apply text-xs text-neutral-500;
+}
+
+@utility link {
+  @apply text-primary hover:text-primary-700 underline-offset-4 hover:underline transition-colors cursor-pointer;
+}
+
+@utility tab-underline {
+  @apply relative flex items-center gap-2 px-4 py-3.5 text-xs font-bold rounded-none text-muted-foreground bg-transparent border-0 shadow-none hover:text-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-foreground after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors cursor-pointer;
+}
+
+@utility tab-badge {
+  @apply ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-bold;
 }

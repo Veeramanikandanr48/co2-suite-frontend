@@ -1,6 +1,8 @@
 ﻿"use client"
 import type React from "react"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/context/auth-provider"
 import { useRouter } from "next/navigation"
 import Header from "./header"
@@ -15,6 +17,7 @@ interface ProtectedLayoutProps {
 const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
   const { user, isLoading } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
@@ -25,7 +28,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-background">
         <Loader />
       </div>
     )
@@ -36,29 +39,38 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="w-full h-screen flex bg-background-sidebar overflow-hidden">
-      {/* Desktop Sidebar Container */}
+    <div className="w-full h-screen flex bg-background overflow-hidden">
+      {/* Desktop Sidebar */}
       <div className="hidden md:block h-full shrink-0">
         <Sidebar />
       </div>
 
-      {/* Mobile Drawer Sidebar */}
+      {/* Mobile Drawer */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="p-0 border-r-0 bg-background-sidebar w-[260px] text-white overflow-hidden z-50">
+        <SheetContent side="left" className="p-0 border-r-0 w-[280px] overflow-hidden">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
-          <div className="h-full w-full">
-            <Sidebar />
-          </div>
+          <Sidebar />
         </SheetContent>
       </Sheet>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full">
-        <main className="flex-1 bg-white flex flex-col overflow-hidden shadow-xs">
-          <Header onOpenMobileSidebar={() => setMobileOpen(true)} />
-          <div className="flex-1 overflow-auto">{children}</div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-surface-subtle">
+        <Header onOpenMobileSidebar={() => setMobileOpen(true)} />
+        <main className="flex-1 overflow-auto scrollbar-custom">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="min-h-full"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

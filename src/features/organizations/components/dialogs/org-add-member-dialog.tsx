@@ -57,7 +57,7 @@ export function OrgAddMemberDialog({
         <form onSubmit={onAddMember} className="space-y-3.5 pt-2">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 First Name *
               </Label>
               <Input
@@ -69,7 +69,7 @@ export function OrgAddMemberDialog({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 Last Name
               </Label>
               <Input
@@ -82,7 +82,7 @@ export function OrgAddMemberDialog({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Username *
             </Label>
             <Input

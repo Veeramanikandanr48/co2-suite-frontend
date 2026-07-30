@@ -2,12 +2,14 @@
 
 import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/context/auth-provider';
 import { MasterRole } from '@/types/enums';
 import { useFetchList } from '@/hooks/use-fetch-list';
-import { Users, MapPin, FileText, Share2 } from 'lucide-react';
+import { Users, MapPin, FileText, Share2, Building2 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { showErrorToast } from '@/components/shared/toast-variant';
+import { PageHeader } from '@/components/shared';
 
 // Modularized Organization Components
 import { OrgHeader } from '@/features/organizations/components/org-header';
@@ -116,7 +118,12 @@ export default function OrganizationDetailsPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#F8F9FA]">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="page-container"
+    >
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         <Tabs defaultValue="overview" className="flex-1 flex flex-col min-h-0">
           <OrgHeader
@@ -133,11 +140,11 @@ export default function OrganizationDetailsPage() {
             onBack={() => router.push('/organizations')}
           />
 
-          <div className="shrink-0 bg-white border-b border-[#E2E8F0] px-8">
+          <div className="shrink-0 bg-card border-b border-border px-8">
             <TabsList className="bg-transparent border-0 p-0 h-auto gap-1 rounded-none">
               <TabsTrigger
                 value="overview"
-                className="relative flex items-center gap-2 px-4 py-3.5 text-xs font-bold rounded-none text-[#64748B] bg-transparent border-0 shadow-none hover:text-[#4355F5] data-[state=active]:text-[#4355F5] data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-[#4355F5] after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors cursor-pointer"
+                className="tab-underline"
               >
                 <FileText className="w-4 h-4" />
                 Overview
@@ -145,36 +152,30 @@ export default function OrganizationDetailsPage() {
               {canEdit && (
                 <TabsTrigger
                   value="members"
-                  className="relative flex items-center gap-2 px-4 py-3.5 text-xs font-bold rounded-none text-[#64748B] bg-transparent border-0 shadow-none hover:text-[#4355F5] data-[state=active]:text-[#4355F5] data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-[#4355F5] after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors cursor-pointer"
+                  className="tab-underline"
                 >
                   <Users className="w-4 h-4" />
                   Members
-                  <span className="ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-[#EEF4FF] text-[#4355F5] text-[11px] font-bold">
-                    {userTotalCount}
-                  </span>
+                  <span className="tab-badge">{userTotalCount}</span>
                 </TabsTrigger>
               )}
               <TabsTrigger
                 value="services"
                 onClick={() => { if (orgServices.length === 0 && allServices.length === 0) fetchOrgServices(); }}
-                className="relative flex items-center gap-2 px-4 py-3.5 text-xs font-bold rounded-none text-[#64748B] bg-transparent border-0 shadow-none hover:text-[#4355F5] data-[state=active]:text-[#4355F5] data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-[#4355F5] after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors cursor-pointer"
+                className="tab-underline"
               >
                 <Share2 className="w-4 h-4" />
                 Services
-                <span className="ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-[#EEF4FF] text-[#4355F5] text-[11px] font-bold">
-                  {subscribedServiceIds.size}
-                </span>
+                <span className="tab-badge">{subscribedServiceIds.size}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="facilities"
                 onClick={fetchOrgFacilities}
-                className="relative flex items-center gap-2 px-4 py-3.5 text-xs font-bold rounded-none text-[#64748B] bg-transparent border-0 shadow-none hover:text-[#4355F5] data-[state=active]:text-[#4355F5] data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-[#4355F5] after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform transition-colors cursor-pointer"
+                className="tab-underline"
               >
                 <MapPin className="w-4 h-4" />
                 Facility Sites
-                <span className="ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-[#EEF4FF] text-[#4355F5] text-[11px] font-bold">
-                  {facilities.length}
-                </span>
+                <span className="tab-badge">{facilities.length}</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -265,6 +266,6 @@ export default function OrganizationDetailsPage() {
         setDeletingFacility={setDeletingFacility}
         onDeleteFacilityConfirm={handleDeleteFacilityConfirm}
       />
-    </div>
+    </motion.div>
   );
 }

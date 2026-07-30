@@ -1,27 +1,22 @@
 ﻿import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-
 import { cn } from "@/lib/utils/utils"
 
 const buttonVariants = cva(
-  "inline-flex text-sm font-bold items-center justify-center gap-2 whitespace-nowrap rounded-[6px] transition-[color,box-shadow] disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex text-sm font-medium items-center justify-center gap-2 whitespace-nowrap rounded-lg transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/80",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/80",
         outline:
-          "border border-button-outline bg-button-background text-button-primary shadow-xs",
-        "outline-primary": 
-          "border border-primary text-primary shadow-xs hover:bg-primary/10",
-        "outline-destructive": 
-          "border border-destructive text-destructive shadow-xs hover:bg-destructive/10",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:bg-secondary/70",
+        ghost: "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

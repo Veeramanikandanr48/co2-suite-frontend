@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useFetchList } from '@/hooks/use-fetch-list';
 import { ReusableTable } from '@/components/shared/table/reusable-table';
 import { API_LIST } from '@/lib/api/endpoints';
@@ -197,10 +198,15 @@ export function EmissionFactorsView() {
   );
 
   return (
-    <div className="p-4 md:p-6 space-y-4 w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="page-container"
+    >
       <EmissionFactorsMetrics metrics={metrics} onOpenCreateModal={handleOpenCreateModal} />
 
-      <div className="bg-white border border-neutral-200 rounded-xl p-3.5 shadow-xs space-y-3">
+      <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs space-y-3">
         <EmissionFactorsToolbar
           searchInput={searchInput}
           setSearch={setSearch}
@@ -231,6 +237,6 @@ export function EmissionFactorsView() {
         submitting={submitting}
         handleSubmitForm={handleSubmitForm}
       />
-    </div>
+    </motion.div>
   );
 }

@@ -10,15 +10,15 @@ interface SummaryCategoryBreakdownProps {
 
 export function SummaryCategoryBreakdown({ summaryData }: SummaryCategoryBreakdownProps) {
   return (
-    <div className="bg-white rounded-2xl border border-[#E6E8EB] p-5 shadow-xs space-y-3">
-      <div className="flex items-center justify-between pb-3 border-b border-[#F0F2F5]">
+    <div className="bg-card rounded-2xl border border-border p-5 shadow-xs space-y-3">
+      <div className="flex items-center justify-between pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-emerald-600" />
-          <h3 className="text-sm font-bold text-neutral-800">
+          <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-foreground">
             Emissions Breakdown by Activity Category (Database)
           </h3>
         </div>
-        <span className="text-xs font-semibold text-neutral-500">
+        <span className="text-xs font-semibold text-muted-foreground">
           {summaryData?.emissionsByCategory?.length || 0} Active Categories
         </span>
       </div>
@@ -31,33 +31,33 @@ export function SummaryCategoryBreakdown({ summaryData }: SummaryCategoryBreakdo
             return (
               <div
                 key={idx}
-                className="p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E6E8EB] hover:border-neutral-300 transition-all flex flex-col justify-between space-y-2"
+                className="p-3.5 bg-muted rounded-xl border border-border hover:border-muted-foreground/30 transition-all flex flex-col justify-between space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <span
                     className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
                       isScope1
-                        ? 'bg-amber-100 text-amber-800'
+                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400'
                         : isScope2
-                        ? 'bg-sky-100 text-sky-800'
-                        : 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-800 dark:text-sky-400'
+                        : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400'
                     }`}
                   >
                     {cat.scope}
                   </span>
-                  <span className="text-xs font-black text-neutral-800">{cat.emission} t CO₂-e</span>
+                  <span className="text-xs font-black text-foreground">{cat.emission} t CO₂-e</span>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-neutral-800 truncate" title={cat.category}>
+                  <p className="text-xs font-bold text-foreground truncate" title={cat.category}>
                     {cat.category}
                   </p>
-                  <p className="text-[10px] text-neutral-400 font-medium">
+                  <p className="text-[10px] text-muted-foreground font-medium">
                     {cat.count} entry record{cat.count > 1 ? 's' : ''} ({cat.percentage}% of total)
                   </p>
                 </div>
 
-                <div className="w-full h-1.5 bg-[#E6E8EB] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-border rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${
                       isScope1 ? 'bg-amber-500' : isScope2 ? 'bg-sky-500' : 'bg-emerald-600'
@@ -69,7 +69,7 @@ export function SummaryCategoryBreakdown({ summaryData }: SummaryCategoryBreakdo
             );
           })
         ) : (
-          <div className="col-span-full py-6 text-center text-xs text-neutral-400">
+          <div className="col-span-full py-6 text-center text-xs text-muted-foreground">
             No category data recorded in database.
           </div>
         )}

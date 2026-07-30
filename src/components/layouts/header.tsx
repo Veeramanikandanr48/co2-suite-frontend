@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/auth-provider";
 import {
   DropdownMenu,
@@ -24,20 +25,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
-import { Badge } from "../ui/badge";
-import { Input } from "../ui/input";
 import {
-  CircleUserRound,
-  LogOut,
-  User as UserIcon,
-  Settings,
   Bell,
   Search,
+  Menu,
   CheckCheck,
   AlertCircle,
   CheckCircle2,
   Info,
-  Menu,
+  CircleUserRound,
+  LogOut,
+  User,
+  Settings,
+  X,
+  Command,
 } from "lucide-react";
 
 interface NotificationItem {
@@ -52,7 +53,7 @@ interface NotificationItem {
 const initialNotifications: NotificationItem[] = [
   {
     id: "1",
-    title: "CO2 Emission Threshold Alert",
+    title: "Emission Threshold Alert",
     description: "Facility #3 exceeded monthly target by 4.2%",
     time: "10m ago",
     type: "alert",
@@ -68,7 +69,7 @@ const initialNotifications: NotificationItem[] = [
   },
   {
     id: "3",
-    title: "System Maintenance Scheduled",
+    title: "System Maintenance",
     description: "Scheduled upgrade on Sunday at 02:00 UTC.",
     time: "3h ago",
     type: "info",
@@ -80,13 +81,26 @@ interface HeaderProps {
   onOpenMobileSidebar?: () => void;
 }
 
+const notificationIcons = {
+  alert: AlertCircle,
+  success: CheckCircle2,
+  info: Info,
+};
+
+const notificationColors = {
+  alert: "text-warning-500",
+  success: "text-positive-500",
+  info: "text-primary",
+};
+
 export default function Header({ onOpenMobileSidebar }: HeaderProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const displayName: string = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
+  const displayName = user ? `${user.firstName} ${user.lastName ?? ''}`.trim() : '';
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAllAsRead = () => {
@@ -96,21 +110,21 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <header className="w-full min-h-[52px] flex items-center justify-between py-2 px-3 sm:px-6 border-b border-border shadow-[0px_2px_6px_0px_rgba(0,0,0,0.03)] z-10 bg-background gap-3 sm:gap-4">
-      {/* Left side: Mobile Menu Toggle & Breadcrumb Navigation */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+    <header className="sticky top-0 z-20 w-full h-header bg-header border-b border-header-border flex items-center justify-between px-4 lg:px-6 gap-4">
+      {/* Left */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
           onClick={onOpenMobileSidebar}
-          className="p-1.5 rounded-lg hover:bg-background-inner transition-colors md:hidden text-header-primary outline-none cursor-pointer shrink-0"
+          className="p-2 rounded-lg hover:bg-muted transition-colors md:hidden text-foreground outline-none cursor-pointer shrink-0"
           aria-label="Open menu"
         >
-          <Menu className="w-5 h-5 text-header-primary" />
+          <Menu className="w-5 h-5" />
         </button>
 
         <Breadcrumb className="hidden sm:flex min-w-0">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-header-secondary hover:text-header-primary font-medium text-xs sm:text-sm">
+              <BreadcrumbLink href="/dashboard" className="text-sm text-neutral-500 hover:text-foreground transition-colors">
                 Home
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -121,14 +135,14 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
 
               return (
                 <React.Fragment key={href}>
-                  <BreadcrumbSeparator />
+                  <BreadcrumbSeparator className="text-neutral-300" />
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className="font-semibold text-header-primary capitalize text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
+                      <BreadcrumbPage className="text-sm font-semibold text-foreground capitalize truncate max-w-[160px]">
                         {title}
                       </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={href} className="text-header-secondary hover:text-header-primary capitalize font-medium text-xs sm:text-sm truncate">
+                      <BreadcrumbLink href={href} className="text-sm text-neutral-500 hover:text-foreground capitalize transition-colors truncate">
                         {title}
                       </BreadcrumbLink>
                     )}
@@ -140,132 +154,121 @@ export default function Header({ onOpenMobileSidebar }: HeaderProps) {
         </Breadcrumb>
       </div>
 
-      {/* Right side: Search, Notifications Popover, User Dropdown Menu */}
-      <div className="flex items-center gap-3">
-        {/* Search Bar */}
-        <div className="relative hidden md:flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-header-secondary pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Search parameters, data..."
-            className="pl-9 pr-12 h-9 w-64 bg-background-inner border-border text-xs rounded-lg focus-visible:ring-1 focus-visible:ring-primary"
-          />
-          <kbd className="absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono text-header-secondary bg-background border border-border rounded shadow-2xs pointer-events-none">
-            ⌘K
+      {/* Right */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        {/* Search */}
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="hidden md:flex items-center gap-2 h-9 px-3 rounded-lg bg-muted/60 border border-border text-sm text-neutral-500 hover:text-foreground hover:border-neutral-300 transition-colors cursor-pointer outline-none min-w-[200px]"
+        >
+          <Search className="w-4 h-4 shrink-0" />
+          <span className="flex-1 text-left">Search...</span>
+          <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-neutral-400 bg-background border border-border rounded">
+            <Command className="w-2.5 h-2.5" />K
           </kbd>
-        </div>
+        </button>
 
-        {/* Notifications Popover */}
+        {/* Notifications */}
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="relative p-2 rounded-lg hover:bg-background-inner transition-colors text-header-secondary outline-none cursor-pointer"
+              className="relative p-2 rounded-lg hover:bg-muted transition-colors text-neutral-500 hover:text-foreground outline-none cursor-pointer"
               aria-label="Notifications"
             >
-              <Bell className="w-5 h-5 text-header-secondary" />
+              <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-negative-300 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-negative-500 border border-background"></span>
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-negative-500 animate-ping-slow opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-negative-500" />
                 </span>
               )}
             </button>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-background shadow-xl rounded-xl border border-border z-50">
+          <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-surface-overlay border-border shadow-xl rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-semibold text-header-primary">Notifications</h4>
+                <h4 className="text-sm font-semibold text-foreground">Notifications</h4>
                 {unreadCount > 0 && (
-                  <Badge variant="secondary" className="bg-negative-50 text-negative-500 font-semibold text-[11px] px-1.5 py-0.2">
-                    {unreadCount} new
-                  </Badge>
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-negative-50 text-negative-600">
+                    {unreadCount}
+                  </span>
                 )}
               </div>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="flex items-center gap-1 text-xs text-primary font-medium hover:underline cursor-pointer"
+                  className="flex items-center gap-1 text-xs text-primary hover:text-primary-700 transition-colors cursor-pointer font-medium"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
-                  Mark all read
+                  Mark read
                 </button>
               )}
             </div>
 
-            <div className="max-h-72 overflow-y-auto divide-y divide-border">
-              {notifications.map((item) => (
-                <div
-                  key={item.id}
-                  className={`p-3.5 flex gap-3 transition-colors ${
-                    !item.read ? "bg-primary/5" : "hover:bg-background-inner/60"
-                  }`}
-                >
-                  <div className="mt-0.5 shrink-0">
-                    {item.type === "alert" && <AlertCircle className="w-4 h-4 text-warning-600" />}
-                    {item.type === "success" && <CheckCircle2 className="w-4 h-4 text-positive-500" />}
-                    {item.type === "info" && <Info className="w-4 h-4 text-primary" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className={`text-xs ${!item.read ? "font-semibold text-header-primary" : "font-medium text-header-secondary"} truncate`}>
-                        {item.title}
-                      </p>
-                      <span className="text-[10px] text-neutral-950 whitespace-nowrap">{item.time}</span>
+            <div className="max-h-80 overflow-y-auto divide-y divide-border">
+              {notifications.map((item) => {
+                const Icon = notificationIcons[item.type];
+                return (
+                  <div
+                    key={item.id}
+                    className={`px-4 py-3 flex gap-3 transition-colors cursor-pointer ${
+                      !item.read ? "bg-primary-50/50 dark:bg-primary-50/5" : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="mt-0.5 shrink-0">
+                      <Icon className={`w-4 h-4 ${notificationColors[item.type]}`} />
                     </div>
-                    <p className="text-xs text-header-secondary mt-0.5 line-clamp-2 leading-relaxed">{item.description}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className={`text-xs ${!item.read ? "font-semibold text-foreground" : "font-medium text-neutral-700 dark:text-neutral-300"} truncate`}>
+                          {item.title}
+                        </p>
+                        <span className="text-[10px] text-neutral-400 whitespace-nowrap">{item.time}</span>
+                      </div>
+                      <p className="text-xs text-neutral-500 mt-0.5 line-clamp-2 leading-relaxed">{item.description}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <div className="p-2 border-t border-border text-center bg-background-inner/50 rounded-b-xl">
-              <button className="text-xs font-medium text-header-secondary hover:text-header-primary transition-colors cursor-pointer py-1">
+            <div className="p-2 border-t border-border text-center bg-muted/30">
+              <button className="text-xs font-medium text-neutral-500 hover:text-foreground transition-colors cursor-pointer py-1">
                 View all notifications
               </button>
             </div>
           </PopoverContent>
         </Popover>
 
-        {/* User Profile Dropdown Menu */}
+        {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 p-1 rounded-lg hover:bg-background-inner transition-colors cursor-pointer outline-none">
-              <div className="w-8 h-8 rounded-full bg-background-sidebarActive border border-profile-border flex items-center justify-center">
-                <CircleUserRound className="w-5 h-5 text-text-sidebar" />
+            <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors cursor-pointer outline-none">
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <CircleUserRound className="w-4 h-4 text-primary" />
               </div>
-              <span className="hidden sm:inline-block text-xs font-medium text-header-secondary capitalize max-w-[100px] truncate">
+              <span className="hidden lg:inline-block text-sm font-medium text-foreground capitalize max-w-[100px] truncate">
                 {displayName || "User"}
               </span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="end" className="w-56 mt-1 bg-background shadow-xl rounded-xl border border-border p-1 z-50">
-            <DropdownMenuLabel className="font-normal p-2">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none text-header-primary capitalize">{displayName || "User"}</p>
-                <p className="text-xs leading-none text-header-secondary">{user?.email || "admin@co2suite.com"}</p>
-              </div>
+          <DropdownMenuContent side="bottom" align="end" className="w-56 mt-1 bg-surface-overlay border-border shadow-xl rounded-xl p-1.5">
+            <DropdownMenuLabel className="px-2 py-1.5">
+              <p className="text-sm font-medium text-foreground capitalize">{displayName || "User"}</p>
+              <p className="text-xs text-neutral-500">{user?.email || "admin@co2suite.com"}</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1 bg-border" />
-            <DropdownMenuItem
-              onClick={() => router.push('/profile')}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer"
-            >
-              <UserIcon className="w-4 h-4 text-neutral-950" />
+            <DropdownMenuItem onClick={() => router.push('/profile')} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer">
+              <User className="w-4 h-4 text-neutral-500" />
               <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => router.push('/settings')}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-header-secondary hover:bg-background-inner rounded-lg cursor-pointer"
-            >
-              <Settings className="w-4 h-4 text-neutral-950" />
+            <DropdownMenuItem onClick={() => router.push('/settings')} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer">
+              <Settings className="w-4 h-4 text-neutral-500" />
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="my-1 bg-border" />
-            <DropdownMenuItem
-              onClick={() => logout()}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-negative-500 hover:bg-negative-50 focus:bg-negative-50 rounded-lg cursor-pointer font-medium"
-            >
-              <LogOut className="w-4 h-4 text-negative-500" />
+            <DropdownMenuItem onClick={() => logout()} className="flex items-center gap-2 px-3 py-2 text-sm text-negative-600 rounded-lg cursor-pointer font-medium">
+              <LogOut className="w-4 h-4" />
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

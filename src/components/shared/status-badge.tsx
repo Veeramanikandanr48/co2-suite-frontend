@@ -13,7 +13,7 @@ export function StatusBadge({
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap leading-none bg-neutral-100 text-neutral-900 border border-neutral-300 ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap leading-none bg-muted text-foreground border-border ${className}`}
     >
       {displayLabel}
     </span>

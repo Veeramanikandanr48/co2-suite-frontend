@@ -47,14 +47,14 @@ export function OrgDialogs({
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-rose-600">
+            <DialogTitle className="text-base font-bold text-destructive">
               Deactivate Organization
             </DialogTitle>
-            <DialogDescription className="text-xs text-neutral-500 mt-1">
+            <DialogDescription className="text-xs text-muted-foreground mt-1">
               Are you sure you want to deactivate <strong>{orgName}</strong>? All members under this organization will lose access to its services.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="pt-4 border-t border-neutral-100 flex items-center justify-end gap-2">
+          <DialogFooter className="pt-4 border-t border-border flex items-center justify-end gap-2">
             <Button
               type="button"
               variant="outline"
