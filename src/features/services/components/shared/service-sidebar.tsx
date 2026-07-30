@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   ChevronDown,
   ChevronRight,
@@ -9,21 +10,25 @@ import {
   Layers,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ServiceScopeItem } from '@/types/services';
 import { ServiceSidebarProps } from '@/types/components/services.types';
 
 export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
   currentConfig,
-  activeTab,
-  setActiveTab,
   loadingScopes,
   groupedScopes,
   openScopes,
   toggleScope,
 }) => {
+  const pathname = usePathname();
+  const router = useRouter();
+  const code = pathname.split('/')[2];
+
+  const isActive = (path: string) => pathname === path;
+
+  const navigate = (path: string) => router.push(path);
+
   return (
-    <aside className="w-64 bg-sidebar border-r border-border flex flex-col shrink-0 h-full overflow-hidden shadow-sm">
-      {/* Module Title Header */}
+    <aside className="w-64 bg-sidebar border-r border-border flex flex-col shrink-0 h-full overflow-hidden shadow-none rounded-none">
       <div className="px-4 pt-4 pb-2 border-b border-border/40">
         <h2 className="text-sm font-semibold text-sidebar-foreground truncate">
           {currentConfig.name}
@@ -33,10 +38,8 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
         </p>
       </div>
 
-      {/* Navigation Sections in ScrollArea */}
       <ScrollArea className="flex-1">
         <div className="py-2 space-y-5">
-          {/* START Section */}
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50 px-4">
               START
@@ -44,16 +47,16 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
             <div className="px-3">
               <button
                 type="button"
-                onClick={() => setActiveTab('Summary')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-all duration-200 cursor-pointer ${
-                  activeTab === 'Summary'
+                onClick={() => navigate(`/services/${code}/summary`)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors duration-150 cursor-pointer ${
+                  isActive(`/services/${code}/summary`)
                     ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-xs'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                 }`}
               >
                 <TrendingUp
                   className={`w-4 h-4 shrink-0 ${
-                    activeTab === 'Summary' ? 'text-emerald-400' : 'text-sidebar-foreground/50'
+                    isActive(`/services/${code}/summary`) ? 'text-emerald-400' : 'text-sidebar-foreground/50'
                   }`}
                 />
                 <span>Summary</span>
@@ -61,7 +64,6 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
             </div>
           </div>
 
-          {/* CALCULATE Section */}
           <div className="space-y-2">
             <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50 px-4">
               CALCULATE
@@ -101,15 +103,15 @@ export const ServiceSidebar: React.FC<ServiceSidebarProps> = ({
                       {isOpen && (
                         <div className="ml-5 pl-2.5 border-l border-border space-y-0.5 my-1">
                           {items.map((item) => {
-                            const isActive = activeTab === item.name;
+                            const scopePath = `/services/${code}/scope/${encodeURIComponent(item.name)}`;
                             return (
                               <button
                                 key={item.id}
                                 type="button"
                                 title={item.description || item.name}
-                                onClick={() => setActiveTab(item.name)}
-                                className={`w-full text-left cursor-pointer px-2.5 py-1.5 rounded-md text-xs transition-all duration-200 truncate block ${
-                                  isActive
+                                onClick={() => navigate(scopePath)}
+                                className={`w-full text-left cursor-pointer px-2.5 py-1.5 rounded-md text-xs transition-colors duration-150 truncate block ${
+                                  isActive(scopePath)
                                     ? 'bg-sidebar-accent text-emerald-400 font-medium'
                                     : 'text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
                                 }`}

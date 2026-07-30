@@ -97,24 +97,24 @@ export function EditInventoryModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-[#E6E8EB] shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#F0F2F5]">
+      <div className="bg-card rounded-2xl border border-border shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-[#ECFDF5] text-[#059669] rounded-lg border border-[#A7F3D0]">
+            <div className="p-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-800">
               <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-neutral-800 tracking-tight">
+              <h3 className="text-sm font-extrabold text-foreground tracking-tight">
                 Edit Inventory Entry #{item.id}
               </h3>
-              <p className="text-[11px] text-neutral-400 font-medium">
+              <p className="text-[11px] text-muted-foreground font-medium">
                 Category: {item.category || 'Scope Data'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer"
+            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-accent transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -148,18 +148,18 @@ export function EditInventoryModal({
             setProofFile={setProofFile}
           />
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#F0F2F5]">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+              className="px-4 py-2 bg-muted hover:bg-accent text-foreground font-bold text-xs rounded-xl transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               Save Changes

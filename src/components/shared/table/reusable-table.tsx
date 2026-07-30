@@ -98,20 +98,20 @@ export function ReusableTable<T extends { id: string | number }>({
     return (
         <div 
             ref={setContainer}
-            className="w-full overflow-auto rounded-xl border border-neutral-200 shadow-xs [scrollbar-width:thin] [scrollbar-color:#94a3b8_#f1f5f9] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-emerald-600"
+            className="w-full overflow-auto rounded-xl border border-border shadow-xs scrollbar-custom"
             style={containerStyle}
         >
             <Table className="w-full text-left border-collapse text-xs min-w-full">
-                <TableHeader className="sticky top-0 z-10 bg-neutral-100 shadow-xs">
+                <TableHeader className="sticky top-0 z-10 bg-muted/60 shadow-xs">
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow 
                             key={headerGroup.id} 
-                            className="h-9 bg-neutral-100 border-b border-neutral-200"
+                            className="h-10 bg-muted/60 border-b border-border"
                         >
                             {headerGroup.headers.map(header => (
                                 <TableHead 
                                     key={header.id} 
-                                    className="sticky top-0 z-10 bg-neutral-100 px-2 py-1.5 text-[11px] font-bold text-neutral-600 uppercase tracking-wider whitespace-nowrap"
+                                    className="sticky top-0 z-10 bg-muted/60 px-4 py-2.5 text-[11px] font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap"
                                     style={{ 
                                         width: header.column.getSize() ? `${header.column.getSize()}px` : undefined,
                                     }}
@@ -126,9 +126,9 @@ export function ReusableTable<T extends { id: string | number }>({
                     {table.getRowModel().rows.map((row, index) => (
                         <TableRow 
                             key={row.id} 
-                            className={`${rowHeight} border-b border-neutral-100 ${
-                                index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
-                            } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-emerald-50/30 transition-colors`}
+                            className={`${rowHeight} border-b border-border/50 ${
+                                index % 2 === 0 ? 'bg-card' : 'bg-muted/20'
+                            } ${onRowClick ? 'cursor-pointer' : ''} hover:bg-muted/50 transition-colors`}
                             onClick={() => onRowClick && handleRowClick(row.original.id)}
                         >
                             {row.getVisibleCells().map(cell => (
@@ -136,8 +136,8 @@ export function ReusableTable<T extends { id: string | number }>({
                                     key={cell.id} 
                                     className={`${
                                         cell.column.id === 'actions' 
-                                            ? 'py-1 px-2 h-full' 
-                                            : 'py-1.5 px-2 gap-1.5 text-xs whitespace-nowrap'
+                                            ? 'py-2 px-4 h-full' 
+                                            : 'py-2.5 px-4 gap-2 text-xs whitespace-nowrap'
                                     }`}
                                     style={{ 
                                         width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,

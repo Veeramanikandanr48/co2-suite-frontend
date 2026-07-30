@@ -20,15 +20,18 @@ export function Scope1EntryFormFields({
   setDataAcquisitionMethod,
   currentMatchingEF,
 }: Scope1EntryFormFieldsProps) {
+  const inputClass = "w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
+  const labelClass = "block text-[11px] font-semibold text-muted-foreground mb-1";
+
   if (category === 'Fugitive Emissions') {
     return (
       <div className="space-y-3 pt-1">
         <div>
-          <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Refrigerant / Gas Type</label>
+          <label className={labelClass}>Refrigerant / Gas Type</label>
           <select
             value={fuelOrGasType}
             onChange={(e) => setFuelOrGasType(e.target.value)}
-            className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className={inputClass}
           >
             {availableFuelOrGasTypes.map((type) => (
               <option key={type} value={type}>
@@ -40,11 +43,11 @@ export function Scope1EntryFormFields({
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Calculation Method</label>
+            <label className={labelClass}>Calculation Method</label>
             <select
               value={fugitiveType}
               onChange={(e) => setFugitiveType(e.target.value as 'filling' | 'leakage')}
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={inputClass}
             >
               <option value="filling">Capacity Refilled (kg)</option>
               <option value="leakage">Annual Leakage (%)</option>
@@ -52,24 +55,24 @@ export function Scope1EntryFormFields({
           </div>
           {fugitiveType === 'leakage' ? (
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Leakage Rate (%)</label>
+              <label className={labelClass}>Leakage Rate (%)</label>
               <input
                 type="number"
                 placeholder="e.g. 5"
                 value={leakagePercent}
                 onChange={(e) => setLeakagePercent(e.target.value)}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className={inputClass}
               />
             </div>
           ) : (
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Amount (kg)</label>
+              <label className={labelClass}>Amount (kg)</label>
               <input
                 type="number"
                 placeholder="e.g. 25"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className={inputClass}
               />
             </div>
           )}
@@ -82,35 +85,35 @@ export function Scope1EntryFormFields({
     return (
       <div className="space-y-3 pt-1">
         <div>
-          <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Process Name / Description</label>
+          <label className={labelClass}>Process Name / Description</label>
           <input
             type="text"
             placeholder="e.g. Lime Production Chemical Reaction"
             value={inventoryName}
             onChange={(e) => setInventoryName(e.target.value)}
-            className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className={inputClass}
           />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Data Source Method</label>
+            <label className={labelClass}>Data Source Method</label>
             <select
               value={dataAcquisitionMethod}
               onChange={(e) => setDataAcquisitionMethod(e.target.value)}
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={inputClass}
             >
               <option value="direct">Direct Mass Balance</option>
               <option value="stoichiometric">Stoichiometric Model</option>
             </select>
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Output Amount (kg)</label>
+            <label className={labelClass}>Output Amount (kg)</label>
             <input
               type="number"
               placeholder="e.g. 1000"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={inputClass}
             />
           </div>
         </div>
@@ -121,11 +124,11 @@ export function Scope1EntryFormFields({
   return (
     <div className="space-y-3 pt-1">
       <div>
-        <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Fuel / Material Type</label>
+        <label className={labelClass}>Fuel / Material Type</label>
         <select
           value={fuelOrGasType}
           onChange={(e) => setFuelOrGasType(e.target.value)}
-          className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className={inputClass}
         >
           {availableFuelOrGasTypes.map((type) => (
             <option key={type} value={type}>
@@ -136,7 +139,7 @@ export function Scope1EntryFormFields({
       </div>
 
       <div>
-        <label className="block text-[11px] font-semibold text-neutral-500 mb-1">
+        <label className={labelClass}>
           Consumed Amount ({currentMatchingEF?.unit || 'units'})
         </label>
         <input
@@ -144,7 +147,7 @@ export function Scope1EntryFormFields({
           placeholder="e.g. 500"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className={inputClass}
         />
       </div>
     </div>

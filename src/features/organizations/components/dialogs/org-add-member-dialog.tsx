@@ -95,7 +95,7 @@ export function OrgAddMemberDialog({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Email Address *
             </Label>
             <Input
@@ -109,7 +109,7 @@ export function OrgAddMemberDialog({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Password *
             </Label>
             <Input
@@ -123,7 +123,7 @@ export function OrgAddMemberDialog({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               Role *
             </Label>
             <Select

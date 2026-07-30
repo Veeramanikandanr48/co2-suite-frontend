@@ -1,35 +1,68 @@
+import { ServiceScopeItem } from '@/types/services';
 import {
   Scope3CategoryType,
   InventoryItem,
   EditModalItem,
 } from '@/types/inventory';
-import { ServiceScopeItem, Service } from '@/types/services';
 
-export interface Scope3TableSectionProps {
-  category: string;
-  totalCount: number;
-  isLoading: boolean;
-  isNotRelevant: boolean;
-  searchInput: string;
-  setSearch: (v: string) => void;
-  filterFacility: string;
-  filterStatus: string;
-  dbFacilities: any[];
-  handleFilterUpdate: (updates: { year?: string; facility?: string; status?: string }) => void;
-  setSelectedFacilityHeader: (v: string) => void;
-  setSelectedYear: (v: string) => void;
-  setAdditionalFilter: (v: any) => void;
-  refetch: () => void;
-  list: any[];
-  canEdit: boolean;
-  editingItem: EditModalItem | null;
-  setEditingItem: (item: EditModalItem | null) => void;
-  handleCopyItem: (item: any) => void;
-  handleDeleteItem: (id: number) => void;
-  setSorting: (field: string) => void;
-  isLoadingMore: boolean;
-  hasMore: boolean;
-  loadMore: () => void;
+export interface ServiceConfig {
+  name: string;
+  tag: string;
+  daysLeft: number;
+}
+
+export interface ServiceContextValue {
+  code: string;
+  currentConfig: ServiceConfig;
+  scopeItems: ServiceScopeItem[];
+  loadingScopes: boolean;
+  groupedScopes: Record<string, ServiceScopeItem[]>;
+  openScopes: Record<string, boolean>;
+  toggleScope: (scopeName: string) => void;
+}
+
+export interface ServiceSidebarProps {
+  currentConfig: ServiceConfig;
+  loadingScopes: boolean;
+  groupedScopes: Record<string, ServiceScopeItem[]>;
+  openScopes: Record<string, boolean>;
+  toggleScope: (scopeName: string) => void;
+}
+
+export interface ServiceCardProps {
+  service: import('@/types/services').Service;
+  isSubscribed?: boolean;
+  showControls?: boolean;
+  isAssigning?: boolean;
+  isRemoving?: boolean;
+  onAssign?: (service: import('@/types/services').Service) => void;
+  onRemove?: (service: import('@/types/services').Service) => void;
+}
+
+export interface Scope1InventorySourceCardProps {
+  facility: string;
+  setFacility: (v: string) => void;
+  dbFacilities: { id: number | string; name: string }[];
+  dateFrom: string;
+  setDateFrom: (v: string) => void;
+  dateTo: string;
+  setDateTo: (v: string) => void;
+  proofFile: File | null;
+  setProofFile: (f: File | null) => void;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+}
+
+export interface Scope2InventorySourceCardProps {
+  facility: string;
+  setFacility: (v: string) => void;
+  dbFacilities: { id: number | string; name: string }[];
+  dateFrom: string;
+  setDateFrom: (v: string) => void;
+  dateTo: string;
+  setDateTo: (v: string) => void;
+  proofFile: File | null;
+  setProofFile: (f: File | null) => void;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export interface Scope3EntryFormFieldsProps {
@@ -129,26 +162,4 @@ export interface CreateInventoryColumnsParams {
   setSorting?: (field: string) => void;
 }
 
-export interface ServiceSidebarProps {
-  readonly currentConfig: {
-    name: string;
-    tag: string;
-    daysLeft: number;
-  };
-  readonly activeTab: string;
-  readonly setActiveTab: (tab: string) => void;
-  readonly loadingScopes: boolean;
-  readonly groupedScopes: Record<string, ServiceScopeItem[]>;
-  readonly openScopes: Record<string, boolean>;
-  readonly toggleScope: (scopeName: string) => void;
-}
 
-export interface ServiceCardProps {
-  service: Service;
-  isSubscribed?: boolean;
-  showControls?: boolean;
-  isAssigning?: boolean;
-  isRemoving?: boolean;
-  onAssign?: (service: Service) => void;
-  onRemove?: (service: Service) => void;
-}

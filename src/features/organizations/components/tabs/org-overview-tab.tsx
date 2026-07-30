@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { Organization, EditOrganizationPayload } from '@/types/organizations';
@@ -56,7 +56,7 @@ export function OrgOverviewTab({
     : '—';
 
   return (
-    <div className="p-8 max-w-[1400px]">
+    <div className="p-6 max-w-[1400px]">
       {!isEditing ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Left Column (2 Spans) */}

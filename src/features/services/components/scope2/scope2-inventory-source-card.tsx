@@ -2,19 +2,7 @@
 
 import React from 'react';
 import { UploadCloud, Paperclip, X } from 'lucide-react';
-
-interface Scope2InventorySourceCardProps {
-  facility: string;
-  setFacility: (v: string) => void;
-  dbFacilities: any[];
-  dateFrom: string;
-  setDateFrom: (v: string) => void;
-  dateTo: string;
-  setDateTo: (v: string) => void;
-  proofFile: File | null;
-  setProofFile: (f: File | null) => void;
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
-}
+import { Scope2InventorySourceCardProps } from '@/types/components/services.types';
 
 export function Scope2InventorySourceCard({
   facility,

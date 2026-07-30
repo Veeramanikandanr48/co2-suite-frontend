@@ -58,7 +58,7 @@ export function OrgOnboardDialog({
                   value={onboardForm.name}
                   onChange={(e) => setOnboardForm({ ...onboardForm, name: e.target.value })}
                   required
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
 
@@ -83,7 +83,7 @@ export function OrgOnboardDialog({
                   value={onboardForm.contactEmail}
                   onChange={(e) => setOnboardForm({ ...onboardForm, contactEmail: e.target.value })}
                   required
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
 
@@ -93,7 +93,7 @@ export function OrgOnboardDialog({
                   placeholder="acme.com"
                   value={onboardForm.emailDomain}
                   onChange={(e) => setOnboardForm({ ...onboardForm, emailDomain: e.target.value })}
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
             </div>
@@ -114,7 +114,7 @@ export function OrgOnboardDialog({
                   value={onboardForm.adminUserName}
                   onChange={(e) => setOnboardForm({ ...onboardForm, adminUserName: e.target.value })}
                   required
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
 
@@ -126,7 +126,7 @@ export function OrgOnboardDialog({
                   value={onboardForm.adminEmail}
                   onChange={(e) => setOnboardForm({ ...onboardForm, adminEmail: e.target.value })}
                   required
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ export function OrgOnboardDialog({
                   placeholder="Acme"
                   value={onboardForm.adminFirstName}
                   onChange={(e) => setOnboardForm({ ...onboardForm, adminFirstName: e.target.value })}
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
 
@@ -160,7 +160,7 @@ export function OrgOnboardDialog({
                   placeholder="Admin"
                   value={onboardForm.adminLastName}
                   onChange={(e) => setOnboardForm({ ...onboardForm, adminLastName: e.target.value })}
-                  className="h-8 text-xs bg-white"
+                  className="h-8 text-xs"
                 />
               </div>
             </div>

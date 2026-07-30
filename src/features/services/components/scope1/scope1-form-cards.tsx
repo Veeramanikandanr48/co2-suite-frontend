@@ -50,21 +50,21 @@ export function Scope1FormCards({
   return (
     <div className={`grid grid-cols-1 xl:grid-cols-3 gap-4 ${activityNotRelevant ? 'opacity-40 pointer-events-none select-none' : ''}`}>
       {/* Card 1: Inventory Source */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex flex-col justify-between space-y-3">
         <div>
-          <h2 className="text-sm font-bold text-neutral-800 tracking-wide border-b border-neutral-100 pb-2">
+          <h2 className="text-sm font-bold text-foreground tracking-wide border-b border-border pb-2">
             1. Inventory Source
           </h2>
           <div className="mt-3 space-y-3">
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1">
                 Database Source
               </label>
               <select
                 value={efSource}
                 onChange={(e) => setEfSource(e.target.value)}
                 disabled={loadingEF}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {availableEfSources.map((src) => (
                   <option key={src} value={src}>
@@ -75,14 +75,14 @@ export function Scope1FormCards({
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1">
                 Version / Report Year
               </label>
               <select
                 value={factorVersion}
                 onChange={(e) => setFactorVersion(e.target.value)}
                 disabled={loadingEF}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {availableVersions.map((ver) => (
                   <option key={ver} value={ver}>
@@ -94,14 +94,14 @@ export function Scope1FormCards({
           </div>
         </div>
 
-        <div className="bg-emerald-50/60 border border-emerald-100 rounded-lg p-2.5 text-[11px] text-emerald-900 font-medium">
-          Current Emission Factor: <span className="font-bold text-emerald-600">{currentMatchingEF?.factor ?? '1.938'}</span> {currentMatchingEF?.unit ?? 'kgCO₂e/unit'}
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-2.5 text-[11px] text-primary font-medium">
+          Current Emission Factor: <span className="font-bold text-primary">{currentMatchingEF?.factor ?? '1.938'}</span> {currentMatchingEF?.unit ?? 'kgCO₂e/unit'}
         </div>
       </div>
 
       {/* Card 2: Entry Details */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm space-y-3">
-        <h2 className="text-sm font-bold text-neutral-800 tracking-wide border-b border-neutral-100 pb-2">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-3">
+        <h2 className="text-sm font-bold text-foreground tracking-wide border-b border-border pb-2">
           2. Entry Details
         </h2>
         <Scope1EntryFormFields
@@ -124,18 +124,18 @@ export function Scope1FormCards({
       </div>
 
       {/* Card 3: Additional Data */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex flex-col justify-between space-y-3">
         <div>
-          <h2 className="text-sm font-bold text-neutral-800 tracking-wide border-b border-neutral-100 pb-2">
+          <h2 className="text-sm font-bold text-foreground tracking-wide border-b border-border pb-2">
             3. Operational Data
           </h2>
           <div className="mt-3 space-y-2.5">
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Facility</label>
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Facility</label>
               <select
                 value={facility}
                 onChange={(e) => setFacility(e.target.value)}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">Select Facility</option>
                 {dbFacilities.map((fac) => (
@@ -148,27 +148,27 @@ export function Scope1FormCards({
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Date From</label>
+                <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Date From</label>
                 <input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-muted border border-border rounded-lg px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Date To</label>
+                <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Date To</label>
                 <input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-muted border border-border rounded-lg px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Proof Document</label>
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Proof Document</label>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -178,7 +178,7 @@ export function Scope1FormCards({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full bg-neutral-50 border border-dashed border-neutral-300 hover:border-emerald-500 rounded-lg py-1.5 text-xs font-semibold text-neutral-600 hover:text-emerald-600 transition-colors"
+                className="w-full bg-muted border border-dashed border-border hover:border-primary rounded-lg py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
               >
                 {proofFile ? proofFile.name : 'Upload File Attachment'}
               </button>
@@ -186,11 +186,11 @@ export function Scope1FormCards({
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Status</label>
+                <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Status</label>
                 <select
                   value={approvalStatus}
                   onChange={(e) => setApprovalStatus(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-muted border border-border rounded-lg px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="Approved">Approved</option>
                   <option value="Pending Review">Pending Review</option>
@@ -198,13 +198,13 @@ export function Scope1FormCards({
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-500 mb-1">Comment</label>
+                <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Comment</label>
                 <input
                   type="text"
                   placeholder="Notes..."
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-muted border border-border rounded-lg px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -214,7 +214,7 @@ export function Scope1FormCards({
         <button
           onClick={onSaveToDatabase}
           disabled={saving || !canEdit}
-          className="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs py-2.5 rounded-lg shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+          className="mt-3 w-full bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground font-bold text-xs py-2.5 rounded-lg shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           Save Entry to Database

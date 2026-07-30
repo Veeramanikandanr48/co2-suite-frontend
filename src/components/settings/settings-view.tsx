@@ -60,7 +60,7 @@ export function SettingsView() {
   };
 
   return (
-    <div className="page-container space-y-6">
+    <div className="page-container">
       <PageHeader
         title="System & Account Settings"
         description="Configure application preferences, reporting standards, and notification parameters"

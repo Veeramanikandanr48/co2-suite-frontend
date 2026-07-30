@@ -88,19 +88,19 @@ export function EmissionFactorModal({
   if (!isModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl border border-neutral-200 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
+    <div className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
+        <div className="flex items-center justify-between px-6 py-4 bg-foreground text-background">
           <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-emerald-400" />
+            <Database className="w-5 h-5 text-primary" />
             <h3 className="font-bold text-sm">
               {editingItem ? 'Edit Emission Factor' : 'Add New Emission Factor'}
             </h3>
           </div>
           <button
             onClick={() => setIsModalOpen(false)}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-background/60 hover:text-background transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -111,11 +111,11 @@ export function EmissionFactorModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Category */}
             <div className="space-y-1 md:col-span-2">
-              <label className="font-bold text-neutral-700">Category / Scope *</label>
+              <label className="font-bold text-foreground">Category / Scope *</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               >
                 {CATEGORY_OPTIONS.map((cat) => (
@@ -128,65 +128,65 @@ export function EmissionFactorModal({
 
             {/* Fuel or Gas Type Name */}
             <div className="space-y-1">
-              <label className="font-bold text-neutral-700">Fuel / Gas / Item Name *</label>
+              <label className="font-bold text-foreground">Fuel / Gas / Item Name *</label>
               <input
                 type="text"
                 placeholder="e.g. Natural Gas, Diesel, Grid Power"
                 value={formData.fuelOrGasType}
                 onChange={(e) => setFormData({ ...formData, fuelOrGasType: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
 
             {/* Emission Factor Value */}
             <div className="space-y-1">
-              <label className="font-bold text-neutral-700">Emission Factor Value *</label>
+              <label className="font-bold text-foreground">Emission Factor Value *</label>
               <input
                 type="number"
                 step="any"
                 placeholder="e.g. 1.942"
                 value={formData.factor}
                 onChange={(e) => setFormData({ ...formData, factor: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 font-mono font-bold"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary font-mono font-bold"
                 required
               />
             </div>
 
             {/* Unit */}
             <div className="space-y-1">
-              <label className="font-bold text-neutral-700">Unit</label>
+              <label className="font-bold text-foreground">Unit</label>
               <input
                 type="text"
                 placeholder="e.g. kg CO2e / liter, sm3, kWh"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
               />
             </div>
 
             {/* Database Source */}
             <div className="space-y-1">
-              <label className="font-bold text-neutral-700">Database Source *</label>
+              <label className="font-bold text-foreground">Database Source *</label>
               <input
                 type="text"
                 placeholder="e.g. DEFRA, IPCC, EPA"
                 value={formData.source}
                 onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
 
             {/* Version / Year */}
             <div className="space-y-1">
-              <label className="font-bold text-neutral-700">Version / Year</label>
+              <label className="font-bold text-foreground">Version / Year</label>
               <input
                 type="text"
                 placeholder="e.g. 2024, AR6"
                 value={formData.version}
                 onChange={(e) => setFormData({ ...formData, version: e.target.value })}
-                className="w-full bg-white border border-neutral-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
               />
             </div>
 
@@ -197,9 +197,9 @@ export function EmissionFactorModal({
                 id="isActiveToggle"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                className="w-4 h-4 text-primary rounded focus:ring-primary"
               />
-              <label htmlFor="isActiveToggle" className="font-bold text-neutral-700 cursor-pointer">
+              <label htmlFor="isActiveToggle" className="font-bold text-foreground cursor-pointer">
                 Active Emission Factor
               </label>
             </div>
@@ -215,18 +215,18 @@ export function EmissionFactorModal({
           </div>
 
           {/* Modal Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-xl text-xs transition-colors"
+              className="px-4 py-2 bg-muted hover:bg-accent text-muted-foreground font-semibold rounded-xl text-xs transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-colors flex items-center gap-1.5"
+              className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs shadow-md transition-colors flex items-center gap-1.5"
             >
               {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {editingItem ? 'Save Changes' : 'Create Emission Factor'}

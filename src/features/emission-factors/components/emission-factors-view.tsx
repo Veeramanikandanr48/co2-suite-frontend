@@ -206,7 +206,7 @@ export function EmissionFactorsView() {
     >
       <EmissionFactorsMetrics metrics={metrics} onOpenCreateModal={handleOpenCreateModal} />
 
-      <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs space-y-3">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
         <EmissionFactorsToolbar
           searchInput={searchInput}
           setSearch={setSearch}

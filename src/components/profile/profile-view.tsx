@@ -90,7 +90,7 @@ export function ProfileView() {
   const initials = `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase() || 'U';
 
   return (
-    <div className="page-container space-y-6">
+    <div className="page-container">
       <PageHeader
         title="Profile Details"
         description="View and manage your account information and security credentials"
@@ -143,9 +143,9 @@ export function ProfileView() {
           </div>
 
           {/* Details List */}
-          <div className="lg:col-span-3 space-y-3 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-              <div className="bg-muted/70 border border-border rounded-xl p-3.5 flex items-center justify-between">
+          <div className="lg:col-span-3 space-y-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <div className="bg-muted/70 border border-border rounded-xl p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   <div>
@@ -155,7 +155,7 @@ export function ProfileView() {
                 </div>
               </div>
 
-              <div className="bg-muted/70 border border-border rounded-xl p-3.5 flex items-center justify-between">
+              <div className="bg-muted/70 border border-border rounded-xl p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-muted-foreground" />
                   <div>
@@ -165,7 +165,7 @@ export function ProfileView() {
                 </div>
               </div>
 
-              <div className="bg-muted/70 border border-border rounded-xl p-3.5 flex items-center justify-between sm:col-span-2">
+              <div className="bg-muted/70 border border-border rounded-xl p-4 flex items-center justify-between sm:col-span-2">
                 <div className="flex items-center gap-3">
                   <Briefcase className="w-4 h-4 text-muted-foreground" />
                   <div>

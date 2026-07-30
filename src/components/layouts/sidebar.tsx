@@ -114,11 +114,13 @@ const Sidebar = () => {
 
   const visibleItems = useMemo(() => getVisibleSidebarItems(user?.roleId), [user?.roleId]);
 
+  const isServiceSection = pathname.startsWith('/services');
+
   useEffect(() => {
-    if (pathname.startsWith('/services')) {
+    if (isServiceSection) {
       setCollapsed(true);
     }
-  }, [pathname]);
+  }, [isServiceSection]);
 
   const handleNavigate = useCallback((href: string) => {
     let targetHref = href;

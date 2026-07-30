@@ -11,7 +11,7 @@ export function SectionCard({
   className = '',
 }: SectionCardProps) {
   return (
-    <div className={`bg-card border border-border rounded-xl shadow-xs p-5 space-y-4 w-full ${className}`}>
+    <div className={`bg-card border border-border rounded-xl shadow-xs p-5 sm:p-6 space-y-4 w-full ${className}`}>
       {(title || action) && (
         <div className="flex items-center justify-between gap-4">
           <div>

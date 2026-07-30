@@ -1,4 +1,3 @@
-import { ColumnDef } from '@tanstack/react-table';
 import {
   Scope1CategoryType,
   Scope2CategoryType,
@@ -6,9 +5,48 @@ import {
   Scope2CategoryConfig,
   Scope3CategoryConfig,
   DBEmissionFactor,
-  InventoryItem,
-  EditModalItem,
 } from '@/types/inventory';
+
+export interface ScopeHeaderProps {
+  title: string;
+  description: string;
+  warningText: string;
+  totalEmissionVal: string;
+  selectedYear: string;
+  onYearChange: (year: string) => void;
+  selectedFacilityHeader: string;
+  onFacilityChange: (facility: string) => void;
+  dbFacilities: { id: number | string; name: string }[];
+  notRelevant?: boolean;
+  onNotRelevantChange?: (checked: boolean) => void;
+  checkboxId?: string;
+}
+
+export interface ScopeTableSectionProps {
+  totalCount: number;
+  isLoading: boolean;
+  notRelevant: boolean;
+  searchInput: string;
+  setSearch: (v: string) => void;
+  filterFacility: string;
+  filterStatus: string;
+  dbFacilities: { id: number | string; name: string }[];
+  handleFilterUpdate: (updates: { year?: string; facility?: string; status?: string }) => void;
+  setSelectedFacilityHeader: (v: string) => void;
+  setSelectedYear: (v: string) => void;
+  setAdditionalFilter: (v: any) => void;
+  refetch: () => void;
+  list: any[];
+  canEdit: boolean;
+  editingItem: any;
+  setEditingItem: (item: any) => void;
+  handleCopyItem: (item: any) => void;
+  handleDeleteItem: (id: number) => void;
+  setSorting: (field: string) => void;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => void;
+}
 
 export interface Scope1CalculationViewProps {
   category?: Scope1CategoryType;
@@ -57,32 +95,7 @@ export interface Scope1FormCardsProps {
   onSaveToDatabase: () => void;
 }
 
-export interface Scope1TableSectionProps {
-  category: string;
-  totalCount: number;
-  isLoading: boolean;
-  activityNotRelevant: boolean;
-  searchInput: string;
-  setSearch: (v: string) => void;
-  filterFacility: string;
-  filterStatus: string;
-  dbFacilities: any[];
-  handleFilterUpdate: (updates: { year?: string; facility?: string; status?: string }) => void;
-  setSelectedFacilityHeader: (v: string) => void;
-  setSelectedYear: (v: string) => void;
-  setAdditionalFilter: (v: any) => void;
-  refetch: () => void;
-  list: any[];
-  canEdit: boolean;
-  editingItem: EditModalItem | null;
-  setEditingItem: (item: EditModalItem | null) => void;
-  handleCopyItem: (item: any) => void;
-  handleDeleteItem: (id: number) => void;
-  setSorting: (field: string) => void;
-  isLoadingMore: boolean;
-  hasMore: boolean;
-  loadMore: () => void;
-}
+
 
 export interface Scope1EntryFormFieldsProps {
   category: string;
@@ -139,33 +152,6 @@ export interface Scope2FormCardsProps {
   setApprovalStatus: (v: string) => void;
   submitting: boolean;
   onSaveToDatabase: () => void;
-}
-
-export interface Scope2TableSectionProps {
-  isElectricity: boolean;
-  totalCount: number;
-  isLoading: boolean;
-  isNotRelevant: boolean;
-  searchInput: string;
-  setSearch: (v: string) => void;
-  filterFacility: string;
-  filterStatus: string;
-  dbFacilities: any[];
-  handleFilterUpdate: (updates: { year?: string; facility?: string; status?: string }) => void;
-  setSelectedFacilityHeader: (v: string) => void;
-  setSelectedYear: (v: string) => void;
-  setAdditionalFilter: (v: any) => void;
-  refetch: () => void;
-  list: any[];
-  canEdit: boolean;
-  editingItem: EditModalItem | null;
-  setEditingItem: (item: EditModalItem | null) => void;
-  handleCopyItem: (item: any) => void;
-  handleDeleteItem: (id: number) => void;
-  setSorting: (field: string) => void;
-  isLoadingMore: boolean;
-  hasMore: boolean;
-  loadMore: () => void;
 }
 
 export interface Scope3CalculationViewProps {
