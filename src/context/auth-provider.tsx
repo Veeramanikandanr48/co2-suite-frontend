@@ -136,14 +136,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false)
       localStorage.clear();
-      router.push("/sign-in/admin");
+      router.push("/sign-in");
     }
   }, [router, state.accessToken]);
 
   const logout = useCallback(async () => {
     localStorage.clear();
     setState({ user: null, isLoading: false, accessToken: null });
-    router.push("/sign-in/admin");
+    router.push("/sign-in");
   }, [router]);
 
   const updateUser = useCallback((userData: User) => {

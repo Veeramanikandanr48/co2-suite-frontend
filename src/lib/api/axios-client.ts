@@ -1,4 +1,4 @@
-﻿import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { HttpStatus } from "@/types/enums";
 import {
   showErrorToast,
@@ -14,7 +14,7 @@ function handleUnauthorized(): void {
   if (typeof window !== "undefined") {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = "/sign-in/admin";
+    window.location.href = "/sign-in";
   }
 }
 

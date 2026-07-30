@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-provider";
@@ -31,7 +31,7 @@ export default function AuthLayout({
   return (
     <div className="relative min-h-screen flex flex-col bg-gradient-to-br from-neutral-50 via-background to-primary-50/40 dark:from-neutral-950 dark:via-background dark:to-primary-950/30">
       {/* Subtle grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none" />
 
       <div className="relative flex-1 flex items-center justify-center p-4 sm:p-8">
         <div className="w-full max-w-[440px]">
@@ -50,7 +50,7 @@ export default function AuthLayout({
         </div>
       </div>
 
-      <div className="relative pb-4 text-center">
+      <div className="relative pb-6 text-center">
         <p className="text-xs text-muted-foreground">
           &copy; {new Date().getFullYear()} CO2 Suite. All rights reserved.
         </p>

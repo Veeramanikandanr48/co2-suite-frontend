@@ -39,7 +39,7 @@ export default function ForgotPassword() {
             We sent a password reset link to <span className="font-medium text-foreground">{email}</span>
           </p>
           <Link
-            href="/sign-in/admin"
+            href="/sign-in"
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary-700 font-medium transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -98,7 +98,7 @@ export default function ForgotPassword() {
 
         <div className="mt-6 text-center">
           <Link
-            href="/sign-in/admin"
+            href="/sign-in"
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

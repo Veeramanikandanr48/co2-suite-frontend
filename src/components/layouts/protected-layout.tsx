@@ -22,7 +22,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push("/sign-in/admin")
+      router.push("/sign-in")
     }
   }, [user, isLoading, router])
 
