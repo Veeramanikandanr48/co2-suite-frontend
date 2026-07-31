@@ -92,6 +92,32 @@ class ApiService {
   async getMainDashboardSummary<T>(queryParams?: { year?: string; facility?: string }): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.get<T>('dashboard/summary', { params: queryParams }) as Promise<CustomAxiosResponse<T>>;
   }
+
+  /**
+   * Fetches scope calculation activity results using exact CageSuite API contract: /services/result/:scope/:activity
+   */
+  async getScopeActivityResult<T>(
+    scope: string,
+    activity: string,
+    queryParams?: { based_option?: string; facility?: string; year?: string },
+  ): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(`services/result/${scope}/${activity}`, {
+      params: queryParams,
+    }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  /**
+   * Fetches factor signature metadata using exact CageSuite API contract: /services/factor-signature
+   */
+  async getFactorSignature<T>(
+    scope: string,
+    activity: string,
+    basedOption?: string,
+  ): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>('services/factor-signature', {
+      params: { scope, activity, based_option: basedOption || 'activity' },
+    }) as Promise<CustomAxiosResponse<T>>;
+  }
 }
  
-export const apiService = new ApiService();
+export const apiService = new ApiService();

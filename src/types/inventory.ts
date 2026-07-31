@@ -75,3 +75,63 @@ export interface InventoryItem {
 }
 
 export type EditModalItem = InventoryItem;
+
+export interface GasBreakdown {
+  CO2: number;
+  CH4: number;
+  N2O: number;
+  HFC: number;
+  PFC: number;
+  SF6: number;
+  NF3: number;
+  total: number;
+}
+
+export interface ActivityResultItemResponseDto {
+  PK: string;
+  SK: string;
+  scope: string;
+  activity: string;
+  name: string;
+  input: string;
+  amount: string;
+  unit: string;
+  based_option: string;
+  source: string;
+  version: string;
+  facility_name: string;
+  facility_uuid: string;
+  from_date: string;
+  to_date: string;
+  status: string;
+  comment?: string;
+  isDefault?: boolean;
+  creation_date?: string;
+  input_ef: Record<keyof GasBreakdown, string>;
+  emissions: GasBreakdown;
+  result?: {
+    emissions: GasBreakdown;
+    calculationTrace?: string[];
+    isLocked?: boolean;
+    snapshotVersion?: string;
+  };
+}
+
+export interface FactorSignatureResponseDto {
+  statusCode: number;
+  scope: string;
+  activity: string;
+  based_option: string;
+  acceptedUnits: string[];
+  requiredFields: string[];
+  supportedSources: string[];
+  defaultSource: string;
+  formula: string;
+  version: string;
+  validationRules?: {
+    minAmount?: number;
+    maxAmount?: number;
+    allowNegative?: boolean;
+  };
+  unitConversions?: Record<string, number>;
+}

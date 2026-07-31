@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiService } from '@/lib/api/api-service';
@@ -70,15 +70,21 @@ export function useScope1Calculation(category: Scope1CategoryType) {
   const fetchEmissionFactors = useCallback(async () => {
     try {
       setLoadingEF(true);
-      const response = await apiService.get<DBEmissionFactor[]>(`${API_LIST.EMISSION_FACTORS}?category=${encodeURIComponent(category)}`);
-      const data = (response as any)?.data ?? response;
-      const listData = Array.isArray(data) ? data : [];
-      setDbEmissionFactors(listData);
+      const [efResponse, signatureResponse] = await Promise.allSettled([
+        apiService.get<DBEmissionFactor[]>(`${API_LIST.EMISSION_FACTORS}?category=${encodeURIComponent(category)}`),
+        apiService.getFactorSignature('1', encodeURIComponent(category)),
+      ]);
 
-      if (listData.length > 0) {
-        formState.setEfSource(listData[0].source);
-        formState.setFactorVersion(listData[0].version || 'AR6');
-        formState.setFuelOrGasType(listData[0].fuelOrGasType);
+      if (efResponse.status === 'fulfilled') {
+        const data = (efResponse.value as any)?.data ?? efResponse.value;
+        const listData = Array.isArray(data) ? data : [];
+        setDbEmissionFactors(listData);
+
+        if (listData.length > 0) {
+          formState.setEfSource(listData[0].source);
+          formState.setFactorVersion(listData[0].version || 'AR6');
+          formState.setFuelOrGasType(listData[0].fuelOrGasType);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch emission factors:', error);
@@ -132,21 +138,50 @@ export function useScope1Calculation(category: Scope1CategoryType) {
       return;
     }
 
-    if (!formState.amount && category !== 'Process Emissions') {
-      showErrorToast('Please enter an amount before saving.');
-      return;
+    if (category === 'Fugitive Emissions') {
+      if (formState.fugitiveType === 'leakage' && !formState.leakagePercent) {
+        showErrorToast('Please enter a leakage percentage before saving.');
+        return;
+      }
+      if (formState.fugitiveType === 'filling' && !formState.amount) {
+        showErrorToast('Please enter an amount before saving.');
+        return;
+      }
+    } else if (category === 'Process Emissions') {
+      if (!formState.inventoryName) {
+        showErrorToast('Please enter an inventory name before saving.');
+        return;
+      }
+      if (!formState.amount) {
+        showErrorToast('Please enter an emission amount before saving.');
+        return;
+      }
+    } else {
+      if (!formState.amount) {
+        showErrorToast('Please enter an amount before saving.');
+        return;
+      }
     }
 
     try {
       setSaving(true);
       const efValue = currentMatchingEF?.factor ?? 1.938;
-      const unitVal = currentMatchingEF?.unit ?? (category === 'Fugitive Emissions' ? 'kg' : category === 'Process Emissions' ? 'kgCO2' : 'sm3');
+      const unitVal =
+        currentMatchingEF?.unit ??
+        (category === 'Fugitive Emissions'
+          ? formState.fugitiveType === 'leakage'
+            ? '%'
+            : 'kg'
+          : category === 'Process Emissions'
+          ? 'kgCO2'
+          : 'L');
+
       const nameVal =
         category === 'Process Emissions'
           ? formState.inventoryName || 'Custom Process'
-          : formState.fuelOrGasType || 'Natural Gas';
+          : formState.fuelOrGasType || (category === 'Fugitive Emissions' ? 'HFC-134a' : 'Natural Gas');
 
-      const defaultFacilityName = dbFacilities[0]?.name || 'Central HQ';
+      const defaultFacilityName = dbFacilities[0]?.name || 'Manchester Facility';
 
       let uploadedDocPath: string | undefined = undefined;
       if (formState.proofFile) {
@@ -167,17 +202,23 @@ export function useScope1Calculation(category: Scope1CategoryType) {
         serviceCode: 'CARBON',
         category,
         name: nameVal,
-        amount: parseFloat(formState.amount) || 0,
+        amount:
+          category === 'Fugitive Emissions' && formState.fugitiveType === 'leakage'
+            ? parseFloat(formState.leakagePercent) || 0
+            : parseFloat(formState.amount) || 0,
         unit: unitVal,
         ef: efValue,
         efSource: formState.efSource || currentMatchingEF?.source || 'IPCC-AR6',
         formula: currentMatchingEF?.formula,
-        dateFrom: formState.dateFrom || '01.01.2026',
-        dateTo: formState.dateTo || '31.12.2026',
+        dateFrom: formState.dateFrom || '2026-01-01',
+        dateTo: formState.dateTo || '2026-12-31',
         facility: formState.facility || defaultFacilityName,
         approvalStatus: formState.approvalStatus || 'Approved',
         comment: formState.comment,
         documentPath: uploadedDocPath,
+        fugitiveType: formState.fugitiveType,
+        leakagePercent: formState.leakagePercent,
+        dataAcquisitionMethod: formState.dataAcquisitionMethod,
       };
 
       await apiService.post<InventoryItem>(API_LIST.INVENTORY_ENTRIES, payload);
@@ -186,6 +227,7 @@ export function useScope1Calculation(category: Scope1CategoryType) {
       refetch();
 
       formState.setAmount('');
+      formState.setLeakagePercent('');
       formState.setInventoryName('');
       formState.setComment('');
       formState.setProofFile(null);

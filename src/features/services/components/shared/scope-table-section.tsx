@@ -54,9 +54,23 @@ export function ScopeTableSection({
             </h2>
             {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
           </div>
+
+          <button
+            onClick={() => {
+              setSearch('');
+              handleFilterUpdate({ facility: '', status: '', year: 'All Years' });
+              setSelectedFacilityHeader('All Facilities');
+              setSelectedYear('All Years');
+              setAdditionalFilter({});
+              refetch();
+            }}
+            className="px-4 py-2 bg-[#09152b] hover:bg-[#0f2347] text-white font-bold text-xs rounded-md shadow-xs transition-colors shrink-0 cursor-pointer"
+          >
+            Clear All Filters
+          </button>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-muted p-3 rounded-lg border border-border">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-muted/30 p-3 rounded-lg border border-border">
           <div className="flex flex-wrap items-center gap-2 flex-1">
             <div className="relative flex-1 min-w-[180px] max-w-xs">
               <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-2.5" />
@@ -101,20 +115,6 @@ export function ScopeTableSection({
               <option value="Draft">Draft</option>
             </select>
           </div>
-
-          <button
-            onClick={() => {
-              setSearch('');
-              handleFilterUpdate({ facility: '', status: '', year: 'All Years' });
-              setSelectedFacilityHeader('All Facilities');
-              setSelectedYear('All Years');
-              setAdditionalFilter({});
-              refetch();
-            }}
-            className="px-3 py-1.5 bg-foreground hover:bg-foreground/90 text-background font-semibold text-xs rounded-lg shadow-xs transition-colors shrink-0 cursor-pointer"
-          >
-            Clear Filters
-          </button>
         </div>
 
         <ReusableTable
