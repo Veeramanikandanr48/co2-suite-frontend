@@ -69,7 +69,7 @@
 }
 
 @utility page-container {
-  @apply p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full;
+  @apply p-4 sm:p-6 lg:p-8 space-y-6 w-full;
 }
 
 @utility page-header {

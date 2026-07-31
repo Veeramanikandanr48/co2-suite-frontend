@@ -20,7 +20,7 @@ export function ScopeHeader({
 }: ScopeHeaderProps) {
   return (
     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-card p-5 sm:p-6 rounded-2xl border border-border shadow-xs">
-      <div className="space-y-1.5 max-w-3xl">
+      <div className="space-y-1.5 flex-1">
         {onNotRelevantChange && (
           <div className="flex items-center gap-2">
             <input

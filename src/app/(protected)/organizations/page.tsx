@@ -67,7 +67,7 @@ export default function OrganizationsPage() {
     if (!selectedOrg) return;
     try {
       setIsSubmitting(true);
-      await apiService.delete(API_LIST.ORGANIZATIONS, selectedOrg.id);
+      await apiService.post(`${API_LIST.ORGANIZATIONS}/${selectedOrg.id}/deactivate`);
       showSuccessToast('Organization deactivated successfully!');
       setIsDeleteOpen(false);
       refetch();

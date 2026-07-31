@@ -102,7 +102,7 @@ export function useOrgDetails(orgId: string, isSuperAdmin: boolean) {
   const handleRemoveService = useCallback(async (service: Service) => {
     setRemovingServiceId(service.id);
     try {
-      await apiService.delete(`organizations/${orgId}/services/${service.id}`);
+      await apiService.post(`organizations/${orgId}/services/${service.id}/deactivate`);
       showSuccessToast(`"${service.name}" removed successfully`);
       fetchOrgServices();
     } catch (err: unknown) {
@@ -205,7 +205,7 @@ export function useOrgDetails(orgId: string, isSuperAdmin: boolean) {
   const handleDeactivate = async () => {
     try {
       setIsSubmitting(true);
-      await apiService.delete(API_LIST.ORGANIZATIONS, orgId);
+      await apiService.post(`${API_LIST.ORGANIZATIONS}/${orgId}/deactivate`);
       showSuccessToast('Organization deactivated successfully!');
       setIsDeleteOpen(false);
       router.push('/organizations');

@@ -119,7 +119,7 @@ export function useOrgFacilities(orgId: string) {
     if (!deletingFacility) return;
     try {
       setIsSavingFacility(true);
-      await apiService.delete('facilities', deletingFacility.id);
+      await apiService.post(`facilities/${deletingFacility.id}/deactivate`);
       showSuccessToast(`Facility "${deletingFacility.name}" deleted successfully`);
       setDeletingFacility(null);
       fetchOrgFacilities();

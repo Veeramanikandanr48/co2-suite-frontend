@@ -17,7 +17,7 @@ export function OrgOverviewEditForm({
   onCancelEdit,
 }: OrgOverviewEditFormProps) {
   return (
-    <form onSubmit={onSave} className="space-y-6 max-w-4xl">
+    <form onSubmit={onSave} className="space-y-6 w-full">
       <div className="bg-background rounded-xl border border-border p-6 space-y-6">
         <h3 className="text-base font-bold text-header-primary">Edit Organization Information</h3>
 

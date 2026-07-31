@@ -92,11 +92,11 @@ export function useScopeCommon(category: string, setAdditionalFilter: (f: any) =
     if (!window.confirm('Are you sure you want to delete this record?')) return;
 
     try {
-      await apiService.delete(API_LIST.INVENTORY_ENTRIES, id);
-      showSuccessToast('Inventory entry deleted successfully!');
+      await apiService.post(`${API_LIST.INVENTORY_ENTRIES}/${id}/deactivate`);
+      showSuccessToast('Inventory entry deactivated successfully!');
       refetch();
     } catch {
-      showErrorToast('Failed to delete inventory record.');
+      showErrorToast('Failed to deactivate inventory record.');
     }
   };
 

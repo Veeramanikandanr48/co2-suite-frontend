@@ -174,10 +174,10 @@ export function EmissionFactorsView() {
   const handleDelete = async (id: string | number) => {
     try {
       setIsDeletingId(id);
-      await apiService.delete(API_LIST.EMISSION_FACTORS, id);
+      await apiService.post(`${API_LIST.EMISSION_FACTORS}/${id}/deactivate`);
       toast({
         title: 'Success',
-        description: 'Emission factor deleted successfully',
+        description: 'Emission factor deactivated successfully',
       });
       refetch();
     } catch (err: any) {

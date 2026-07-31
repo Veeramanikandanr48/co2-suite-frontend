@@ -75,11 +75,11 @@ export function FacilitiesView() {
 
   const handleDeleteFacility = async (id: number | string) => {
     try {
-      await apiService.delete('facilities', id);
-      toast.success('Facility deleted');
+      await apiService.post(`facilities/${id}/deactivate`);
+      toast.success('Facility deactivated');
       fetchFacilities();
     } catch {
-      toast.error('Failed to delete facility');
+      toast.error('Failed to deactivate facility');
     }
   };
 

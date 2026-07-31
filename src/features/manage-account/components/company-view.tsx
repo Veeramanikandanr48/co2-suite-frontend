@@ -26,17 +26,18 @@ export function CompanyView() {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const orgId = user?.organizationId || 1;
+
   const fetchCompanyData = async () => {
     try {
       setLoading(true);
       const [orgRes, facRes, svcRes] = await Promise.all([
-        apiService.get<any>('organizations'),
+        apiService.get<any>(`organizations/${orgId}`),
         apiService.get<any>('facilities'),
-        apiService.get<any>('organizations/1/services'),
+        apiService.get<any>(`organizations/${orgId}/services`),
       ]);
 
-      const orgs = (orgRes as any)?.data ?? orgRes;
-      const currentOrg = Array.isArray(orgs) && orgs.length > 0 ? orgs[0] : null;
+      const currentOrg = (orgRes as any)?.data ?? orgRes;
 
       const facs = (facRes as any)?.data ?? facRes;
       const facilityCount = Array.isArray(facs) ? facs.length : 0;
@@ -47,17 +48,17 @@ export function CompanyView() {
         : [];
 
       setCompany({
-        id: currentOrg?.id || 1,
-        name: currentOrg?.name || currentOrg?.organizationName || 'WD Solutions Co. LLC',
+        id: currentOrg?.id || orgId,
+        name: currentOrg?.name || currentOrg?.organizationName || 'Organization',
         country: currentOrg?.country || currentOrg?.countryName || 'Türkiye',
-        contactEmail: currentOrg?.contactEmail || currentOrg?.email || 'admin@w-d.ae',
-        contactPhone: currentOrg?.contactPhone || currentOrg?.phone || '+90',
-        address: currentOrg?.address || currentOrg?.city || 'Agha Yasin',
+        contactEmail: currentOrg?.contactEmail || currentOrg?.email || '',
+        contactPhone: currentOrg?.phone || currentOrg?.contactPhone || '-',
+        address: currentOrg?.address || currentOrg?.city || '-',
         taxId: currentOrg?.taxId || 'Not set',
-        allowedDomains: currentOrg?.allowedDomains || 'w-d.ae',
+        allowedDomains: currentOrg?.emailDomain || currentOrg?.allowedDomains || '-',
         userCount: currentOrg?.userCount || 1,
         adminCount: currentOrg?.adminCount || 1,
-        facilityCount: facilityCount || 1,
+        facilityCount: facilityCount,
         subscriptions: subscriptions,
       });
     } catch (err) {
@@ -69,7 +70,7 @@ export function CompanyView() {
 
   useEffect(() => {
     fetchCompanyData();
-  }, []);
+  }, [orgId]);
 
   if (loading) {
     return (

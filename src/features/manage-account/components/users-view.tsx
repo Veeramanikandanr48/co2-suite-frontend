@@ -16,10 +16,12 @@ export function UsersView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserFormData | null>(null);
 
+  const orgId = user?.organizationId || 1;
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await apiService.post<any>('organizations/1/users/filter', { pageNo: 1, limit: 50 });
+      const res = await apiService.post<any>(`organizations/${orgId}/users/filter`, { pageNo: 1, limit: 50 });
       const dataObj = (res as any)?.data ?? res;
       const listData = Array.isArray(dataObj?.listData)
         ? dataObj.listData
@@ -59,7 +61,7 @@ export function UsersView() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [orgId]);
 
   const handleAddUser = () => {
     setSelectedUser(null);

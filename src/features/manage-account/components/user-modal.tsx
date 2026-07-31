@@ -5,11 +5,14 @@ import { X, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api/api-service';
 
+import { useAuth } from '@/context/auth-provider';
 import { UserFormData, UserModalProps } from '@/types/manage-account';
 
 export type { UserFormData, UserModalProps };
 
 export function UserModal({ isOpen, onClose, onSuccess, userData }: UserModalProps) {
+  const { user } = useAuth();
+  const orgId = user?.organizationId || 1;
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -56,7 +59,7 @@ export function UserModal({ isOpen, onClose, onSuccess, userData }: UserModalPro
           phone,
           roleId,
         };
-        await apiService.put(`organizations/1/users`, userData.id, payload);
+        await apiService.put(`organizations/${orgId}/users`, userData.id, payload);
         toast.success('User updated successfully');
       } else {
         // Add User
@@ -69,7 +72,7 @@ export function UserModal({ isOpen, onClose, onSuccess, userData }: UserModalPro
           phone,
           roleId,
         };
-        await apiService.post('organizations/1/users', payload);
+        await apiService.post(`organizations/${orgId}/users`, payload);
         toast.success('User created successfully');
       }
 
