@@ -16,9 +16,9 @@ export default function SummaryPage() {
   const [summaryData, setSummaryData] = useState<CarbonSummaryData | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(true);
 
-  const fetchCarbonSummary = useCallback(async () => {
+  const fetchCarbonSummary = useCallback(async (isSilent = false) => {
     try {
-      setLoadingSummary(true);
+      if (!isSilent) setLoadingSummary(true);
       const apiParams: Record<string, string> = {};
       if (selectedYear && selectedYear !== 'all') apiParams.year = selectedYear;
       if (selectedFacility && selectedFacility !== 'all') apiParams.facility = selectedFacility;
@@ -26,13 +26,22 @@ export default function SummaryPage() {
       const data = (response as any)?.data ?? response;
       if (data && typeof data === 'object') setSummaryData(data);
     } catch {
-      setSummaryData(null);
+      if (!isSilent) setSummaryData(null);
     } finally {
-      setLoadingSummary(false);
+      if (!isSilent) setLoadingSummary(false);
     }
   }, [code, selectedYear, selectedFacility]);
 
-  useEffect(() => { fetchCarbonSummary(); }, [fetchCarbonSummary]);
+  useEffect(() => {
+    fetchCarbonSummary(false);
+  }, [fetchCarbonSummary]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCarbonSummary(true);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [fetchCarbonSummary]);
 
   return (
     <ServiceSummaryView
@@ -42,7 +51,8 @@ export default function SummaryPage() {
       setSelectedYear={setSelectedYear}
       selectedFacility={selectedFacility}
       setSelectedFacility={setSelectedFacility}
-      fetchCarbonSummary={fetchCarbonSummary}
+      fetchCarbonSummary={() => fetchCarbonSummary(false)}
     />
   );
 }
+

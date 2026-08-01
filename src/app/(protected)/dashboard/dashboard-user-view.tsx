@@ -44,6 +44,16 @@ export function DashboardUserView({ summaryData }: Props) {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Real-time Live Sync
+        </div>
+        <p className="text-xs text-muted-foreground font-medium">
+          Auto-refreshing every 15 seconds
+        </p>
+      </div>
+
       {/* KPI Cards */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}

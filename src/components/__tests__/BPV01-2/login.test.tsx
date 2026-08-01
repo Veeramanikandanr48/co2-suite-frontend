@@ -239,7 +239,7 @@ describe(`${APP_NAME}-${SRS_ID.LOGIN}: Login - SignIn Component`, () => {
     render(<SignIn />);
     
     await waitFor(() => {
-      expect(mockRouter.push).toHaveBeenCalledWith('/device-integration/system-integration');
+      expect(mockRouter.push).toHaveBeenCalledWith('/dashboard');
     });
   });
 

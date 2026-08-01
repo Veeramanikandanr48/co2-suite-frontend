@@ -17,15 +17,15 @@ interface UseDashboardReturn {
   availableFacilities: { name: string; id: string }[]
 }
 
-export function useDashboard(): UseDashboardReturn {
+export function useDashboard(pollIntervalMs: number = 15000): UseDashboardReturn {
   const [summaryData, setSummaryData] = useState<MainDashboardSummaryData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedYear, setSelectedYear] = useState("all")
   const [selectedFacility, setSelectedFacility] = useState("all")
 
-  const fetchData = useCallback(async () => {
-    setLoading(true)
+  const fetchData = useCallback(async (isSilent = false) => {
+    if (!isSilent) setLoading(true)
     setError(null)
     try {
       const params: Record<string, string> = {}
@@ -35,16 +35,24 @@ export function useDashboard(): UseDashboardReturn {
       const data = (response as any)?.data ?? response
       setSummaryData(data)
     } catch (err) {
-      setError("Failed to load dashboard data")
+      if (!isSilent) setError("Failed to load dashboard data")
       console.error(err)
     } finally {
-      setLoading(false)
+      if (!isSilent) setLoading(false)
     }
   }, [selectedYear, selectedFacility])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    if (pollIntervalMs <= 0) return
+    const interval = setInterval(() => {
+      fetchData(true)
+    }, pollIntervalMs)
+    return () => clearInterval(interval)
+  }, [fetchData, pollIntervalMs])
 
   const availableYears = summaryData?.availableYears ?? []
   const availableFacilities = (summaryData?.availableFacilities ?? []).map((f) =>
@@ -59,8 +67,9 @@ export function useDashboard(): UseDashboardReturn {
     selectedFacility,
     setSelectedYear,
     setSelectedFacility,
-    refresh: fetchData,
+    refresh: () => fetchData(false),
     availableYears,
     availableFacilities,
   }
 }
+

@@ -80,22 +80,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
 
-      const responsePayload = response as unknown as { data?: { token: string; user: User }; token?: string; user?: User };
+      const responsePayload = response as unknown as { data?: { token: string; user: User; isTwoFactorAuthenticationEnabled?: boolean }; token?: string; user?: User; isTwoFactorAuthenticationEnabled?: boolean };
       const loginData = responsePayload?.data || responsePayload;
       const token = loginData?.token;
-      const user = loginData?.user || {
-        id: 1,
-        userName,
-        firstName: userName,
-        lastName: null,
-        email: userName,
-        roleId: 1,
-        profilePath: null,
-        userId: String(1),
-        idpId: "local",
-      };
+      const user = loginData?.user;
+      const isTwoFactorAuthenticationEnabled = loginData?.isTwoFactorAuthenticationEnabled;
 
-      if (token) {
+      if (isTwoFactorAuthenticationEnabled) {
+        router.push("/sign-in/otp");
+        return;
+      }
+
+      if (!token || !user) {
+        throw new Error("Invalid login response: missing token or user");
+      }
+
+      {
         const authState: AuthState = {
           user,
           isLoading: false,

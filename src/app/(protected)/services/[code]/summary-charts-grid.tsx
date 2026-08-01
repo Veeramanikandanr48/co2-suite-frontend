@@ -38,7 +38,7 @@ function BarTooltip({ active, payload, label }: any) {
         </p>
       ))}
       <p className="font-extrabold pt-1 border-t border-border/20 mt-1">
-        Total: {payload.reduce((s: number, e: any) => s + (Number(e.value) || 0), 0).toFixed(1)} t CO-e
+        Total: {payload.reduce((s: number, e: any) => s + (Number(e.value) || 0), 0).toFixed(1)} t CO₂e
       </p>
     </div>
   );

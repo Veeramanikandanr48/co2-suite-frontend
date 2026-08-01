@@ -41,8 +41,8 @@ export function SocketProvider({ children, url = process.env.SOCKET_URL as strin
         reconnection: true,
         reconnectionAttempts: 5,
         auth: {
-          headers: token
-        }
+          headers: `Bearer ${token}`,
+        },
       })
 
       newSocket.on("connect", () => {
