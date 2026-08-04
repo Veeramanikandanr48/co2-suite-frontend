@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { apiService } from '@/lib/api/api-service';
+import { ListResponse } from '@/types/fetch';
 import { FacilityItem } from '@/features/organizations/components/tabs/org-facilities-tab';
 import { FacilityFormState } from '@/features/organizations/components/dialogs/org-dialogs';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast-variant';
@@ -29,9 +30,11 @@ export function useOrgFacilities(orgId: string) {
     if (!orgId) return;
     try {
       setFacilitiesLoading(true);
-      const res = await apiService.get<any[]>('facilities', { orgId });
-      const data = (res as unknown as { data?: any[] })?.data ?? (res as unknown as any[]);
-      setFacilities(Array.isArray(data) ? data : []);
+      const res = await apiService.get<ListResponse<FacilityItem>>('facilities', {
+        organizationId: orgId,
+        limit: '100',
+      });
+      setFacilities(res?.data?.listData ?? []);
     } catch {
       // ignore
     } finally {

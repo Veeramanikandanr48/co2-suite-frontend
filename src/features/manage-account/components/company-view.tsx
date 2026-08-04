@@ -18,6 +18,8 @@ import { apiService } from '@/lib/api/api-service';
 import { useAuth } from '@/context/auth-provider';
 import { CompanyModal } from './company-modal';
 import { CompanyData } from '@/types/manage-account';
+import { ListResponse } from '@/types/fetch';
+import { OrganizationService } from '@/types/services';
 
 export function CompanyView() {
   const { user } = useAuth();
@@ -32,19 +34,17 @@ export function CompanyView() {
     try {
       setLoading(true);
       const [orgRes, facRes, svcRes] = await Promise.all([
-        apiService.get<any>(`organizations/${orgId}`),
-        apiService.get<any>('facilities'),
-        apiService.get<any>(`organizations/${orgId}/services`),
+        apiService.get<CompanyData>(`organizations/${orgId}`),
+        apiService.get<ListResponse<{ id: number }>>('facilities', { limit: '1' }),
+        apiService.get<OrganizationService[]>(`organizations/${orgId}/services`),
       ]);
 
-      const currentOrg = (orgRes as any)?.data ?? orgRes;
+      const currentOrg = orgRes?.data;
 
-      const facs = (facRes as any)?.data ?? facRes;
-      const facilityCount = Array.isArray(facs) ? facs.length : 0;
+      const facilityCount = facRes?.data?.dataCount ?? 0;
 
-      const rawSvcs = (svcRes as any)?.data ?? svcRes;
-      const subscriptions = Array.isArray(rawSvcs)
-        ? rawSvcs.map((item: any) => item.service || item)
+      const subscriptions = Array.isArray(svcRes?.data)
+        ? svcRes.data.map((item) => item.service ?? item)
         : [];
 
       setCompany({

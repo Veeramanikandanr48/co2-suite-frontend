@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { apiService } from '@/lib/api/api-service';
 import { API_LIST } from '@/lib/api/endpoints';
+import { ListResponse } from '@/types/fetch';
+import { FacilityItem } from '@/types/organizations';
 import { showSuccessToast, showErrorToast } from '@/components/shared/toast-variant';
 import { useAuth } from '@/context/auth-provider';
 import { MasterRole } from '@/types/enums';
@@ -11,7 +13,7 @@ export function useScopeCommon(category: string, setAdditionalFilter: (f: any) =
   const { user } = useAuth();
   const canEdit = !user || user.roleId === MasterRole.SUPER_ADMIN || user.roleId === MasterRole.ADMIN;
 
-  const [dbFacilities, setDbFacilities] = useState<any[]>([]);
+  const [dbFacilities, setDbFacilities] = useState<FacilityItem[]>([]);
   const [selectedYear, setSelectedYear] = useState('2026');
   const [selectedFacilityHeader, setSelectedFacilityHeader] = useState('All Facilities');
   const [filterFacility, setFilterFacility] = useState('');
@@ -19,9 +21,10 @@ export function useScopeCommon(category: string, setAdditionalFilter: (f: any) =
 
   const fetchFacilities = useCallback(async () => {
     try {
-      const response = await apiService.get<any[]>(API_LIST.FACILITIES);
-      const data = (response as any)?.data ?? response;
-      setDbFacilities(Array.isArray(data) ? data : []);
+      const response = await apiService.get<ListResponse<FacilityItem>>(API_LIST.FACILITIES, {
+        limit: '100',
+      });
+      setDbFacilities(response?.data?.listData ?? []);
     } catch (error) {
       console.error('Failed to fetch facilities:', error);
     }

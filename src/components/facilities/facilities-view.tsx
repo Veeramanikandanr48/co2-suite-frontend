@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { apiService } from '@/lib/api/api-service';
 import { useAuth } from '@/context/auth-provider';
 import { PageHeader } from '@/components/shared';
+import { ListResponse } from '@/types/fetch';
 import { FacilityModal, FacilityData } from './facility-modal';
 import { CompanyView } from '@/features/manage-account/components/company-view';
 import { UsersView } from '@/features/manage-account/components/users-view';
@@ -42,6 +43,7 @@ export function FacilitiesView() {
   const [activeTab, setActiveTab] = useState<'company' | 'facilities' | 'users'>('facilities');
   const [viewMode, setViewMode] = useState<'cards' | 'table' | 'map'>('cards');
   const [facilities, setFacilities] = useState<FacilityData[]>([]);
+  const [totalFacilities, setTotalFacilities] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFacility, setSelectedFacility] = useState<FacilityData | null>(null);
@@ -49,9 +51,10 @@ export function FacilitiesView() {
   const fetchFacilities = async () => {
     try {
       setLoading(true);
-      const res = await apiService.get<FacilityData[]>('facilities');
-      const data = (res as any)?.data ?? res;
-      setFacilities(Array.isArray(data) ? data : []);
+      const res = await apiService.get<ListResponse<FacilityData>>('facilities', { limit: '100' });
+      const list = res?.data?.listData ?? [];
+      setFacilities(list);
+      setTotalFacilities(res?.data?.dataCount ?? list.length);
     } catch (err) {
       console.error('Failed to fetch facilities:', err);
     } finally {
@@ -128,7 +131,7 @@ export function FacilitiesView() {
           <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs flex items-center justify-between gap-4 mb-4">
             <div className="text-xs font-bold text-muted-foreground">
               Total Facilities:{' '}
-              <span className="text-foreground font-extrabold">{facilities.length}</span>
+              <span className="text-foreground font-extrabold">{totalFacilities}</span>
             </div>
 
             <div className="flex items-center gap-3">

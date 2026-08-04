@@ -8,6 +8,7 @@ import { MasterRole } from '@/types/enums';
 import { apiService } from '@/lib/api/api-service';
 import { API_LIST } from '@/lib/api/endpoints';
 import { Service, OrganizationService } from '@/types/services';
+import { ListResponse } from '@/types/fetch';
 import { ServiceCard } from '@/features/services/components/shared/service-card';
 import { PageHeader } from '@/components/shared';
 import { showErrorToast } from '@/components/shared/toast-variant';
@@ -28,9 +29,10 @@ export default function ServicesPage() {
     try {
       setLoading(true);
       if (isSuperAdmin) {
-        const response = await apiService.get<Service[]>(API_LIST.SERVICES);
-        const data = (response as unknown as { data?: Service[] })?.data ?? (response as unknown as Service[]);
-        setServices(Array.isArray(data) ? data : []);
+        const response = await apiService.get<ListResponse<Service>>(API_LIST.SERVICES, {
+          limit: '100',
+        });
+        setServices(response?.data?.listData ?? []);
       } else if (orgId) {
         const response = await apiService.get<OrganizationService[]>(`organizations/${orgId}/services`);
         const orgData = (response as unknown as { data?: OrganizationService[] })?.data ?? (response as unknown as OrganizationService[]);

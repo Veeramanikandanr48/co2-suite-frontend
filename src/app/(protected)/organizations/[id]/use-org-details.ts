@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiService } from '@/lib/api/api-service';
 import { API_LIST } from '@/lib/api/endpoints';
+import { ListResponse } from '@/types/fetch';
 import { Organization, EditOrganizationPayload } from '@/types/organizations';
 import { Service, OrganizationService, AssignServicesPayload } from '@/types/services';
 import { INITIAL_EDIT_FORM } from '@/components/constants/organization';
@@ -66,12 +67,12 @@ export function useOrgDetails(orgId: string, isSuperAdmin: boolean) {
       setServicesLoading(true);
       if (isSuperAdmin) {
         const [allRes, orgRes] = await Promise.all([
-          apiService.get<Service[]>('services'),
+          apiService.get<ListResponse<Service>>('services', { limit: '100' }),
           apiService.get<OrganizationService[]>(`organizations/${orgId}/services`),
         ]);
-        const allData = (allRes as unknown as { data?: Service[] })?.data ?? (allRes as unknown as Service[]);
-        const orgData = (orgRes as unknown as { data?: OrganizationService[] })?.data ?? (orgRes as unknown as OrganizationService[]);
-        setAllServices(Array.isArray(allData) ? allData : []);
+        const allData = allRes?.data?.listData ?? [];
+        const orgData = orgRes?.data ?? [];
+        setAllServices(allData);
         setOrgServices(Array.isArray(orgData) ? orgData : []);
       } else {
         const orgRes = await apiService.get<OrganizationService[]>(`organizations/${orgId}/services`);
