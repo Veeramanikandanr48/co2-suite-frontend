@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { UploadCloud, FileText, Sparkles, Loader2 } from 'lucide-react';
 import { EditInventoryFormFieldsProps } from '@/types/components/services.types';
 import { apiService } from '@/lib/api/api-service';
+import { AppliedCalculationContextCard } from './applied-calculation-context-card';
 
 export function EditInventoryFormFields({
   item,
@@ -264,6 +265,30 @@ export function EditInventoryFormFields({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Applied Calculation Context Card — Auto-derived from Policy & Facility */}
+      <div className="md:col-span-2 pt-2">
+        <AppliedCalculationContextCard
+          context={(() => {
+            const amtVal = parseFloat(String(amount)) || 0;
+            const efVal = parseFloat(String(ef)) || 2.68;
+            if (!name && !unit && !amount) return null;
+
+            return {
+              factorSource: efSource || 'IPCC',
+              factorVersion: 'AR6',
+              formula: 'Fuel Combustion v3',
+              gwpVersion: 'AR6 (2021)',
+              country: facility ? 'Facility Default' : 'Global Default',
+              region: 'Grid Zone A',
+              priorityText: facility ? 'Priority 3 (Regional Grid)' : 'Priority 5 (Global IPCC)',
+              factorRate: efVal,
+              unit: unit || 'L',
+              calculatedCO2e: (amtVal * efVal) / 1000,
+            };
+          })()}
+        />
       </div>
     </div>
   );
