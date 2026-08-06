@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { UploadCloud, FileText } from 'lucide-react';
-import { InventoryItem } from '@/types/inventory';
+import React, { useState } from 'react';
+import { UploadCloud, FileText, Sparkles, Loader2 } from 'lucide-react';
 import { EditInventoryFormFieldsProps } from '@/types/components/services.types';
+import { apiService } from '@/lib/api/api-service';
 
 export function EditInventoryFormFields({
   item,
@@ -31,21 +31,68 @@ export function EditInventoryFormFields({
   proofFile,
   setProofFile,
 }: EditInventoryFormFieldsProps) {
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+
+  const handleAiAssist = async () => {
+    if (!name.trim()) return;
+    setAiLoading(true);
+    setAiSuggestion(null);
+    try {
+      const [unitRes, factorRes] = await Promise.all([
+        apiService.getAiUnitSuggestion<{ amount: number; unit: string; confidence: number }>(name),
+        apiService.getAiFactorRecommendation<{ recommendedSource: string; reason: string }>('Stationary Combustion', name, unit || 'kWh'),
+      ]);
+
+      if (unitRes?.data?.unit && !unit) {
+        setUnit(unitRes.data.unit);
+      }
+      if (factorRes?.data?.recommendedSource && !efSource) {
+        setEfSource(factorRes.data.recommendedSource);
+      }
+      setAiSuggestion(`AI Auto-filled: Unit "${unitRes?.data?.unit || unit}" & EF Source "${factorRes?.data?.recommendedSource || 'DEFRA 2026'}"`);
+    } catch {
+      setAiSuggestion('AI Assistant temporarily unavailable');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Entry Name */}
-      <div>
-        <label className="block text-xs font-semibold text-neutral-700 mb-1">
-          Entry / Activity Name <span className="text-red-500">*</span>
-        </label>
+      {/* Entry Name with AI Assist */}
+      <div className="md:col-span-2">
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-xs font-semibold text-neutral-700">
+            Entry / Activity Name <span className="text-red-500">*</span>
+          </label>
+          <button
+            type="button"
+            onClick={handleAiAssist}
+            disabled={aiLoading || !name.trim()}
+            className="flex items-center gap-1 text-[11px] font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-2 py-0.5 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {aiLoading ? (
+              <Loader2 className="w-3 h-3 animate-spin text-purple-600" />
+            ) : (
+              <Sparkles className="w-3 h-3 text-purple-600" />
+            )}
+            <span>AI Auto-Suggest</span>
+          </button>
+        </div>
         <input
           type="text"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Natural Gas"
+          placeholder="e.g. Natural Gas, Diesel Fleet, Purchased Electricity"
           className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
         />
+        {aiSuggestion && (
+          <p className="text-[10px] text-purple-600 font-medium mt-1 animate-pulse">
+            ✨ {aiSuggestion}
+          </p>
+        )}
       </div>
 
       {/* Facility */}
@@ -98,7 +145,7 @@ export function EditInventoryFormFields({
           type="text"
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
-          placeholder="e.g. sm3, kWh, kg, km"
+          placeholder="e.g. sm3, kWh, kg, km, litre"
           className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
         />
       </div>
@@ -111,7 +158,7 @@ export function EditInventoryFormFields({
           step="any"
           value={ef}
           onChange={(e) => setEf(e.target.value)}
-          placeholder="e.g. 1.938"
+          placeholder="e.g. 1.942"
           className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
         />
         <div className="mt-1 flex items-center justify-between px-1">
@@ -137,7 +184,7 @@ export function EditInventoryFormFields({
           type="text"
           value={efSource}
           onChange={(e) => setEfSource(e.target.value)}
-          placeholder="e.g. IPCC-AR6"
+          placeholder="e.g. IPCC-AR6, DEFRA 2026"
           className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-800 focus:outline-none focus:border-[#00C9A7] focus:bg-white"
         />
       </div>

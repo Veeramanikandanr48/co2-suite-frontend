@@ -38,7 +38,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
     return null
   }
 
-  const isServiceDetail = pathname.startsWith('/services/');
+  const isFullHeightPage = pathname.startsWith('/services/') || pathname.startsWith('/master-management');
 
   return (
     <div className="w-full h-screen flex bg-background overflow-hidden">
@@ -60,15 +60,15 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 h-full bg-surface-subtle overflow-hidden">
         <Header onOpenMobileSidebar={() => setMobileOpen(true)} />
-        <main className={`flex-1 min-h-0 ${isServiceDetail ? 'overflow-hidden flex flex-col' : 'overflow-auto scrollbar-custom'}`}>
+        <main className={`flex-1 min-h-0 ${isFullHeightPage ? 'overflow-hidden flex flex-col' : 'overflow-auto scrollbar-custom'}`}>
           <AnimatePresence mode="wait">
             <motion.div
-              key={isServiceDetail ? 'service-detail-view' : pathname}
+              key={isFullHeightPage ? pathname : pathname}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className={`min-h-full ${isServiceDetail ? 'h-full flex flex-col flex-1' : ''}`}
+              className={`min-h-full ${isFullHeightPage ? 'h-full flex flex-col flex-1 overflow-hidden' : ''}`}
             >
               {children}
             </motion.div>

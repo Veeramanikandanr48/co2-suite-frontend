@@ -23,6 +23,7 @@ export interface EmissionFactorsToolbarProps {
   setFilterSource: (v: string) => void;
   setAdditionalFilter: (f: any) => void;
   refetch: () => void;
+  onOpenCreateModal?: () => void;
 }
 
 export interface EmissionFactorsMetricsProps {

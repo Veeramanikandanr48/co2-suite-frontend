@@ -16,7 +16,11 @@ import { EmissionFactorItem } from '@/types/emission-factors';
 
 export type { EmissionFactorItem };
 
-export function EmissionFactorsView() {
+interface EmissionFactorsViewProps {
+  hideMetricsHeader?: boolean;
+}
+
+export function EmissionFactorsView({ hideMetricsHeader = false }: EmissionFactorsViewProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<EmissionFactorItem | null>(null);
   const [isDeletingId, setIsDeletingId] = useState<string | number | null>(null);
@@ -202,11 +206,13 @@ export function EmissionFactorsView() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="page-container"
+      className={hideMetricsHeader ? 'space-y-4' : 'page-container'}
     >
-      <EmissionFactorsMetrics metrics={metrics} onOpenCreateModal={handleOpenCreateModal} />
+      {!hideMetricsHeader && (
+        <EmissionFactorsMetrics metrics={metrics} onOpenCreateModal={handleOpenCreateModal} />
+      )}
 
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
+      <div className={hideMetricsHeader ? 'space-y-4' : 'bg-card border border-border rounded-xl p-4 sm:p-5 shadow-xs space-y-4'}>
         <EmissionFactorsToolbar
           searchInput={searchInput}
           setSearch={setSearch}
@@ -216,6 +222,7 @@ export function EmissionFactorsView() {
           setFilterSource={setFilterSource}
           setAdditionalFilter={setAdditionalFilter}
           refetch={refetch}
+          onOpenCreateModal={hideMetricsHeader ? handleOpenCreateModal : undefined}
         />
 
         <ReusableTable

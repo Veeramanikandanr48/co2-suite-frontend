@@ -17,4 +17,49 @@ export enum API_LIST {
   INVENTORY_ENTRIES = 'inventory-entries',
   INVENTORY_ENTRIES_FILTER = 'inventory-entries/filter',
   UPLOAD_INVENTORY_DOC = 'inventory-entries/upload-document',
+
+  // Master Configuration APIs
+  MASTERS_ITEMS = 'masters/items',
+  MASTERS_ITEMS_FILTER = 'masters/items/filter',
+  MASTERS_ITEMS_BULK_IMPORT = 'masters/items/bulk-import',
+  MASTERS_MATRIX_EXPORT = 'masters/matrix/export',
+  MASTERS_UNIT_CONVERSIONS = 'masters/unit-conversions',
+  MASTERS_UNIT_CONVERT = 'masters/unit-conversions/convert',
+  MASTERS_GAS_TYPES = 'masters/gas-types',
+  MASTERS_GWP_VERSIONS = 'masters/gwp-versions',
+  MASTERS_FACTOR_SETS = 'masters/factor-sets',
+  MASTERS_FORMULAS = 'masters/formulas',
+  MASTERS_POLICIES = 'masters/policies',
+  MASTERS_SUPPLEMENTARY_FIELDS = 'masters/supplementary-fields',
+
+  // Data Quality APIs
+  DATA_QUALITY_VALIDATE = 'data-quality/validate',
+  DATA_QUALITY_RESULTS = 'data-quality/results',
+  DATA_QUALITY_SUPPLEMENTARY = 'data-quality/supplementary-values',
+
+  // AI Platform APIs
+  AI_SUGGEST_CATEGORY = 'ai/suggest/category',
+  AI_SUGGEST_UNIT = 'ai/suggest/unit',
+  AI_SUGGEST_FACTOR = 'ai/suggest/factor',
+  AI_SUMMARIZE_REPORT = 'ai/summarize/report',
+  AI_CHAT = 'ai/chat',
+  AI_ANOMALIES = 'ai/anomalies',
+  AI_DUPLICATES = 'ai/duplicates',
+
+  // Reporting & Analytics APIs
+  REPORTS_DEFINITIONS = 'reports/definitions',
+  REPORTS_EXECUTE = 'reports/execute',
+  REPORTS_SUMMARIES = 'reports/summaries',
+  ANALYTICS_TRENDS = 'analytics/trends',
+  ANALYTICS_FORECAST = 'analytics/forecast',
+  ANALYTICS_SIMULATE = 'analytics/simulate',
+  ANALYTICS_COST = 'analytics/cost-analysis',
+  ANALYTICS_HOTSPOTS = 'analytics/hotspots',
+  ANALYTICS_TARGETS = 'analytics/targets',
+
+  // Enterprise Scale APIs
+  ENTERPRISE_TENANTS = 'enterprise/tenants',
+  ENTERPRISE_API_KEYS = 'enterprise/api-keys',
+  ENTERPRISE_WEBHOOKS = 'enterprise/webhooks',
+  ENTERPRISE_AUDIT_LOGS = 'enterprise/audit-logs',
 }

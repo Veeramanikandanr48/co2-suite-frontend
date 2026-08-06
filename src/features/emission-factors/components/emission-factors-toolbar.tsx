@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Plus } from 'lucide-react';
 import { CATEGORY_OPTIONS } from '../constants/emission-factor-constants';
 import { EmissionFactorsToolbarProps } from '@/types/components/emission-factors.types';
 
@@ -14,6 +14,7 @@ export function EmissionFactorsToolbar({
   setFilterSource,
   setAdditionalFilter,
   refetch,
+  onOpenCreateModal,
 }: EmissionFactorsToolbarProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-muted p-2.5 rounded-lg border border-border">
@@ -74,19 +75,32 @@ export function EmissionFactorsToolbar({
         </select>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          setSearch('');
-          setFilterCategory('');
-          setFilterSource('');
-          setAdditionalFilter({});
-          refetch();
-        }}
-        className="px-3.5 py-1.5 bg-foreground hover:bg-foreground/90 text-background font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
-      >
-        Clear All Filters
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          onClick={() => {
+            setSearch('');
+            setFilterCategory('');
+            setFilterSource('');
+            setAdditionalFilter({});
+            refetch();
+          }}
+          className="px-3.5 py-1.5 bg-foreground hover:bg-foreground/90 text-background font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+        >
+          Clear All Filters
+        </button>
+
+        {onOpenCreateModal && (
+          <button
+            type="button"
+            onClick={onOpenCreateModal}
+            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Factor
+          </button>
+        )}
+      </div>
     </div>
   );
 }

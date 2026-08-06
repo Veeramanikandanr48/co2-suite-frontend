@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiService } from '@/lib/api/api-service';
@@ -10,6 +10,7 @@ import { useFetchList } from '@/hooks/use-fetch-list';
 import { Scope2CategoryConfig, DBEmissionFactor, InventoryItem } from '@/types/inventory';
 import { useScopeCommon } from './use-scope-common';
 import { useScope2FormState } from './use-scope2-form-state';
+import { useMasterData } from '@/hooks/use-master-data';
 
 export const SCOPE2_CONFIGS: Record<string, Scope2CategoryConfig> = {
   electricity: {
@@ -45,6 +46,8 @@ export function useScope2Calculation(type: 'electricity' | 'heat') {
   const [dbEmissionFactors, setDbEmissionFactors] = useState<DBEmissionFactor[]>([]);
   const [loadingEF, setLoadingEF] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  const { data: masterFuelItems } = useMasterData('FUEL_TYPE');
 
   const efCategory = isElectricity ? 'Purchased Electricity' : 'Purchased Heating & Steam';
 
@@ -139,8 +142,13 @@ export function useScope2Calculation(type: 'electricity' | 'heat') {
     dbEmissionFactors
       .filter((item) => (!formState.efSource || item.source === formState.efSource) && (!formState.factorVersion || item.version === formState.factorVersion))
       .forEach((item) => types.add(item.fuelOrGasType));
+
+    if (masterFuelItems && Array.isArray(masterFuelItems)) {
+      masterFuelItems.forEach((m) => { if (m.name) types.add(m.name); });
+    }
+
     return Array.from(types);
-  }, [dbEmissionFactors, formState.efSource, formState.factorVersion]);
+  }, [dbEmissionFactors, formState.efSource, formState.factorVersion, masterFuelItems]);
 
   const currentMatchingEF = useMemo(() => {
     return dbEmissionFactors.find(

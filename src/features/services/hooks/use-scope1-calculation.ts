@@ -10,6 +10,7 @@ import { useFetchList } from '@/hooks/use-fetch-list';
 import { DBEmissionFactor, InventoryItem, Scope1CategoryType } from '@/types/inventory';
 import { useScopeCommon } from './use-scope-common';
 import { useScope1FormState } from './use-scope1-form-state';
+import { useMasterData } from '@/hooks/use-master-data';
 
 export type { DBEmissionFactor, InventoryItem };
 
@@ -21,6 +22,9 @@ export function useScope1Calculation(category: Scope1CategoryType) {
   const [dbEmissionFactors, setDbEmissionFactors] = useState<DBEmissionFactor[]>([]);
   const [loadingEF, setLoadingEF] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const { data: masterFuelItems } = useMasterData('FUEL_TYPE');
+  const { data: masterGasItems } = useMasterData('GAS_TYPE');
 
   const {
     list,
@@ -116,8 +120,21 @@ export function useScope1Calculation(category: Scope1CategoryType) {
     dbEmissionFactors
       .filter((item) => (!formState.efSource || item.source === formState.efSource) && (!formState.factorVersion || item.version === formState.factorVersion))
       .forEach((item) => types.add(item.fuelOrGasType));
+
+    // Merge dynamic master items from Master Data Management
+    if (masterFuelItems && Array.isArray(masterFuelItems)) {
+      masterFuelItems.forEach((m) => {
+        if (m.name) types.add(m.name);
+      });
+    }
+    if (masterGasItems && Array.isArray(masterGasItems)) {
+      masterGasItems.forEach((m) => {
+        if (m.name) types.add(m.name);
+      });
+    }
+
     return Array.from(types);
-  }, [dbEmissionFactors, formState.efSource, formState.factorVersion]);
+  }, [dbEmissionFactors, formState.efSource, formState.factorVersion, masterFuelItems, masterGasItems]);
 
   const currentMatchingEF = useMemo(() => {
     return dbEmissionFactors.find(

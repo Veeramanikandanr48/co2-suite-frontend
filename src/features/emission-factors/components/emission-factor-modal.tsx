@@ -1,10 +1,11 @@
-﻿'use client';
+'use client';
 
 import React, { useMemo } from 'react';
 import { Database, X, Loader2 } from 'lucide-react';
 import { EmissionFactorItem } from './emission-factors-view';
 import { CATEGORY_OPTIONS } from '../constants/emission-factor-constants';
 import { FormulaBuilderField } from './formula-builder-field';
+import { useMasterData } from '@/hooks/use-master-data';
 
 interface EmissionFactorModalProps {
   isModalOpen: boolean;
@@ -45,6 +46,44 @@ export function EmissionFactorModal({
   submitting,
   handleSubmitForm,
 }: EmissionFactorModalProps) {
+  const { data: allMasterItems } = useMasterData();
+
+  // Dynamic Master Data Dropdowns & Autocomplete Lists
+  const categoryOptions = useMemo(() => {
+    const items = allMasterItems.filter((i) => i.type === 'ACTIVITY_CATEGORY');
+    if (items.length === 0) return CATEGORY_OPTIONS;
+    const names = items.map((i) => i.name);
+    return Array.from(new Set([...CATEGORY_OPTIONS, ...names]));
+  }, [allMasterItems]);
+
+  const fuelOptions = useMemo(() => {
+    const items = allMasterItems.filter((i) => i.type === 'FUEL_TYPE' || i.type === 'GAS_TYPE');
+    const defaultFuels = ['Natural Gas', 'Diesel', 'Petrol', 'LPG', 'Coal', 'Grid Electricity', 'Renewable Electricity', 'R134a', 'Flight', 'Car', 'Steel'];
+    const names = items.map((i) => i.name);
+    return Array.from(new Set([...defaultFuels, ...names]));
+  }, [allMasterItems]);
+
+  const unitOptions = useMemo(() => {
+    const items = allMasterItems.filter((i) => i.type === 'UNIT');
+    const defaultUnits = ['kg CO2e', 'sm3', 'Litre', 'kWh', 'MWh', 'km', 'tonne', 'USD', 'kg'];
+    const names = items.map((i) => i.name);
+    return Array.from(new Set([...defaultUnits, ...names]));
+  }, [allMasterItems]);
+
+  const sourceOptions = useMemo(() => {
+    const items = allMasterItems.filter((i) => i.type === 'FACTOR_SOURCE');
+    const defaultSources = ['DEFRA', 'IPCC', 'IEA', 'EPA', 'Ecoinvent', 'PCAF', 'GHG Protocol'];
+    const names = items.map((i) => i.name);
+    return Array.from(new Set([...defaultSources, ...names]));
+  }, [allMasterItems]);
+
+  const versionOptions = useMemo(() => {
+    const items = allMasterItems.filter((i) => i.type === 'FACTOR_VERSION');
+    const defaultVersions = ['2024', '2023', '2022', 'AR6', 'AR5', 'v3.9'];
+    const names = items.map((i) => i.name);
+    return Array.from(new Set([...defaultVersions, ...names]));
+  }, [allMasterItems]);
+
   const handleInsertToken = (token: string) => {
     setFormData((prev) => {
       const current = prev.formula || '';
@@ -109,7 +148,7 @@ export function EmissionFactorModal({
         {/* Modal Form */}
         <form onSubmit={handleSubmitForm} className="p-6 space-y-4 text-xs">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Category */}
+            {/* Category / Scope */}
             <div className="space-y-1 md:col-span-2">
               <label className="font-bold text-foreground">Category / Scope *</label>
               <select
@@ -118,7 +157,7 @@ export function EmissionFactorModal({
                 className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               >
-                {CATEGORY_OPTIONS.map((cat) => (
+                {categoryOptions.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
@@ -131,12 +170,18 @@ export function EmissionFactorModal({
               <label className="font-bold text-foreground">Fuel / Gas / Item Name *</label>
               <input
                 type="text"
+                list="master-fuel-list"
                 placeholder="e.g. Natural Gas, Diesel, Grid Power"
                 value={formData.fuelOrGasType}
                 onChange={(e) => setFormData({ ...formData, fuelOrGasType: e.target.value })}
                 className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               />
+              <datalist id="master-fuel-list">
+                {fuelOptions.map((opt) => (
+                  <option key={opt} value={opt} />
+                ))}
+              </datalist>
             </div>
 
             {/* Emission Factor Value */}
@@ -158,11 +203,17 @@ export function EmissionFactorModal({
               <label className="font-bold text-foreground">Unit</label>
               <input
                 type="text"
+                list="master-unit-list"
                 placeholder="e.g. kg CO2e / liter, sm3, kWh"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                 className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
               />
+              <datalist id="master-unit-list">
+                {unitOptions.map((opt) => (
+                  <option key={opt} value={opt} />
+                ))}
+              </datalist>
             </div>
 
             {/* Database Source */}
@@ -170,12 +221,18 @@ export function EmissionFactorModal({
               <label className="font-bold text-foreground">Database Source *</label>
               <input
                 type="text"
+                list="master-source-list"
                 placeholder="e.g. DEFRA, IPCC, EPA"
                 value={formData.source}
                 onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                 className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
                 required
               />
+              <datalist id="master-source-list">
+                {sourceOptions.map((opt) => (
+                  <option key={opt} value={opt} />
+                ))}
+              </datalist>
             </div>
 
             {/* Version / Year */}
@@ -183,11 +240,17 @@ export function EmissionFactorModal({
               <label className="font-bold text-foreground">Version / Year</label>
               <input
                 type="text"
+                list="master-version-list"
                 placeholder="e.g. 2024, AR6"
                 value={formData.version}
                 onChange={(e) => setFormData({ ...formData, version: e.target.value })}
                 className="w-full bg-card border border-border rounded-lg p-2 text-xs focus:ring-2 focus:ring-primary"
               />
+              <datalist id="master-version-list">
+                {versionOptions.map((opt) => (
+                  <option key={opt} value={opt} />
+                ))}
+              </datalist>
             </div>
 
             {/* Active Toggle */}

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiService } from '@/lib/api/api-service';
@@ -11,6 +11,7 @@ import { DBEmissionFactor, InventoryItem } from '@/types/inventory';
 import { SCOPE3_CONFIGS } from '../constants/scope3-category-helpers';
 import { useScopeCommon } from './use-scope-common';
 import { useScope3FormState } from './use-scope3-form-state';
+import { useMasterData } from '@/hooks/use-master-data';
 
 export function useScope3Calculation(category: string) {
   const config = SCOPE3_CONFIGS[category] || SCOPE3_CONFIGS['Purchased Goods and Services'];
@@ -23,6 +24,9 @@ export function useScope3Calculation(category: string) {
   const [dbFactors, setDbFactors] = useState<DBEmissionFactor[]>([]);
   const [loadingEF, setLoadingEF] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  const { data: masterFuelItems } = useMasterData('FUEL_TYPE');
+  const { data: masterCatItems } = useMasterData('ACTIVITY_CATEGORY');
 
   const {
     list,
@@ -108,6 +112,24 @@ export function useScope3Calculation(category: string) {
       .forEach((item) => versions.add(item.version));
     return Array.from(versions);
   }, [dbFactors, formState.efSource]);
+
+  const availableMaterialProducts = useMemo(() => {
+    const types = new Set<string>();
+    dbFactors
+      .filter((item) => (!formState.efSource || item.source === formState.efSource) && (!formState.factorVersion || item.version === formState.factorVersion))
+      .forEach((item) => {
+        if (item.fuelOrGasType) types.add(item.fuelOrGasType);
+      });
+
+    if (masterFuelItems && Array.isArray(masterFuelItems)) {
+      masterFuelItems.forEach((m) => { if (m.name) types.add(m.name); });
+    }
+    if (masterCatItems && Array.isArray(masterCatItems)) {
+      masterCatItems.forEach((m) => { if (m.name) types.add(m.name); });
+    }
+
+    return Array.from(types);
+  }, [dbFactors, formState.efSource, formState.factorVersion, masterFuelItems, masterCatItems]);
 
   const currentMatchingEF = useMemo(() => {
     return dbFactors.find(
@@ -216,6 +238,7 @@ export function useScope3Calculation(category: string) {
     dbFactors,
     availableSources,
     availableVersions,
+    availableMaterialProducts,
     currentMatchingEF,
     totalEmissionVal,
     handleNotRelevantToggle,

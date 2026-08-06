@@ -1,101 +1,45 @@
 'use client';
- 
+
 import { CustomAxiosResponse } from '@/types';
 import axiosInstance from './axios-client';
-
+import { API_LIST } from './endpoints';
 import type { AxiosRequestConfig } from 'axios';
- 
+
 /**
- * API Service Class
- * Provides a wrapper around axios for making HTTP requests.
- * Includes typed methods for common HTTP operations.
+ * ApiService Class
+ * Provides typed helper methods for all CO2 Suite API endpoints.
  */
 class ApiService {
-  /**
-   * Performs a GET request to fetch data
-   * @param endpoint - The API endpoint to call
-   * @param queryParams - Optional query parameters
-   * @param config - Optional axios configuration
-   * @returns Promise with the response data
-   * @example
-   * const users = await apiService.get<User[]>('/users');
-   */
   async get<T>(endpoint: string, queryParams?: Record<string, string>, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.get<T>(endpoint, { ...config, params: queryParams }) as Promise<CustomAxiosResponse<T>>;
   }
- 
-  /**
-   * Performs a GET request to fetch a single item by ID
-   * @param endpoint - The base API endpoint
-   * @param id - The ID of the item to fetch
-   * @param queryParams - Optional query parameters
-   * @param config - Optional axios configuration
-   * @returns Promise with the response data
-   * @example
-   * const user = await apiService.getById<User>('/users', 123);
-   */
+
   async getById<T>(endpoint: string, id: string | number, queryParams?: Record<string, string>, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.get<T>(`${endpoint}/${id}`, { ...config, params: queryParams }) as Promise<CustomAxiosResponse<T>>;
   }
- 
-  /**
-   * Performs a POST request to create new data
-   * @param endpoint - The API endpoint
-   * @param data - The data to send
-   * @param config - Optional axios configuration
-   * @returns Promise with the response data
-   * @example
-   * const newUser = await apiService.post<User>('/users', { name: 'John' });
-   */
+
   async post<T>(endpoint: string, data?: unknown, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.post<T>(endpoint, data, config) as Promise<CustomAxiosResponse<T>>;
   }
- 
-  /**
-   * Performs a PUT request to update existing data
-   * @param endpoint - The base API endpoint
-   * @param id - The ID of the item to update
-   * @param data - The updated data
-   * @param config - Optional axios configuration
-   * @returns Promise with the response data
-   * @example
-   * await apiService.put<User>('/users', 123, { name: 'Updated' });
-   */
+
   async put<T>(endpoint: string, id: string | number, data?: unknown, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.put<T>(`${endpoint}/${id}`, data, config) as Promise<CustomAxiosResponse<T>>;
   }
- 
-  /**
-   * Performs a DELETE request to remove or deactivate data
-   * @param endpoint - The base API endpoint
-   * @param id - Optional ID of the item to delete
-   * @param config - Optional axios configuration
-   * @returns Promise with the response data
-   * @example
-   * await apiService.delete<void>('/users', 123);
-   */
+
   async delete<T>(endpoint: string, id?: string | number, config?: AxiosRequestConfig): Promise<CustomAxiosResponse<T>> {
     const url = id !== undefined ? `${endpoint}/${id}` : endpoint;
     return axiosInstance.delete<T>(url, config) as Promise<CustomAxiosResponse<T>>;
   }
 
-  /**
-   * Fetches dynamic overall carbon summary from database
-   */
+  // Dashboard & Scope Methods
   async getCarbonSummary<T>(serviceCode: string, queryParams?: { year?: string; facility?: string }): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.get<T>(`services/${serviceCode}/summary`, { params: queryParams }) as Promise<CustomAxiosResponse<T>>;
   }
 
-  /**
-   * Fetches dynamic main executive dashboard summary from database
-   */
   async getMainDashboardSummary<T>(queryParams?: { year?: string; facility?: string }): Promise<CustomAxiosResponse<T>> {
     return axiosInstance.get<T>('dashboard/summary', { params: queryParams }) as Promise<CustomAxiosResponse<T>>;
   }
 
-  /**
-   * Fetches scope calculation activity results using exact CageSuite API contract: /services/result/:scope/:activity
-   */
   async getScopeActivityResult<T>(
     scope: string,
     activity: string,
@@ -106,9 +50,6 @@ class ApiService {
     }) as Promise<CustomAxiosResponse<T>>;
   }
 
-  /**
-   * Fetches factor signature metadata using exact CageSuite API contract: /services/factor-signature
-   */
   async getFactorSignature<T>(
     scope: string,
     activity: string,
@@ -118,6 +59,102 @@ class ApiService {
       params: { scope, activity, based_option: basedOption || 'activity' },
     }) as Promise<CustomAxiosResponse<T>>;
   }
+
+  // ============================================================================
+  // MASTER CONFIGURATION HELPERS
+  // ============================================================================
+  async getGasTypes<T>(): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_GAS_TYPES) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getGwpVersions<T>(): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_GWP_VERSIONS) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getFactorSets<T>(): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_FACTOR_SETS) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getFormulas<T>(): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_FORMULAS) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getPolicies<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_POLICIES, {
+      params: { organizationId },
+    }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getSupplementaryFields<T>(category?: string): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.MASTERS_SUPPLEMENTARY_FIELDS, {
+      params: { category },
+    }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  // ============================================================================
+  // DATA QUALITY HELPERS
+  // ============================================================================
+  async validateDataQuality<T>(entryId: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(`${API_LIST.DATA_QUALITY_VALIDATE}/${entryId}`) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getDataQualityResults<T>(entryId: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(`${API_LIST.DATA_QUALITY_RESULTS}/${entryId}`) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  // ============================================================================
+  // AI PLATFORM HELPERS
+  // ============================================================================
+  async getAiCategorySuggestion<T>(description: string): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_CATEGORY, { description }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAiUnitSuggestion<T>(text: string): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_UNIT, { text }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAiFactorRecommendation<T>(category: string, fuelType: string, unit: string): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_FACTOR, { category, fuelType, unit }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async aiChat<T>(message: string, context?: any): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(API_LIST.AI_CHAT, { message, context }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  // ============================================================================
+  // REPORTING & ANALYTICS HELPERS
+  // ============================================================================
+  async getReportDefinitions<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.REPORTS_DEFINITIONS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async executeReport<T>(definitionId: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(`${API_LIST.REPORTS_EXECUTE}/${definitionId}`) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAnalyticsTrends<T>(organizationId?: number, year?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.ANALYTICS_TRENDS, { params: { organizationId, year } }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAnalyticsForecast<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.ANALYTICS_FORECAST, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async runAnalyticsSimulation<T>(organizationId: number, dieselReductionPercent: number, electricityReductionPercent: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.post<T>(API_LIST.ANALYTICS_SIMULATE, { organizationId, dieselReductionPercent, electricityReductionPercent }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAnalyticsCost<T>(organizationId?: number, carbonPrice?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.ANALYTICS_COST, { params: { organizationId, carbonPrice } }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAnalyticsHotspots<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.ANALYTICS_HOTSPOTS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
+  }
+
+  async getAnalyticsTargets<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
+    return axiosInstance.get<T>(API_LIST.ANALYTICS_TARGETS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
+  }
 }
- 
-export const apiService = new ApiService();
+
+export const apiService = new ApiService();

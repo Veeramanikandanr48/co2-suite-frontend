@@ -2,10 +2,9 @@
 
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Edit2, Copy, Trash2, ArrowUpDown, Paperclip } from 'lucide-react';
-import { InventoryItem, EditModalItem } from '@/types/inventory';
+import { Edit2, Copy, Trash2, ArrowUpDown, Paperclip, ShieldCheck } from 'lucide-react';
+import { InventoryItem } from '@/types/inventory';
 import { CreateInventoryColumnsParams } from '@/types/components/services.types';
-
 
 export function createInventoryColumns({
   canEdit,
@@ -107,11 +106,37 @@ export function createInventoryColumns({
       ),
     },
     {
+      accessorKey: 'dataQuality',
+      header: 'Data Quality',
+      cell: ({ row }) => {
+        const hasDoc = Boolean(row.original.documentPath);
+        const hasEf = Boolean(row.original.efSource || row.original.ef);
+        const score = hasDoc && hasEf ? 100 : hasEf ? 85 : 60;
+        const level = score >= 85 ? 'HIGH' : score >= 70 ? 'MEDIUM' : 'LOW';
+
+        return (
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+              level === 'HIGH'
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : level === 'MEDIUM'
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'bg-rose-50 text-rose-700 border border-rose-200'
+            }`}
+            title={`Confidence Score: ${score}%`}
+          >
+            <ShieldCheck className="w-3 h-3" />
+            <span>{level} ({score}%)</span>
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: 'approvalStatus',
       header: 'Status',
       cell: ({ row }) => {
         const status = row.original.approvalStatus || row.original.status || 'Approved';
-        const isApproved = status === 'Approved';
+        const isApproved = status === 'Approved' || status === 'completed';
         const isPending = status === 'Pending Review' || status === 'Pending';
         return (
           <span
