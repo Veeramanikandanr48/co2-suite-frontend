@@ -19,6 +19,9 @@ export enum API_LIST {
   UPLOAD_INVENTORY_DOC = 'inventory-entries/upload-document',
 
   // Master Configuration APIs
+  MASTERS_SIDEBAR_STRUCTURE = 'masters/sidebar-structure',
+  MASTERS_TYPE_SCHEMA = 'masters/types/:code/schema',
+  MASTERS_SUPPORTED_TYPES = 'masters/supported-types',
   MASTERS_ITEMS = 'masters/items',
   MASTERS_ITEMS_FILTER = 'masters/items/filter',
   MASTERS_ITEMS_BULK_IMPORT = 'masters/items/bulk-import',
@@ -31,31 +34,6 @@ export enum API_LIST {
   MASTERS_FORMULAS = 'masters/formulas',
   MASTERS_POLICIES = 'masters/policies',
   MASTERS_SUPPLEMENTARY_FIELDS = 'masters/supplementary-fields',
-
-  // Data Quality APIs
-  DATA_QUALITY_VALIDATE = 'data-quality/validate',
-  DATA_QUALITY_RESULTS = 'data-quality/results',
-  DATA_QUALITY_SUPPLEMENTARY = 'data-quality/supplementary-values',
-
-  // AI Platform APIs
-  AI_SUGGEST_CATEGORY = 'ai/suggest/category',
-  AI_SUGGEST_UNIT = 'ai/suggest/unit',
-  AI_SUGGEST_FACTOR = 'ai/suggest/factor',
-  AI_SUMMARIZE_REPORT = 'ai/summarize/report',
-  AI_CHAT = 'ai/chat',
-  AI_ANOMALIES = 'ai/anomalies',
-  AI_DUPLICATES = 'ai/duplicates',
-
-  // Reporting & Analytics APIs
-  REPORTS_DEFINITIONS = 'reports/definitions',
-  REPORTS_EXECUTE = 'reports/execute',
-  REPORTS_SUMMARIES = 'reports/summaries',
-  ANALYTICS_TRENDS = 'analytics/trends',
-  ANALYTICS_FORECAST = 'analytics/forecast',
-  ANALYTICS_SIMULATE = 'analytics/simulate',
-  ANALYTICS_COST = 'analytics/cost-analysis',
-  ANALYTICS_HOTSPOTS = 'analytics/hotspots',
-  ANALYTICS_TARGETS = 'analytics/targets',
 
   // Enterprise Scale APIs
   ENTERPRISE_TENANTS = 'enterprise/tenants',

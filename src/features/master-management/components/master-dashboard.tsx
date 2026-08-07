@@ -25,12 +25,13 @@ const COVERAGE_TARGETS: Record<string, { label: string; icon: React.ElementType;
 
 interface MasterDashboardProps {
   onNavigate: (key: string) => void;
+  serviceCode?: string;
 }
 
-export function MasterDashboard({ onNavigate }: MasterDashboardProps) {
+export function MasterDashboard({ onNavigate, serviceCode }: MasterDashboardProps) {
   const { list: allItems, totalCount, isLoading } = useFetchList<MasterItem>(
     API_LIST.MASTERS_ITEMS_FILTER,
-    { limit: 500, additionalFilter: {} }
+    { limit: 500, additionalFilter: { serviceCode } }
   );
 
   const stats = useMemo(() => {

@@ -141,6 +141,7 @@ function buildColumns(onRowClick: (item: MasterItem) => void): ColumnDef<MasterI
 
 interface MasterDataGridProps {
   typeKey: string;
+  serviceCode?: string;
   refreshKey: number;
   selectedItem: MasterItem | null;
   onRowClick: (item: MasterItem) => void;
@@ -151,6 +152,7 @@ interface MasterDataGridProps {
 
 export function MasterDataGrid({
   typeKey,
+  serviceCode = 'GLOBAL',
   refreshKey,
   selectedItem,
   onRowClick,
@@ -165,6 +167,15 @@ export function MasterDataGrid({
   const isEmissionFactor = typeKey === 'EMISSION_FACTOR';
   const endpoint = isEmissionFactor ? API_LIST.EMISSION_FACTORS_FILTER : API_LIST.MASTERS_ITEMS_FILTER;
 
+  const currentFilter = useMemo(() => {
+    const filter: Record<string, unknown> = {};
+    if (typeKey !== 'ALL') filter.type = typeKey;
+    if (serviceCode && serviceCode !== 'ALL') {
+      filter.serviceCode = serviceCode;
+    }
+    return filter;
+  }, [typeKey, serviceCode]);
+
   const {
     list,
     totalCount,
@@ -177,15 +188,15 @@ export function MasterDataGrid({
     setPage,
     refetch,
   } = useFetchList<MasterItem>(endpoint, {
-    additionalFilter: typeKey !== 'ALL' ? { type: typeKey } : {},
+    additionalFilter: currentFilter,
     limit: 50,
   });
 
-  // Sync type filter when key changes
+  // Sync type & service filters when props change
   React.useEffect(() => {
-    setAdditionalFilter(typeKey !== 'ALL' ? { type: typeKey } : {});
+    setAdditionalFilter(currentFilter);
     setRowSelection({});
-  }, [typeKey, refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentFilter, refreshKey, setAdditionalFilter]);
 
   const columns = useMemo(() => buildColumns(onRowClick), [onRowClick]);
 
@@ -222,8 +233,9 @@ export function MasterDataGrid({
 
   const handleBulkDelete = useCallback(async () => {
     const ids = selectedRows.map((r) => r.original.id);
+    if (!ids.length) return;
     try {
-      await Promise.all(ids.map((id) => apiService.delete(API_LIST.MASTERS_ITEMS, id)));
+      await apiService.post(`${API_LIST.MASTERS_ITEMS}/bulk-delete`, { ids });
       toast({ title: 'Deleted', description: `${ids.length} items removed.` });
       setRowSelection({});
       refetch();

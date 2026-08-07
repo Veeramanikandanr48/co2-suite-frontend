@@ -91,69 +91,12 @@ class ApiService {
     }) as Promise<CustomAxiosResponse<T>>;
   }
 
-  // ============================================================================
-  // DATA QUALITY HELPERS
-  // ============================================================================
-  async validateDataQuality<T>(entryId: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(`${API_LIST.DATA_QUALITY_VALIDATE}/${entryId}`) as Promise<CustomAxiosResponse<T>>;
+  async getAiUnitSuggestion<T>(_text: string): Promise<CustomAxiosResponse<T>> {
+    return Promise.resolve({ success: true, message: 'OK', data: null, status: 200 } as unknown as CustomAxiosResponse<T>);
   }
 
-  async getDataQualityResults<T>(entryId: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(`${API_LIST.DATA_QUALITY_RESULTS}/${entryId}`) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  // ============================================================================
-  // AI PLATFORM HELPERS
-  // ============================================================================
-  async getAiCategorySuggestion<T>(description: string): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_CATEGORY, { description }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAiUnitSuggestion<T>(text: string): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_UNIT, { text }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAiFactorRecommendation<T>(category: string, fuelType: string, unit: string): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(API_LIST.AI_SUGGEST_FACTOR, { category, fuelType, unit }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async aiChat<T>(message: string, context?: any): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(API_LIST.AI_CHAT, { message, context }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  // ============================================================================
-  // REPORTING & ANALYTICS HELPERS
-  // ============================================================================
-  async getReportDefinitions<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.REPORTS_DEFINITIONS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async executeReport<T>(definitionId: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(`${API_LIST.REPORTS_EXECUTE}/${definitionId}`) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAnalyticsTrends<T>(organizationId?: number, year?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.ANALYTICS_TRENDS, { params: { organizationId, year } }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAnalyticsForecast<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.ANALYTICS_FORECAST, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async runAnalyticsSimulation<T>(organizationId: number, dieselReductionPercent: number, electricityReductionPercent: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.post<T>(API_LIST.ANALYTICS_SIMULATE, { organizationId, dieselReductionPercent, electricityReductionPercent }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAnalyticsCost<T>(organizationId?: number, carbonPrice?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.ANALYTICS_COST, { params: { organizationId, carbonPrice } }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAnalyticsHotspots<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.ANALYTICS_HOTSPOTS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
-  }
-
-  async getAnalyticsTargets<T>(organizationId?: number): Promise<CustomAxiosResponse<T>> {
-    return axiosInstance.get<T>(API_LIST.ANALYTICS_TARGETS, { params: { organizationId } }) as Promise<CustomAxiosResponse<T>>;
+  async getAiFactorRecommendation<T>(_category: string, _fuelType: string, _unit: string): Promise<CustomAxiosResponse<T>> {
+    return Promise.resolve({ success: true, message: 'OK', data: null, status: 200 } as unknown as CustomAxiosResponse<T>);
   }
 }
 

@@ -61,12 +61,32 @@ export const MASTER_ITEM_TYPES: MasterItemTypeOption[] = [
   { value: 'EMISSION_FACTOR', label: 'Emission Factors', description: 'Emission factor values, formulas & breakdown' },
 ];
 
+export interface ServiceOption {
+  value: string;
+  label: string;
+}
+
+export const MASTER_SERVICES: ServiceOption[] = [
+  { value: 'CARBON', label: 'CO2 Suite Carbon' },
+  { value: 'CBAM', label: 'CO2 Suite CBAM' },
+  { value: 'PEF_TEXTILES', label: 'CO2 Suite PEF (Textiles)' },
+  { value: 'LCA_PLASTICS', label: 'CO2 Suite LCA (Plastics)' },
+  { value: 'LCA_METALS', label: 'CO2 Suite LCA (Metals)' },
+  { value: 'ESG', label: 'CO2 Suite ESG' },
+  { value: 'EPD_CABLES', label: 'CO2 Suite EPD (Cables)' },
+];
+
+export type MasterVisibility = 'GLOBAL' | 'DOMAIN' | 'TENANT';
+
 export interface MasterItem {
   id: number | string;
   type: MasterItemType | string;
   code: string;
   name: string;
   description?: string;
+  status?: string;
+  serviceCode?: string;
+  visibility?: MasterVisibility;
   sortOrder?: number;
   scope?: string;
   subType?: string;
@@ -76,6 +96,7 @@ export interface MasterItem {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  attributes?: Record<string, any>;
   customAttributes?: Record<string, any>;
 }
 
@@ -84,11 +105,14 @@ export interface MasterItemFormData {
   code: string;
   name: string;
   description: string;
+  serviceCode?: string;
+  visibility?: MasterVisibility;
   sortOrder: number;
   scope?: string;
   subType?: string;
   allowedUnits?: string[];
   parentId?: number;
   isActive: boolean;
+  attributes?: Record<string, any>;
   customAttributes?: Record<string, any>;
 }

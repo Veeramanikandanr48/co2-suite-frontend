@@ -157,6 +157,21 @@ export function createMasterItemColumns({
       },
     },
     {
+      accessorKey: 'serviceCode',
+      header: 'Service',
+      cell: ({ row }) => {
+        const serviceCode = row.original.serviceCode || 'GLOBAL';
+        const isGlobal = serviceCode === 'GLOBAL';
+        return (
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
+            isGlobal ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+          }`}>
+            {serviceCode}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: 'sortOrder',
       header: 'Sort Order',
       cell: ({ row }) => (

@@ -3,10 +3,11 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Edit2, Trash2, MoreVertical, Clock, Tag, Info, History, Link2, ShieldCheck } from 'lucide-react';
-import { MasterItem, MasterItemFormData } from '@/types/master-management.types';
+import { MasterItem, MasterItemFormData, MASTER_SERVICES } from '@/types/master-management.types';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TypeBadge } from '@/components/ui/type-badge';
 import { Timeline, TimelineEvent } from '@/components/ui/page-layout';
+import { DynamicFormRenderer } from './dynamic-form-renderer';
 import { apiService } from '@/lib/api/api-service';
 import { API_LIST } from '@/lib/api/endpoints';
 import { toast } from '@/hooks/use-toast';
@@ -55,6 +56,7 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
       code: item.code,
       name: item.name,
       description: item.description ?? '',
+      serviceCode: item.serviceCode ?? 'GLOBAL',
       sortOrder: item.sortOrder ?? 0,
       isActive: item.isActive !== false,
     });
@@ -127,7 +129,7 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -140,13 +142,13 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="h-7 px-3 text-xs font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-60"
+                    className="h-7 px-3 text-xs font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-60 cursor-pointer"
                   >
                     {isSaving ? 'Saving…' : 'Save changes'}
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="h-7 px-3 text-xs font-medium rounded-lg border border-input hover:bg-muted transition-colors"
+                    className="h-7 px-3 text-xs font-medium rounded-lg border border-input hover:bg-muted transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -155,14 +157,14 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
                 <>
                   <button
                     onClick={handleOpenEdit}
-                    className="h-7 px-3 text-xs font-medium rounded-lg border border-input hover:bg-muted transition-colors inline-flex items-center gap-1.5"
+                    className="h-7 px-3 text-xs font-medium rounded-lg border border-input hover:bg-muted transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <Edit2 className="w-3 h-3" /> Edit
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="h-7 px-3 text-xs font-medium rounded-lg border border-negative-200 text-negative-600 hover:bg-negative-50 dark:hover:bg-negative-900/20 transition-colors inline-flex items-center gap-1.5 disabled:opacity-60"
+                    className="h-7 px-3 text-xs font-medium rounded-lg border border-negative-200 text-negative-600 hover:bg-negative-50 dark:hover:bg-negative-900/20 transition-colors inline-flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     {isDeleting ? 'Deleting…' : 'Delete'}
@@ -181,7 +183,7 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setIsEditing(false); }}
                   className={cn(
-                    'relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0',
+                    'relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0 cursor-pointer',
                     'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-t after:transition-transform',
                     activeTab === tab.key
                       ? 'text-foreground after:bg-primary after:scale-x-100'
@@ -208,56 +210,42 @@ export function MasterDetailDrawer({ item, onClose, onDelete, onSaveSuccess }: M
                 {activeTab === 'overview' && (
                   <div className="px-4 pt-2 pb-4">
                     {isEditing ? (
-                      <div className="space-y-3 pt-2">
-                        <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Name *</label>
-                          <input
-                            value={editForm.name ?? ''}
-                            onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
-                            className="w-full h-8 px-3 text-sm bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Code *</label>
-                          <input
-                            value={editForm.code ?? ''}
-                            onChange={(e) => setEditForm((f) => ({ ...f, code: e.target.value }))}
-                            className="w-full h-8 px-3 text-sm font-mono bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Description</label>
-                          <textarea
-                            value={editForm.description ?? ''}
-                            onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
-                            rows={3}
-                            className="w-full px-3 py-2 text-sm bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Sort Order</label>
-                          <input
-                            type="number"
-                            value={editForm.sortOrder ?? 0}
-                            onChange={(e) => setEditForm((f) => ({ ...f, sortOrder: Number(e.target.value) }))}
-                            className="w-full h-8 px-3 text-sm bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id="isActive"
-                            checked={editForm.isActive !== false}
-                            onChange={(e) => setEditForm((f) => ({ ...f, isActive: e.target.checked }))}
-                            className="rounded"
-                          />
-                          <label htmlFor="isActive" className="text-sm font-medium text-foreground">Active</label>
-                        </div>
+                      <div className="pt-2">
+                        <DynamicFormRenderer
+                          typeCode={item.type as string}
+                          initialValues={{
+                            code: item.code,
+                            name: item.name,
+                            description: item.description || '',
+                            serviceCode: item.serviceCode || 'GLOBAL',
+                            sortOrder: item.sortOrder || 0,
+                            isActive: item.isActive !== false,
+                          }}
+                          onSubmit={async (formData) => {
+                            setIsSaving(true);
+                            try {
+                              await apiService.put(API_LIST.MASTERS_ITEMS, item.id, formData);
+                              toast({ title: 'Saved', description: `${formData.name || item.name} updated successfully.` });
+                              setIsEditing(false);
+                              onSaveSuccess();
+                            } catch {
+                              toast({ title: 'Error', description: 'Failed to save changes.', variant: 'destructive' });
+                            } finally {
+                              setIsSaving(false);
+                            }
+                          }}
+                          onCancel={() => setIsEditing(false)}
+                        />
                       </div>
                     ) : (
                       <div className="divide-y divide-border">
                         <DetailRow label="Code" value={
                           <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">{item.code}</span>
+                        } />
+                        <DetailRow label="Service" value={
+                          <span className="font-semibold text-xs text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded">
+                            {item.serviceCode || 'GLOBAL'}
+                          </span>
                         } />
                         <DetailRow label="Type" value={<TypeBadge type={item.type} />} />
                         <DetailRow label="Status" value={
